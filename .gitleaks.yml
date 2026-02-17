@@ -1,0 +1,67 @@
+# UIForge Patterns Secret Detection
+
+title: "UIForge Patterns Secret Detection"
+
+# Allowlist of common false positives
+allowlist:
+  - description: "GitHub token placeholder"
+    regex: "REPLACE_WITH_GITHUB_TOKEN"
+  - description: "API key placeholder"
+    regex: "REPLACE_WITH_API_KEY"
+  - description: "Database URL placeholder"
+    regex: "REPLACE_WITH_DATABASE_URL"
+  - description: "JWT secret placeholder"
+    regex: "REPLACE_WITH_JWT_SECRET"
+  - description: "Strong secret placeholder"
+    regex: "REPLACE_WITH_STRONG_SECRET"
+  - description: "Encryption key placeholder"
+    regex: "REPLACE_WITH_ENCRYPTION_KEY"
+  - description: "Webhook secret placeholder"
+    regex: "REPLACE_WITH_WEBHOOK_SECRET"
+  - description: "Environment variable placeholder"
+    regex: "REPLACE_WITH_.*_URL"
+
+# Rules for detecting secrets
+rules:
+  - description: "GitHub token"
+    regex: "(?i)(github|ghp_|gho_|ghu_|ghs_|ghr_)[a-zA-Z0-9_]{36}"
+    tags: ["github", "token"]
+    allowlist:
+      - "REPLACE_WITH_GITHUB_TOKEN"
+
+  - description: "Generic API key"
+    regex: "(?i)(api[_-]?key|apikey)[\"'`]*\\s*[:=]\\s*[\"'`]*[a-zA-Z0-9_]{20,}"
+    tags: ["api", "key"]
+    allowlist:
+      - "REPLACE_WITH_API_KEY"
+
+  - description: "Generic secret"
+    regex: "(?i)(secret|password|passwd|pwd)[\"'`]*\\s*[:=]\\s*[\"'`]*[a-zA-Z0-9_]{8,}"
+    tags: ["secret", "password"]
+    allowlist:
+      - "REPLACE_WITH_STRONG_SECRET"
+      - "REPLACE_WITH_PASSWORD"
+
+  - description: "JWT token"
+    regex: "(?i)(jwt[_-]?token|jwt)[\"'`]*\\s*[:=]\\s*[\"'`]*[a-zA-Z0-9_]{20,}"
+    tags: ["jwt", "token"]
+    allowlist:
+      - "REPLACE_WITH_JWT_SECRET"
+
+  - description: "Database URL"
+    regex: "(?i)(database[_-]?url|db[_-]?url)[\"'`]*\\s*[:=]\\s*[\"'`]*[a-zA-Z0-9_]{10,}"
+    tags: ["database", "url"]
+    allowlist:
+      - "REPLACE_WITH_DATABASE_URL"
+
+  - description: "Encryption key"
+    regex: "(?i)(encryption[_-]?key|encrypt[_-]?key)[\"'`]*\\s*[:=]\\s*[\"'`]*[a-zA-Z0-9_]{16,}"
+    tags: ["encryption", "key"]
+    allowlist:
+      - "REPLACE_WITH_ENCRYPTION_KEY"
+
+  - description: "Webhook secret"
+    regex: "(?i)(webhook[_-]?secret|webhook[_-]?token)[\"'`]*\\s*[:=]\\s*[\"'`]*[a-zA-Z0-9_]{16,}"
+    tags: ["webhook", "secret"]
+    allowlist:
+      - "REPLACE_WITH_WEBHOOK_SECRET"

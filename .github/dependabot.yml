@@ -1,0 +1,55 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    reviewers:
+      - "LucasSantana-Dev"
+    assignees:
+      - "LucasSantana-Dev"
+    labels:
+      - "dependencies"
+      - "npm"
+      
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    reviewers:
+      - "LucasSantana-Dev"
+    assignees:
+      - "LucasSantana-Dev"
+    labels:
+      - "dependencies"
+      - "python"
+      
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    reviewers:
+      - "LucasSantana-Dev"
+    assignees:
+      - "LucasSantana-Dev"
+    labels:
+      - "dependencies"
+      - "github-actions"

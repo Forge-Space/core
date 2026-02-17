@@ -1,0 +1,87 @@
+# Dependencies
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Build outputs
+dist/
+build/
+out/
+.next/
+*.tsbuildinfo
+
+# Environment files
+.env
+.env.local
+.env.*.local
+!.env.example
+!.env.template
+
+# Logs
+*.log
+logs/
+
+# Coverage
+coverage/
+htmlcov/
+.coverage
+.nyc_output
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.windsurf/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+.jest/
+test-results/
+playwright-report/
+
+# Security cleanup
+cleanup-*.sh
+replacements.txt
+bfg.jar
+SECURITY_INCIDENT.md
+POST_CLEANUP_CHECKLIST.md
+
+# Temporary files
+*.tmp
+*.temp
+stdin
+test.local.js
+*.local
+
+# Cache
+.cache/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Backup and archive
+*.bak
+*.backup
+*.tgz
+
+# Documentation builds
+docs/build/
+site/
+
+# Tools
+.npm
+.yarn-integrity
+.pnpm-debug.log*
+
+# Security tools
+.snyk/
+bandit-report.json
