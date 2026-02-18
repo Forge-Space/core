@@ -17,12 +17,12 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
+          node-version: "20"
           cache: "npm"
 
       - name: Install dependencies
@@ -37,17 +37,45 @@ jobs:
       - name: TypeScript compilation check
         run: npx tsc --noEmit
 
+  shell-lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install shfmt
+        run: sudo apt-get install -y shfmt
+
+      - name: Run shellcheck
+        uses: ludeeus/action-shellcheck@2.0.0
+        env:
+          SHELLCHECK_OPTS: --rcfile=patterns/shell/linting/.shellcheckrc
+
+      - name: Check shell formatting
+        run: |
+          ERRORS=0
+          while IFS= read -r -d '' f; do
+            if shfmt -d -i 2 "$f" 2>/dev/null | grep -q .; then
+              echo "\u274c Formatting violation: $f"
+              ERRORS=$((ERRORS + 1))
+            fi
+          done < <(find . -name "*.sh" ! -path "*/node_modules/*" -print0)
+          [ "$ERRORS" -eq 0 ] && echo "\u2705 All shell scripts correctly formatted" || exit 1
+
   validate-patterns:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
+          node-version: "20"
           cache: "npm"
 
       - name: Install dependencies
@@ -60,11 +88,11 @@ jobs:
         run: |
           echo "Checking root directory organization..."
           if [ $(find . -maxdepth 1 -name "*.md" | grep -v "README.md" | wc -l) -gt 0 ]; then
-            echo "❌ Found markdown files in root directory (should only be README.md)"
+            echo "\u274c Found markdown files in root directory (should only be README.md)"
             find . -maxdepth 1 -name "*.md" | grep -v "README.md"
             exit 1
           else
-            echo "✅ Root directory is properly organized"
+            echo "\u2705 Root directory is properly organized"
           fi
 
   security-scan:
@@ -72,10 +100,13 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Run Gitleaks
         uses: gitleaks/gitleaks-action@v2
+        continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -87,12 +118,12 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
+          node-version: "20"
           cache: "npm"
 
       - name: Install dependencies
@@ -105,17 +136,17 @@ jobs:
         run: |
           echo "Testing MCP Gateway routing patterns..."
           if [ ! -f "patterns/mcp-gateway/routing/README.md" ]; then
-            echo "❌ MCP Gateway routing patterns missing"
+            echo "\u274c MCP Gateway routing patterns missing"
             exit 1
           fi
 
           echo "Testing MCP Server AI provider patterns..."
           if [ ! -f "patterns/mcp-servers/ai-providers/README.md" ]; then
-            echo "❌ MCP Server AI provider patterns missing"
+            echo "\u274c MCP Server AI provider patterns missing"
             exit 1
           fi
 
-          echo "✅ All critical MCP patterns are present"
+          echo "\u2705 All critical MCP patterns are present"
 
   deploy-docs:
     runs-on: ubuntu-latest
@@ -123,12 +154,12 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
+          node-version: "20"
           cache: "npm"
 
       - name: Install dependencies

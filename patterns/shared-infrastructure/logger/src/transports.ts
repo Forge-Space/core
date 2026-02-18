@@ -26,32 +26,32 @@ export class ConsoleTransport implements LoggerTransport {
   format(entry: LogEntry): string {
     const color = this.colors[entry.level];
     const levelName = LogLevel[entry.level].padEnd(5);
-    const timestamp = entry.timestamp;
+    const { timestamp } = entry;
     const service = entry.service ? `[${entry.service}]` : '';
     const correlation = entry.correlationId ? `[${entry.correlationId}]` : '';
-    
+
     let message = `${color}${timestamp} ${levelName}${this.reset} ${service}${correlation} ${entry.message}`;
-    
+
     if (entry.duration) {
       message += ` (${entry.duration}ms)`;
     }
-    
+
     if (entry.context && Object.keys(entry.context).length > 0) {
       message += `\n${color}Context:${this.reset} ${JSON.stringify(entry.context, null, 2)}`;
     }
-    
+
     if (entry.stackTrace) {
       message += `\n${color}Stack Trace:${this.reset}\n${entry.stackTrace}`;
     }
-    
+
     return message;
   }
 
   write(entry: LogEntry): void {
     if (entry.level < this.level) return;
-    
+
     const formatted = this.format(entry);
-    
+
     switch (entry.level) {
       case LogLevel.TRACE:
       case LogLevel.DEBUG:
@@ -91,7 +91,7 @@ export class JsonTransport implements LoggerTransport {
 
   write(entry: LogEntry): void {
     if (entry.level < this.level) return;
-    
+
     console.log(this.format(entry));
   }
 }
@@ -126,18 +126,18 @@ export class FileTransport implements LoggerTransport {
 
   async write(entry: LogEntry): Promise<void> {
     if (entry.level < this.level) return;
-    
+
     const formatted = this.format(entry) + '\n';
-    
+
     try {
       // In a real implementation, this would write to the file system
       // For now, we'll simulate file writing
       this.currentSize += formatted.length;
-      
+
       if (this.currentSize > this.maxSize) {
         await this.rotateFile();
       }
-      
+
       // Simulate file write
       console.debug(`[FILE] Writing to ${this.filePath}:`, formatted.trim());
     } catch (error) {
@@ -175,7 +175,7 @@ export class RemoteTransport implements LoggerTransport {
     this.level = level;
     this.apiKey = apiKey;
     this.batchSize = batchSize;
-    
+
     // Flush logs every 5 seconds
     this.flushInterval = setInterval(() => this.flush(), 5000);
   }
@@ -186,9 +186,9 @@ export class RemoteTransport implements LoggerTransport {
 
   write(entry: LogEntry): void {
     if (entry.level < this.level) return;
-    
+
     this.buffer.push(entry);
-    
+
     if (this.buffer.length >= this.batchSize) {
       this.flush();
     }
@@ -196,9 +196,9 @@ export class RemoteTransport implements LoggerTransport {
 
   private async flush(): Promise<void> {
     if (this.buffer.length === 0) return;
-    
+
     const batch = this.buffer.splice(0, this.batchSize);
-    
+
     try {
       // In a real implementation, this would send to the remote endpoint
       console.debug(`[REMOTE] Sending ${batch.length} logs to ${this.endpoint}`);
@@ -241,7 +241,7 @@ export class FilteredTransport implements LoggerTransport {
 
   write(entry: LogEntry): void {
     if (entry.level < this.level) return;
-    
+
     if (this.filter(entry)) {
       this.transport.write(entry);
     }
@@ -268,7 +268,7 @@ export class MultiTransport implements LoggerTransport {
 
   write(entry: LogEntry): void {
     if (entry.level < this.level) return;
-    
+
     this.transports.forEach(transport => {
       transport.write(entry);
     });

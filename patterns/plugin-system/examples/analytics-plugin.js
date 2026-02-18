@@ -9,21 +9,21 @@ module.exports = {
   description: 'Analytics and event tracking plugin',
   author: 'Forge Patterns Team',
   dependencies: [],
-  
+
   // Plugin configuration
   config: {
     endpoint: 'https://analytics.example.com/events',
     batchSize: 100,
     flushInterval: 30000 // 30 seconds
   },
-  
+
   // Plugin hooks
   hooks: {
     'system:ready': async function(api) {
       api.log('info', 'Analytics plugin starting up');
       await this.initializeAnalytics(api);
     },
-    
+
     'feature:toggle': async function(featureName, enabled, api) {
       await this.trackEvent('feature_toggle', {
         feature: featureName,
@@ -32,7 +32,7 @@ module.exports = {
         userAgent: this.getUserAgent()
       }, api);
     },
-    
+
     'plugin:loaded': async function(plugin, api) {
       await this.trackEvent('plugin_loaded', {
         plugin: plugin.name,
@@ -40,7 +40,7 @@ module.exports = {
         timestamp: new Date().toISOString()
       }, api);
     },
-    
+
     'system:error': async function(error, api) {
       await this.trackEvent('system_error', {
         error: error.message,
@@ -49,11 +49,10 @@ module.exports = {
       }, api);
     }
   },
-  
+
   // Plugin state
   events: [],
-  config: {},
-  
+
   /**
    * Initialize analytics service
    */
@@ -61,18 +60,18 @@ module.exports = {
     try {
       // Load configuration
       this.config = await api.getConfig() || this.config;
-      
+
       // Start flush interval
       this.flushInterval = setInterval(() => {
         this.flushEvents(api);
       }, this.config.flushInterval);
-      
+
       api.log('info', 'Analytics initialized with config:', this.config);
     } catch (error) {
       api.log('error', 'Failed to initialize analytics:', error);
     }
   },
-  
+
   /**
    * Track an event
    */
@@ -83,17 +82,17 @@ module.exports = {
       timestamp: new Date().toISOString(),
       id: this.generateEventId()
     };
-    
+
     this.events.push(event);
-    
+
     // Flush immediately if batch size reached
     if (this.events.length >= this.config.batchSize) {
       await this.flushEvents(api);
     }
-    
+
     api.log('debug', `Event tracked: ${eventName}`, event);
   },
-  
+
   /**
    * Flush events to analytics service
    */
@@ -101,17 +100,18 @@ module.exports = {
     if (this.events.length === 0) {
       return;
     }
-    
+
+    let eventsToSend = [];
     try {
-      const eventsToSend = this.events.splice(0, this.config.batchSize);
-      
+      eventsToSend = this.events.splice(0, this.config.batchSize);
+
       // In a real implementation, this would send to an analytics service
       // For demo purposes, we'll just log the events
       api.log('info', `Flushing ${eventsToSend.length} events to analytics`);
-      
+
       // Simulate API call
       await this.sendToAnalytics(eventsToSend);
-      
+
       api.log('info', `Successfully flushed ${eventsToSend.length} events`);
     } catch (error) {
       api.log('error', 'Failed to flush events:', error);
@@ -119,7 +119,7 @@ module.exports = {
       this.events.unshift(...eventsToSend);
     }
   },
-  
+
   /**
    * Send events to analytics service (mock implementation)
    */
@@ -132,30 +132,30 @@ module.exports = {
       }, 100);
     });
   },
-  
+
   /**
    * Generate unique event ID
    */
   generateEventId() {
     return `evt_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   },
-  
+
   /**
    * Get user agent information
    */
   getUserAgent() {
     return process.env.USER_AGENT || 'Forge Patterns Plugin System';
   },
-  
+
   /**
    * Plugin initialization
    */
   async initialize(api) {
     api.log('info', 'Analytics plugin initializing...');
-    
+
     // Set up configuration
     await this.initializeAnalytics(api);
-    
+
     // Track plugin initialization
     await this.trackEvent('plugin_initialized', {
       plugin: 'analytics-plugin',
@@ -163,7 +163,7 @@ module.exports = {
       timestamp: new Date().toISOString()
     }, api);
   },
-  
+
   /**
    * Plugin cleanup
    */
@@ -172,13 +172,13 @@ module.exports = {
     if (this.flushInterval) {
       clearInterval(this.flushInterval);
     }
-    
+
     // Flush remaining events
     if (this.events.length > 0) {
       console.log(`[ANALYTICS] Flushing remaining ${this.events.length} events`);
       await this.flushEvents({ log: console.log });
     }
-    
+
     console.log('Analytics plugin cleaned up');
   }
 };

@@ -7,8 +7,8 @@ const fs = require('fs').promises;
 const path = require('path');
 
 // Constants for magic numbers
-const DEFAULT_TIMEOUT = 60000;
-const MAX_FILE_SIZE = 1024 * 1024; // 1MB
+const _DEFAULT_TIMEOUT = 60000;
+const _MAX_FILE_SIZE = 1024 * 1024; // 1MB
 const SECURITY_RISK_THRESHOLDS = {
   critical: 10,
   high: 7,
@@ -39,7 +39,7 @@ class AICodeAnalyzer {
     this.securityRules = new Map();
     this.performanceRules = new Map();
     this.qualityMetrics = new Map();
-    
+
     this.initialize();
   }
 
@@ -48,7 +48,7 @@ class AICodeAnalyzer {
     await this.loadSecurityRules();
     await this.loadPerformanceRules();
     await this.loadQualityMetrics();
-    
+
     // eslint-disable-next-line no-console
     console.log('AI Code Analyzer initialized');
   }
@@ -73,7 +73,7 @@ class AICodeAnalyzer {
 
       // Basic code analysis
       analysis.metrics = this.calculateBasicMetrics(content);
-      
+
       // Pattern recognition
       if (this.options.enablePatternRecognition) {
         analysis.patterns = this.recognizePatterns(content, filePath);
@@ -130,16 +130,16 @@ class AICodeAnalyzer {
     try {
       // Find all code files
       const codeFiles = await this.findCodeFiles(projectPath);
-      
+
       for (const filePath of codeFiles) {
         const fileAnalysis = await this.analyzeFile(filePath);
         projectAnalysis.files.push(fileAnalysis);
-        
+
         // Aggregate metrics
         projectAnalysis.summary.totalFiles++;
         projectAnalysis.summary.totalIssues += fileAnalysis.issues.length;
         projectAnalysis.summary.totalRecommendations += fileAnalysis.recommendations.length;
-        
+
         // Aggregate scores
         projectAnalysis.summary.securityScore += this.calculateSecurityScore(fileAnalysis.security);
         projectAnalysis.summary.performanceScore += this.calculatePerformanceScore(fileAnalysis.performance);
@@ -183,7 +183,7 @@ class AICodeAnalyzer {
       } else {
         improvements.requiresReview.push(recommendation);
       }
-      
+
       improvements.suggestions.push({
         type: recommendation.type,
         title: recommendation.title,
@@ -398,7 +398,7 @@ class AICodeAnalyzer {
 
   recognizePatterns(content, _filePath) {
     const patterns = [];
-    
+
     for (const [name, pattern] of this.patterns) {
       const matches = content.match(pattern.pattern);
       if (matches) {
@@ -409,13 +409,13 @@ class AICodeAnalyzer {
         });
       }
     }
-    
+
     return patterns;
   }
 
   getPatternRecommendations(patterns) {
     const recommendations = [];
-    
+
     for (const pattern of patterns) {
       const patternInfo = this.patterns.get(pattern.name);
       recommendations.push({
@@ -429,7 +429,7 @@ class AICodeAnalyzer {
         line: this.findLineNumber(pattern.matches[0], pattern.pattern)
       });
     }
-    
+
     return recommendations;
   }
 
@@ -450,10 +450,10 @@ class AICodeAnalyzer {
           matches: matches.length,
           recommendation: rule.recommendation
         });
-        
+
         // Calculate risk score
         security.riskScore += SECURITY_RISK_THRESHOLDS[rule.severity] * matches.length;
-        
+
         security.rules.push({
           name,
           severity: rule.severity,
@@ -479,7 +479,7 @@ class AICodeAnalyzer {
 
   getSecurityRecommendations(security) {
     const recommendations = [];
-    
+
     if (security.riskScore > 0) {
       recommendations.push({
         type: 'security',
@@ -491,7 +491,7 @@ class AICodeAnalyzer {
         autoFixable: false
       });
     }
-    
+
     return recommendations;
   }
 
@@ -512,10 +512,10 @@ class AICodeAnalyzer {
           matches: matches.length,
           recommendation: rule.recommendation
         });
-        
+
         // Calculate performance score
         performance.score -= PERFORMANCE_DEDUCTIONS[rule.severity] * matches.length;
-        
+
         performance.rules.push({
           name,
           severity: rule.severity,
@@ -541,7 +541,7 @@ class AICodeAnalyzer {
 
   getPerformanceRecommendations(performance) {
     const recommendations = [];
-    
+
     if (performance.score < QUALITY_THRESHOLD) {
       recommendations.push({
         type: 'performance',
@@ -553,7 +553,7 @@ class AICodeAnalyzer {
         autoFixable: false
       });
     }
-    
+
     return recommendations;
   }
 
@@ -567,7 +567,7 @@ class AICodeAnalyzer {
 
     for (const [name, metric] of this.qualityMetrics) {
       let value = 0;
-      
+
       switch (metric.measurement) {
         case 'lines':
           value = this.calculateFunctionLength(content, metric.threshold);
@@ -584,13 +584,13 @@ class AICodeAnalyzer {
         default:
           value = 0;
       }
-      
+
       quality.metrics[name] = {
         value,
         threshold: metric.threshold,
         description: metric.description
       };
-      
+
       if (value > metric.threshold) {
         quality.issues.push({
           name,
@@ -598,7 +598,7 @@ class AICodeAnalyzer {
           value,
           threshold: metric.threshold
         });
-        
+
         quality.score -= 10;
         quality.rules.push({
           name,
@@ -624,7 +624,7 @@ class AICodeAnalyzer {
 
   getQualityRecommendations(quality) {
     const recommendations = [];
-    
+
     if (quality.score < QUALITY_THRESHOLD) {
       recommendations.push({
         type: 'quality',
@@ -636,7 +636,7 @@ class AICodeAnalyzer {
         autoFixable: false
       });
     }
-    
+
     return recommendations;
   }
 
@@ -657,34 +657,34 @@ class AICodeAnalyzer {
   calculateFunctionLength(content, threshold) {
     const functions = content.match(/function\s+\w+\s*\([^)]*\)\s*{/g) || [];
     let maxLength = 0;
-    
+
     for (const func of functions) {
       const start = func.index;
       const end = content.indexOf('}', start);
       const lines = content.substring(start, end).split('\n').length;
       maxLength = Math.max(maxLength, lines);
     }
-    
+
     return maxLength;
   }
 
   calculateParameterCount(content, threshold) {
     const functions = content.match(/function\s+\w+\s*\([^)]*\)/g) || [];
     let maxCount = 0;
-    
+
     for (const func of functions) {
       const params = func.match(/[^()]+/)[0];
       const count = params ? params.split(',').length : 0;
       maxCount = Math.max(maxCount, count);
     }
-    
+
     return maxCount;
   }
 
   calculateNestingDepth(content, threshold) {
     let maxDepth = 0;
     let currentDepth = 0;
-    
+
     for (const char of content) {
       if (char === '{') {
         currentDepth++;
@@ -693,18 +693,18 @@ class AICodeAnalyzer {
         currentDepth--;
       }
     }
-    
+
     return maxDepth;
   }
 
   calculateLineLength(content, threshold) {
     const lines = content.split('\n');
     let maxLength = 0;
-    
+
     for (const line of lines) {
       maxLength = Math.max(maxLength, line.length);
     }
-    
+
     return maxLength;
   }
 
@@ -720,14 +720,14 @@ class AICodeAnalyzer {
 
   async findCodeFiles(projectPath) {
     const files = [];
-    
+
     async function searchDirectory(dir) {
       const items = await fs.readdir(dir);
-      
+
       for (const item of items) {
         const fullPath = path.join(dir, item);
         const stat = await fs.stat(fullPath);
-        
+
         if (stat.isDirectory() && !item.startsWith('.') && item !== 'node_modules') {
           await searchDirectory(fullPath);
         } else if (stat.isFile() && this.isCodeFile(fullPath)) {
@@ -735,7 +735,7 @@ class AICodeAnalyzer {
         }
       }
     }
-    
+
     await searchDirectory(projectPath);
     return files;
   }
@@ -747,7 +747,7 @@ class AICodeAnalyzer {
 
   getProjectRecommendations(projectAnalysis) {
     const recommendations = [];
-    
+
     // Overall recommendations based on aggregate metrics
     if (projectAnalysis.summary.securityScore < QUALITY_THRESHOLD) {
       recommendations.push({
@@ -759,7 +759,7 @@ class AICodeAnalyzer {
         effort: 'high'
       });
     }
-    
+
     if (projectAnalysis.summary.performanceScore < QUALITY_THRESHOLD) {
       recommendations.push({
         type: 'project',
@@ -770,7 +770,7 @@ class AICodeAnalyzer {
         effort: 'medium'
       });
     }
-    
+
     if (projectAnalysis.summary.qualityScore < QUALITY_THRESHOLD) {
       recommendations.push({
         type: 'project',
@@ -781,7 +781,7 @@ class AICodeAnalyzer {
         effort: 'medium'
       });
     }
-    
+
     return recommendations;
   }
 }

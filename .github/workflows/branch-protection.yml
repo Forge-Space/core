@@ -39,12 +39,10 @@ jobs:
         run: |
           echo "Checking commit messages..."
 
-          # Get commit messages from PR
-          COMMITS=$(git log --pretty=format:"%s" origin/main..HEAD)
-
-          for COMMIT in $COMMITS; do
+          # Get commit messages from PR (one per line, handles spaces correctly)
+          git log --pretty=format:"%s" origin/main..HEAD | while IFS= read -r COMMIT; do
             echo "Checking: $COMMIT"
-            
+
             # Check Angular convention
             if [[ "$COMMIT" =~ ^(feat|fix|docs|style|refactor|perf|test|chore|build|ci|revert)(\(.+\))?: .+$ ]]; then
               echo "✅ $COMMIT follows convention"
@@ -101,7 +99,7 @@ jobs:
           # Check if we're working against main (trunk)
           if [ "$GITHUB_BASE_REF" = "main" ]; then
             echo "✅ Working against trunk (main)"
-            
+
             # Check if branch is up to date with main
             BEHIND=$(git rev-list --count HEAD..origin/main)
             if [ "$BEHIND" -gt 0 ]; then
