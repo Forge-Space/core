@@ -20,12 +20,13 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "validate": "npm run lint:check && npm run format:check && npm run test",
-    "test": "bash patterns/cost/scripts/validate-development-workflow.sh",
+    "test": "node test/plugin-system-validation.js && node test/feature-toggle-validation.js && node test/shared-constants-validation.js",
+    "test:workflow": "bash patterns/cost/scripts/validate-development-workflow.sh",
     "test:plugins": "node test/plugin-system-validation.js",
     "test:feature-toggles": "node test/feature-toggle-validation.js",
     "test:integration": "node test/cross-project-integration.js",
     "test:shared-constants": "node test/shared-constants-validation.js",
-    "test:all": "npm run test && npm run test:plugins && npm run test:feature-toggles && npm run test:shared-constants",
+    "test:all": "npm run test && npm run test:integration",
     "prepare": "npm run build && husky install",
     "pre-commit": "npm run lint && npm run format && npm run test && .husky/pre-commit-backup-check",
     "prepack": "npm run build",
@@ -71,16 +72,9 @@
     "typescript-eslint": "^8.56.0"
   },
   "lint-staged": {
-    "*.{js,ts}": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "*.{json,yml,yaml}": [
-      "prettier --write"
-    ],
-    "*.md": [
-      "prettier --write"
-    ]
+    "*.{js,ts}": ["eslint --fix", "prettier --write"],
+    "*.{json,yml,yaml}": ["prettier --write"],
+    "*.md": ["prettier --write"]
   },
   "husky": {
     "hooks": {
