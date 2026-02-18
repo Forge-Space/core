@@ -8,6 +8,10 @@
 const fs = require('fs-extra');
 const path = require('path');
 
+// Constants
+const DEFAULT_TIMEOUT = 5000;
+const FILE_PERMISSION_MASK = 0o111;
+
 // Test configuration
 const TEST_CONFIG = {
   projects: ['mcp-gateway', 'uiforge-mcp', 'uiforge-webapp'],
@@ -31,6 +35,7 @@ class FeatureToggleValidator {
   log(message, type = 'info') {
     const timestamp = new Date().toISOString();
     const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : 'ℹ️';
+    // eslint-disable-next-line no-console
     console.log(`${timestamp} ${prefix} ${message}`);
   }
 
@@ -125,7 +130,7 @@ class FeatureToggleValidator {
       const stats = await fs.stat(cliPath);
 
       // Check if executable (Unix systems)
-      if (process.platform !== 'win32' && (stats.mode & 0o111) === 0) {
+      if (process.platform !== 'win32' && (stats.mode & FILE_PERMISSION_MASK) === 0) {
         throw new Error('CLI tool is not executable');
       }
     });
@@ -136,7 +141,7 @@ class FeatureToggleValidator {
       return new Promise((resolve, reject) => {
         const child = spawn('./scripts/forge-features', ['help'], {
           stdio: 'pipe',
-          timeout: 5000,
+          timeout: DEFAULT_TIMEOUT,
           cwd: path.join(__dirname, '..')
         });
 
@@ -224,7 +229,7 @@ class FeatureToggleValidator {
 
   async runAllTests() {
     this.log('🚀 Starting Centralized Feature Toggle System Validation');
-    this.log('=' .repeat(60));
+    this.log('='.repeat(60));
 
     await this.validateConfiguration();
     await this.validateLibrary();
@@ -232,7 +237,7 @@ class FeatureToggleValidator {
     await this.validateIntegration();
     await this.validateNamespacing();
 
-    this.log('=' .repeat(60));
+    this.log('='.repeat(60));
     this.log(`📊 Test Results: ${this.results.passed} passed, ${this.results.failed} failed`);
 
     if (this.results.failed > 0) {
@@ -248,6 +253,7 @@ class FeatureToggleValidator {
 if (require.main === module) {
   const validator = new FeatureToggleValidator();
   validator.runAllTests().catch(error => {
+    // eslint-disable-next-line no-console
     console.error('Validation failed:', error);
     process.exit(1);
   });
