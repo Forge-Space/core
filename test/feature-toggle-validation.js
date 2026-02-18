@@ -35,7 +35,7 @@ class FeatureToggleValidator {
   log(message, type = 'info') {
     const timestamp = new Date().toISOString();
     const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : 'ℹ️';
-    // eslint-disable-next-line no-console
+     
     console.log(`${timestamp} ${prefix} ${message}`);
   }
 
@@ -253,7 +253,7 @@ class FeatureToggleValidator {
 if (require.main === module) {
   const validator = new FeatureToggleValidator();
   validator.runAllTests().catch(error => {
-    // eslint-disable-next-line no-console
+     
     console.error('Validation failed:', error);
     process.exit(1);
   });

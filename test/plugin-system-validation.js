@@ -181,8 +181,8 @@ class PluginSystemValidator {
   addTestResult(testName, passed, message) {
     this.results.tests.push({
       name: testName,
-      passed: passed,
-      message: message
+      passed,
+      message
     });
     
     if (passed) {

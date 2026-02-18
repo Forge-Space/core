@@ -26,7 +26,7 @@ export function validateProjectSlug(project: string): void {
   if (!SAFE_PROJECT_SLUG.test(project)) {
     throw new Error(
       `Invalid project slug "${project}". ` +
-      `Slugs must be lowercase kebab-case (e.g. "my-project").`
+      'Slugs must be lowercase kebab-case (e.g. "my-project").'
     );
   }
 }

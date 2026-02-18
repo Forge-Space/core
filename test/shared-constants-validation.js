@@ -41,7 +41,7 @@ class SharedConstantsValidator {
     const base = path.join(__dirname, '../patterns/shared-constants');
     const required = [
       'index.ts', 'network.ts', 'mcp-protocol.ts', 'environments.ts',
-      'ai-providers.ts', 'feature-flags.ts', 'storage.ts', 'README.md',
+      'ai-providers.ts', 'feature-flags.ts', 'storage.ts', 'README.md'
     ];
     for (const file of required) {
       await this.test(`File exists: ${file}`, async () => {
@@ -198,7 +198,7 @@ class SharedConstantsValidator {
       /sk-[a-zA-Z0-9]{20,}/,
       /AIza[0-9A-Za-z-_]{35}/,
       /Bearer\s+[a-zA-Z0-9._-]{20,}/,
-      /password\s*=\s*['"'][^'"]+['"]/i,
+      /password\s*=\s*['"'][^'"]+['"]/i
     ];
     for (const file of files) {
       await this.test(`BR-001 Zero-Secrets: ${file}`, async () => {

@@ -64,10 +64,10 @@ class AdvancedFeatureToggles {
         await this.loadABTestConfigurations();
       }
 
-      // eslint-disable-next-line no-console
+       
       console.log(`Advanced Feature Toggles initialized for ${this.options.appName}`);
     } catch (error) {
-      // eslint-disable-next-line no-console
+       
       console.error('Failed to initialize Advanced Feature Toggles:', error);
       throw error;
     }
@@ -157,7 +157,7 @@ class AdvancedFeatureToggles {
     abTest.isActive = true;
     abTest.startDate = new Date();
 
-    // eslint-disable-next-line no-console
+     
     console.log(`A/B test started for feature: ${featureName}`);
     return abTest;
   }
@@ -177,9 +177,9 @@ class AdvancedFeatureToggles {
     const results = this.generateABTestResults(abTest);
     abTest.results = results;
 
-    // eslint-disable-next-line no-console
+     
     console.log(`A/B test stopped for feature: ${featureName}`);
-    // eslint-disable-next-line no-console
+     
     console.log('Results:', results);
 
     return results;
@@ -247,7 +247,7 @@ class AdvancedFeatureToggles {
     strategy.isActive = true;
     strategy.currentPhase = 0;
 
-    // eslint-disable-next-line no-console
+     
     console.log(`Rollout strategy started for feature: ${featureName}`);
     return this.executeRolloutPhase(strategy);
   }
@@ -463,7 +463,7 @@ class AdvancedFeatureToggles {
           timestamp
         });
       } catch (error) {
-        // eslint-disable-next-line no-console
+         
         console.error('Analytics callback error:', error);
       }
     });
@@ -692,7 +692,7 @@ class AdvancedFeatureToggles {
         }
       }
     } catch (error) {
-      // eslint-disable-next-line no-console
+       
       console.log('No A/B test configurations found, using defaults');
     }
   }

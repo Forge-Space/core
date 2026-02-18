@@ -18,7 +18,7 @@ export const MCP_PROTOCOL_METHODS = {
   RESOURCES_LIST: 'resources/list',
   RESOURCES_READ: 'resources/read',
   PROMPTS_LIST: 'prompts/list',
-  PROMPTS_GET: 'prompts/get',
+  PROMPTS_GET: 'prompts/get'
 } as const;
 
 export type McpProtocolMethod = (typeof MCP_PROTOCOL_METHODS)[keyof typeof MCP_PROTOCOL_METHODS];

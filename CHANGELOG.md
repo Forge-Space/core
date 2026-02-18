@@ -7,15 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed
-
-- **ESLint peer dependency conflict**: upgraded `@typescript-eslint/eslint-plugin` from `^6.0.0` to `^8.56.0` to match `@typescript-eslint/parser@^8.56.0` (same major version required)
-- **ESLint version incompatibility**: downgraded `eslint` from `^10.0.0` to `^9.0.0`; ESLint 10 dropped legacy `.eslintrc.*` config support entirely
-- **ESLint flat config migration**: replaced `.eslintrc.js` with `eslint.config.mjs` (ESLint 9 flat config format); added `@eslint/js` and `globals` dev dependencies
-- **ESLint scripts**: removed deprecated `--ext .js,.ts` flag from `lint` and `lint:check` scripts (flat config handles file matching)
-
 ### Added
-
+- **`patterns/python/`**: Python project template and tooling patterns for Forge ecosystem use cases (AI/ML scripts, automation, MCP server extensions) — `pyproject.toml` with ruff + mypy + pytest, entry point template, and test template; mirrors `scripts/bootstrap/project.sh python` type
+- **`patterns/shell/`**: Shell scripting conventions for all Forge bash scripts — `conventions/header.sh` (standard `set -euo pipefail`, colour helpers, `require_cmd`/`guard_cmd`) and `conventions/guard.sh` (`ensure_dir`, `safe_copy`, `require_env`, `make_tmpfile`); extracted from patterns in `scripts/security/` and `scripts/bootstrap/`
+- **`patterns/code-quality/eslint/base.config.mjs`**: new composable ESLint 9 flat-config base for Node.js/TypeScript projects — uses `typescript-eslint` unified package with `strictTypeChecked` + `stylisticTypeChecked` presets, `projectService: true` for full type-aware linting, and `eslint-plugin-import` for cycle/duplicate detection
+- **`patterns/code-quality/eslint/react.config.mjs`**: new React/Next.js ESLint layer — adds `eslint-plugin-react`, `eslint-plugin-react-hooks`, and `eslint-plugin-jsx-a11y` rules; composable on top of `base.config.mjs`
+- **`patterns/code-quality/tsconfig/base.json`**: canonical Node.js/TypeScript tsconfig preset (`NodeNext` module resolution, full strict suite, `exactOptionalPropertyTypes`)
+- **`patterns/code-quality/tsconfig/nextjs.json`**: Next.js/React tsconfig preset extending base (`Bundler` resolution, `jsx: preserve`, `noEmit`)
+- **`patterns/code-quality/tsconfig/library.json`**: publishable library tsconfig preset extending base (`composite`, `declarationMap`, `importHelpers`)
+- **`typescript-eslint`** unified meta-package added to devDependencies (re-exports `@typescript-eslint/eslint-plugin` + `@typescript-eslint/parser`)
+- **`eslint-plugin-import`** + **`eslint-import-resolver-typescript`** added to devDependencies
 - **VS Code Extension stub** (`patterns/ide-extensions/vscode/`): Alpha scaffold for forge-patterns VS Code extension with command palette integration (`listPatterns`, `applyPattern`, `validateCompliance`), TypeScript entry point, and MCP context server integration docs
 - **UIForge Context MCP Server v2** (`src/mcp-context-server/`): Centralized context store — the MCP server is now the absolute source of truth for all UIForge project contexts
   - `store.ts` — Read/write/list operations on `context-store/` with slug validation and path-confinement security (0 Snyk issues)
@@ -28,6 +29,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `mcp-context:build` and `mcp-context:start` npm scripts
 - `@modelcontextprotocol/sdk` dependency
 - `test:plugins`, `test:feature-toggles`, `test:integration`, `test:all` npm scripts
+- **`patterns/shared-constants/`**: Centralised reusable constants from the Forge ecosystem — `network.ts` (timeouts, retries, gateway URL), `mcp-protocol.ts` (JSON-RPC version, MCP methods), `environments.ts` (NODE_ENVS, LOG_LEVELS, guard functions), `ai-providers.ts` (AI_PROVIDERS registry, helper functions), `feature-flags.ts` (FeatureFlag interface, createFeatureFlags, resolveFeatureFlag), `storage.ts` (IndexedDBStoreConfig, createStorageConfig, COMMON_STORE_NAMES), `index.ts` (barrel re-export)
+- `test:shared-constants` npm script (44 tests, 0 failures)
+- **`patterns/shell/linting/.shellcheckrc`**: strict shellcheck configuration — `shell=bash`, `enable=all`, disables only SC1091 (source not following) and SC2034 (unused variable in sourced files)
+- **`scripts/lint-shell.sh`**: unified shell linting runner — runs `shellcheck` (static analysis) and `shfmt` (formatting check) on all `.sh` files; `STRICT=1` mode for CI; graceful skip when tools are absent locally
+
+### Removed
+
+- **`patterns/go/`**: Removed — Go is not used in the Forge ecosystem (TypeScript/Node.js only); generic templates added unnecessary package weight
+- **`patterns/java/`**: Removed — Java/Spring Boot is not used in the Forge ecosystem; generic templates added unnecessary package weight
+- **`patterns/rust/`**: Removed — Rust is not used in the Forge ecosystem; generic templates added unnecessary package weight
+
+### Changed
+
+- **`eslint.config.mjs`** (root): migrated to `tseslint.config()` wrapper; upgraded from `recommended` to `strictTypeChecked` + `stylisticTypeChecked`; enabled `projectService: true`; added `eslint-plugin-import`; removed style rules now fully owned by Prettier (`quotes`, `semi`, `comma-dangle`); added `disableTypeChecked` override for plain JS files
+- **`.prettierrc.json`** (root): expanded to multi-line human-readable format; reconciled `trailingComma: "all"`, `arrowParens: "always"`; added `objectWrap: "collapse"` (Prettier 3.5+); added `$schema`
+- **`patterns/code-quality/prettier/base.config.json`**: synced with root — same canonical options, added `$schema`, `jsxSingleQuote`, `objectWrap`
+- **`tsconfig.json`** (root): upgraded `module`/`moduleResolution` from `ESNext`/`node` to `NodeNext`/`NodeNext`; added `composite: true`; removed redundant explicit strict flags already implied by `strict: true`
+- **`prettier`** bumped to `^3.5.0` in devDependencies
 
 ### Fixed
 
@@ -41,77 +60,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Plugin System** (`patterns/plugin-system/`): Complete extensible architecture with dynamic plugin loading, hot reload, hook system, dependency management, and per-plugin configuration
-  - `plugin-manager.js` — Core `PluginManager` class extending `EventEmitter`
-  - `examples/analytics-plugin.js` — Analytics and event tracking example
-  - `examples/feature-enhancer-plugin.js` — A/B testing and feature enhancement example
-  - `examples/plugin-demo.js` — Full demonstration script
-  - `plugins/analytics-plugin.js` — Production-ready analytics plugin
-  - `plugins/config/analytics-plugin.json` — Plugin configuration
-  - `README.md` — Comprehensive plugin system documentation
-- **Shared Infrastructure Logger** (`patterns/shared-infrastructure/logger/`): TypeScript structured logging with multiple transports, observability, and correlation context
-- **Multi-Language Pattern Stubs**: Go, Java, Rust, and AI project template READMEs
-- **Plugin System Validation Test** (`test/plugin-system-validation.js`): 5-test validation suite
-- **Phase 5 Validation Report** (`docs/reports/PHASE_5_VALIDATION_REPORT.md`)
-- **Plugin System Implementation Report** (`docs/reports/PLUGIN_SYSTEM_IMPLEMENTATION_REPORT.md`)
+- **Python patterns** (`patterns/python/`): `pyproject.toml` template with ruff + mypy + pytest; entry point and test templates
+- **Shell patterns** (`patterns/shell/`): `conventions/header.sh` and `conventions/guard.sh` with standard helpers
+- **ESLint base config** (`patterns/code-quality/eslint/base.config.mjs`): composable ESLint 9 flat-config for Node.js/TypeScript
+- **ESLint React config** (`patterns/code-quality/eslint/react.config.mjs`): React/Next.js ESLint layer
+- **TSConfig presets** (`patterns/code-quality/tsconfig/`): `base.json`, `nextjs.json`, `library.json`
 
-### Fixed
+### Changed
 
-- Security vulnerabilities in logger examples: replaced hardcoded credentials with `process.env` references (CWE-547, CWE-798)
-- Duplicate files and backup files created by bootstrap script
-- `.vimrc` added to disable Vim backup and swap files
-- Pre-commit hook updated to prevent backup files from being committed
+- Migrated root `eslint.config.mjs` to ESLint 9 flat config
+- Upgraded `@typescript-eslint` to v8, `eslint` to v9
+- Added `typescript-eslint`, `eslint-plugin-import`, `eslint-import-resolver-typescript` to devDependencies
 
-### Removed
-
-- Kubernetes configurations (`patterns/kubernetes/`) — replaced by cloud-native patterns approach
-- Duplicate plan files from `.windsurf/plans/`
-- `dist/` compiled output directory
-- `scripts/prevent-duplicates.sh` and `scripts/remove-duplicates.sh` (consolidated into pre-commit)
-- Stale reports: `ALL_ISSUES_RESOLVED.md`, `COMPLETE_INTEGRATION_SUMMARY.md`, `COMPLETE_PROJECT_ANALYSIS.md`, and others
-
-## [1.0.0] - 2026-02-10
+## [1.0.0] - 2026-02-18
 
 ### Added
 
-- **Centralized Feature Toggle System** (`patterns/feature-toggles/`): Cross-project feature management with unified control via Unleash
-  - Node.js SDK (`libraries/nodejs/index.js`)
-  - Advanced library with A/B testing and analytics (`libraries/advanced/index.js`)
-  - Centralized YAML configuration (`config/centralized-config.yml`)
-  - `forge-features` CLI tool for feature management across all projects
-- **AI-Powered Code Analyzer** (`patterns/ai-tools/code-analyzer.js`): Pattern recognition, security analysis, performance analysis, and code quality metrics
-- **Advanced Feature Toggle System**: A/B testing, analytics, rollout strategies
-- **Cross-Project Integration Tests** (`test/cross-project-integration.js`)
-- **Feature Toggle Validation Tests** (`test/feature-toggle-validation.js`)
-- **Performance Benchmark Suite** (`test/performance-benchmark.js`)
-- **Integration Script** (`scripts/integrate.js`): Automated integration for mcp-gateway, uiforge-mcp, uiforge-webapp
-- **Architecture Decision Records**: ADR-001 through ADR-006 covering ecosystem design, gateway hub, MCP server design, and centralized feature toggles
-- **Integration Guides**: MCP Gateway, UIForge MCP, troubleshooting, and developer onboarding guides
-- **Code Quality Patterns** (`patterns/code-quality/`): ESLint, Prettier, TypeScript configurations
-- **Docker Patterns** (`patterns/docker/`): High-efficiency three-state service model (Running/Sleeping/Stopped)
-- **Cost Patterns** (`patterns/cost/`): Zero-cost tracking and optimization strategies
-- **Security Patterns** (`patterns/security/`): Authentication, middleware, zero-secrets architecture
-- **MCP Gateway Patterns** (`patterns/mcp-gateway/`): Rate limiting, request validation, security headers
-- **MCP Server Patterns** (`patterns/mcp-servers/`): AI providers, streaming, template management
-- **Git Patterns** (`patterns/git/`): Hooks, workflows, conventional commits
-- **Config Patterns** (`patterns/config/`): Centralized configuration management
-- **Terraform Patterns** (`patterns/terraform/`): Infrastructure as code templates
-- **LocalStack Patterns** (`patterns/localstack/`): Local AWS service emulation
-- **Security Scripts** (`scripts/security/`): `scan-for-secrets.sh`, `validate-no-secrets.sh`, `validate-placeholders.sh`
-- **Bootstrap Script** (`scripts/bootstrap/project.sh`): Automated project setup
-- **Gitleaks Configuration** (`.gitleaks.yml`): Secret detection rules
-- **35+ Windsurf Rules** (`.windsurf/rules/`): Development standards and guidelines
-- **16+ Windsurf Workflows** (`.windsurf/workflows/`): Development procedures
-- **5+ Windsurf Skills** (`.windsurf/skills/`): Specialized development capabilities
-- **GitHub Actions CI/CD**: Lint, type-check, build, test, coverage, security scan pipeline
-- **GitHub Pages**: Automated documentation deployment
-
-### Security
-
-- BR-001 Zero-Secrets policy enforced across all patterns
-- Multi-layer secret scanning with Trufflehog, Gitleaks, and custom scripts
-- All sensitive values use `{{PLACEHOLDER}}` syntax
-
-[Unreleased]: https://github.com/LucasSantana-Dev/forge-patterns/compare/v1.1.0...HEAD
-[1.1.0]: https://github.com/LucasSantana-Dev/forge-patterns/compare/v1.0.0...v1.1.0
-[1.0.0]: https://github.com/LucasSantana-Dev/forge-patterns/releases/tag/v1.0.0
+- Initial release with core patterns: MCP Gateway, MCP Servers, Shared Infrastructure, Code Quality, Docker, Cost, Config, Feature Toggles, Plugin System
+- Security scanning with Gitleaks and custom scripts
+- CI/CD pipeline with GitHub Actions
+- Bootstrap script for new projects

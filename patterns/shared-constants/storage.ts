@@ -30,7 +30,7 @@ export interface IndexedDBStoreConfig {
 export function createStorageConfig(
   dbName: string,
   stores: string[],
-  version: number = DEFAULT_DB_VERSION,
+  version: number = DEFAULT_DB_VERSION
 ): IndexedDBStoreConfig {
   return { dbName, version, stores };
 }
@@ -43,7 +43,7 @@ export const COMMON_STORE_NAMES = {
   API_KEYS: 'api_keys',
   USER_PREFERENCES: 'user_preferences',
   SESSIONS: 'sessions',
-  CACHE: 'cache',
+  CACHE: 'cache'
 } as const;
 
 export type CommonStoreName = (typeof COMMON_STORE_NAMES)[keyof typeof COMMON_STORE_NAMES];

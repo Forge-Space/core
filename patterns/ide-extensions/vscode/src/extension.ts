@@ -4,7 +4,7 @@ export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push(
     vscode.commands.registerCommand('forgePatterns.listPatterns', listPatterns),
     vscode.commands.registerCommand('forgePatterns.applyPattern', applyPattern),
-    vscode.commands.registerCommand('forgePatterns.validateCompliance', validateCompliance),
+    vscode.commands.registerCommand('forgePatterns.validateCompliance', validateCompliance)
   );
 }
 
@@ -21,11 +21,11 @@ async function listPatterns(): Promise<void> {
     'java/library',
     'ai/ml-project',
     'ai/deep-learning',
-    'ai/ai-api',
+    'ai/ai-api'
   ];
 
   const selected = await vscode.window.showQuickPick(patterns, {
-    placeHolder: 'Select a pattern to view',
+    placeHolder: 'Select a pattern to view'
   });
 
   if (selected) {
@@ -36,14 +36,14 @@ async function listPatterns(): Promise<void> {
 async function applyPattern(): Promise<void> {
   // TODO: Scaffold selected pattern into the current workspace
   vscode.window.showInformationMessage(
-    'Apply Pattern: Coming soon. Use the CLI (npx forge-patterns apply <pattern>) in the meantime.',
+    'Apply Pattern: Coming soon. Use the CLI (npx forge-patterns apply <pattern>) in the meantime.'
   );
 }
 
 async function validateCompliance(): Promise<void> {
   // TODO: Run pattern compliance checks against the current workspace
   vscode.window.showInformationMessage(
-    'Validate Compliance: Coming soon. Use the CLI (npx forge-patterns validate) in the meantime.',
+    'Validate Compliance: Coming soon. Use the CLI (npx forge-patterns validate) in the meantime.'
   );
 }
 

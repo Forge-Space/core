@@ -12,12 +12,12 @@ module.exports = {
   
   // Plugin hooks
   hooks: {
-    'system:ready': async function(api) {
+    async 'system:ready'(api) {
       api.log('info', 'Feature Enhancer plugin starting up');
       await this.initializeEnhancer(api);
     },
     
-    'feature:toggle': async function(featureName, enabled, api) {
+    async 'feature:toggle'(featureName, enabled, api) {
       const enhancement = await this.enhanceFeatureToggle(featureName, enabled, api);
       
       if (enhancement.abTest) {
@@ -35,11 +35,11 @@ module.exports = {
       api.log('info', `Enhanced feature toggle: ${featureName}`, enhancement);
     },
     
-    'feature:ab:test': async function(testConfig, api) {
+    async 'feature:ab:test'(testConfig, api) {
       await this.createABTest(testConfig, api);
     },
     
-    'feature:analytics': async function(featureData, api) {
+    async 'feature:analytics'(featureData, api) {
       await this.analyzeFeatureUsage(featureData, api);
     }
   },
@@ -224,7 +224,7 @@ module.exports = {
       event: 'ab_test_assignment',
       feature: featureName,
       variant: enhancement.variant,
-      enabled: enabled,
+      enabled,
       timestamp: new Date().toISOString()
     });
     
@@ -270,7 +270,7 @@ module.exports = {
     await api.emitHook('analytics:track', {
       event: 'feature_usage',
       feature: featureName,
-      enabled: enabled,
+      enabled,
       variant: enhancement.variant,
       rolloutPercentage: enhancement.rolloutPercentage,
       timestamp: new Date().toISOString()
@@ -302,12 +302,12 @@ module.exports = {
         return `Feature "${featureName}" is now enabled with variant: ${enhancement.variant}`;
       } else if (enhancement.rolloutPercentage !== undefined) {
         return `Feature "${featureName}" is now enabled (${enhancement.rolloutPercentage}% rollout)`;
-      } else {
+      } 
         return `Feature "${featureName}" is now enabled`;
-      }
-    } else {
+      
+    } 
       return `Feature "${featureName}" has been disabled`;
-    }
+    
   },
   
   /**
@@ -319,9 +319,9 @@ module.exports = {
     // Store test configuration
     this.abTests.set(featureName, {
       started: new Date(),
-      variants: variants,
-      weights: weights,
-      duration: duration,
+      variants,
+      weights,
+      duration,
       assignments: new Map()
     });
     
@@ -346,7 +346,7 @@ module.exports = {
     
     const analysis = {
       feature: featureName,
-      timeRange: timeRange,
+      timeRange,
       usage: analyticsData,
       abTest: testData,
       insights: this.generateInsights(analyticsData, testData)
