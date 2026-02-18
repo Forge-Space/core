@@ -33,22 +33,11 @@ feature_toggles:
       - ai-chat
       - template-management
       - ui-generation
-      - cost-optimization
     uiforge-webapp:
       - dark-mode
       - advanced-analytics
       - feature-flags-ui
       - experimental-components
-
-learning:
-  certification: aws-solutions-architect
-  current_level: 1 # 1-5 progressive complexity
-  focus_areas:
-    - resilient_architectures
-    - high_performance
-    - secure_applications
-    - cost_optimization
-    - operational_excellence
 
 monitoring:
   local_metrics: true
