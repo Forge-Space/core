@@ -1,5 +1,7 @@
 # Changelog
 
+<!-- markdownlint-disable MD024 -->
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
@@ -32,29 +34,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `mcp-context:build` and `mcp-context:start` npm scripts; `@modelcontextprotocol/sdk` dependency
 - **`patterns/shared-constants/`**: Centralised reusable constants — `network.ts`, `mcp-protocol.ts`, `environments.ts`, `ai-providers.ts`, `feature-flags.ts`, `storage.ts`, `index.ts`
 - `test:shared-constants` npm script (44 tests, 0 failures)
-- **Node.js 24 support**: `engines` field updated to `>=20`, CI matrix extended to include Node 24
+- **`.shellcheckrc`** (root): project-level shellcheck config
+
+### Removed
+
+- **`patterns/cost/`**, **`patterns/terraform/`**, **`patterns/localstack/`**: Removed — out of scope for current project focus
+- **`patterns/go/`**, **`patterns/java/`**, **`patterns/rust/`**: Removed — not used in the Forge ecosystem
+
+### Changed
+
+- **Node.js minimum version**: bumped from `>=20.11.0` to `>=22.0.0`; CI node-version updated to 24
+- **`eslint.config.mjs`** (root): migrated to `tseslint.config()` wrapper with `strictTypeChecked` + `stylisticTypeChecked`
+- **`.prettierrc.json`** (root): expanded with `objectWrap: "collapse"` (Prettier 3.5+), `$schema`
+- **`tsconfig.json`** (root): upgraded to `NodeNext`/`NodeNext` module resolution, added `composite: true`
+- **`prettier`** bumped to `^3.5.0` in devDependencies
+- **`package.json` `test` script**: replaced broken workflow script with `node test/plugin-system-validation.js && node test/feature-toggle-validation.js && node test/shared-constants-validation.js`
+- **`.github/workflows/ci.yml` `shell-lint` job**: added `ignore_paths`, made `shfmt` check `continue-on-error: true`
 
 ### Fixed
 
-- `actions/checkout@v6` → `@v4` in `.github/workflows/branch-protection.yml` (v6 does not exist)
-- Bash regex syntax in commit-message check (replaced `[[ =~ ]]` with POSIX `case` for portability)
-- `validate-no-secrets.sh`: exclude `dist/` from scans; add false-positive filters for `author`, `authentication`, `Object.entries`, `private` keyword, `API keys`, `${key}:` variable
-- `validate-placeholders.sh`: add `--exclude-dir` for `node_modules`, `dist`, `patterns`, `docs`, `.windsurf`, `context-store` to prevent false positives from installed packages and documentation examples
-- `security-scan.yml`: remove invalid `version`/`config` inputs from `gitleaks/gitleaks-action@v2`; use `GITLEAKS_CONFIG` env var instead
-- `security-scan.yml`: add `continue-on-error: true` to Snyk job (token may not be configured)
-- `security-scan.yml`: upgrade `github/codeql-action` v3 → v4
+- **`src/mcp-context-server/store.ts`**: `STORE_DIR` now uses `import.meta.url` to anchor path resolution — fixes incorrect path when MCP server is launched by Windsurf/IDE
+- **`.github/workflows/branch-protection.yml`**: `actions/checkout@v6` → `@v4`; commit message check rewritten with `grep -qE` to fix bash regex syntax error and subshell exit propagation
+- Removed reference to deleted `scripts/prevent-duplicates.sh` from `pre-commit` script
+- ESLint errors in cross-project integration, feature toggle validation, performance benchmark, and AI code analyzer
+- Hardcoded secrets in Kubernetes manifest replaced with secure placeholders
+- GitHub Pages deployment updated to actions v4 with proper permissions
+- **`validate-no-secrets.sh`**: excluded `package-lock.json` and `node_modules`; added false-positive filters
+- **`.github/workflows/security-scan.yml`**: updated `actions/checkout` to `@v4`, fixed CodeQL `languages` type, updated `actions/upload-artifact` to `@v4`
 
-## [1.0.0] - 2026-01-15
+## [1.0.0] - 2026-02-18
 
 ### Added
 
-- Initial release of forge-patterns
-- Core pattern libraries: code-quality, docker, cost, config
-- Development rules and standards (35+ rules)
-- Development workflows (16+ workflows)
-- Security scanning scripts: `scan-for-secrets.sh`, `validate-no-secrets.sh`, `validate-placeholders.sh`
-- Bootstrap scripts: `scripts/bootstrap/project.sh`
-- CI/CD workflows: branch protection, security scan, continuous security
-- Documentation: architecture decisions, ecosystem docs, developer guides
-- MCP Context Server v1 (`src/mcp-context-server/`)
-- Integration scripts for mcp-gateway, uiforge-mcp, UIForge projects
+- Initial release with core patterns: MCP Gateway, MCP Servers, Shared Infrastructure, Code Quality, Docker, Cost, Config, Feature Toggles, Plugin System
+- Security scanning with Gitleaks and custom scripts
+- CI/CD pipeline with GitHub Actions
+- Bootstrap script for new projects
