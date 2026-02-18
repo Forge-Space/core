@@ -5,13 +5,13 @@ set -e
 
 echo "🚀 Integrating Forge Patterns into all Forge Projects..."
 
-FORGE_PATTERNS_DIR="/Users/lucassantana/Desenvolvimento/forge-patterns"
+FORGE_PATTERNS_DIR="$(pwd)"
 
 # Project paths (update these to match your actual project locations)
 PROJECTS=(
-    "/Users/lucassantana/Desenvolvimento/mcp-gateway"
-    "/Users/lucantana/Desenvolvimento/uiforge-mcp"
-    "/Users/lucantana/Desenvolvimento/uiforge-webapp"
+    "$(pwd)/../mcp-gateway"
+    "$(pwd)/../uiforge-mcp"
+    "$(pwd)/../uiforge-webapp"
 )
 
 # Integration scripts
@@ -34,11 +34,11 @@ echo "🔄 Starting integration..."
 for i in "${!PROJECTS[@]}"; do
     project="${PROJECTS[$i]}"
     script="${INTEGRATION_SCRIPTS[$i]}"
-    
+
     echo ""
     echo "📦 Integrating into: $project"
     echo "📋 Using script: $script"
-    
+
     if [ -d "$project" ]; then
         "$FORGE_PATTERNS_DIR/scripts/$script" "$project" "$FORGE_PATTERNS_DIR"
         echo "✅ Integration completed for $project"

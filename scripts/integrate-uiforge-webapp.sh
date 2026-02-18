@@ -6,7 +6,7 @@ set -e
 echo "🚀 Integrating Forge Patterns into UIForge WebApp..."
 
 PROJECT_ROOT=${1:-$(pwd)}
-FORGE_PATTERNS_DIR=${2:-"/Users/lucassantana/Desenvolvimento/forge-patterns"}
+FORGE_PATTERNS_DIR=${2:-"$(pwd)"}
 
 if [ ! -d "$FORGE_PATTERNS_DIR" ]; then
     echo "❌ Forge Patterns directory not found: $FORGE_PATTERNS_DIR"
@@ -50,19 +50,19 @@ if [ -f "$PROJECT_ROOT/package.json" ]; then
         const fs = require('fs');
         const projectPkg = JSON.parse(fs.readFileSync('$PROJECT_ROOT/package.json', 'utf8'));
         const forgePkg = JSON.parse(fs.readFileSync('$FORGE_PATTERNS_DIR/package.json', 'utf8'));
-        
+
         // Merge devDependencies
         projectPkg.devDependencies = {
             ...projectPkg.devDependencies,
             ...forgePkg.devDependencies
         };
-        
+
         // Merge scripts
         projectPkg.scripts = {
             ...projectPkg.scripts,
             ...forgePkg.scripts
         };
-        
+
         fs.writeFileSync('$PROJECT_ROOT/package.json', JSON.stringify(projectPkg, null, 2));
         console.log('✅ Updated package.json');
     "
@@ -379,7 +379,7 @@ export default async function handler(req, res) {
   if (method === 'GET') {
     // Get all features
     const features = featureToggleManager.getAllFeatures();
-    
+
     return NextApiResponse.json({
       success: true,
       data: features,
@@ -389,7 +389,7 @@ export default async function handler(req, res) {
   if (method === 'POST') {
     // Update feature toggle
     const { featureName, enabled } = req.body;
-    
+
     if (!featureName || typeof enabled !== 'boolean') {
       return NextApiResponse.json(
         { error: 'Invalid request body' },
@@ -398,7 +398,7 @@ export default async function handler(req, res) {
     }
 
     const updated = await featureToggleManager.updateFeature(featureName, enabled);
-    
+
     if (!updated) {
       return NextApiResponse.json(
         { error: 'Feature not found' },
@@ -471,11 +471,11 @@ import { useFeatureToggle } from '../patterns/feature-toggles/libraries/nodejs';
 
 const MyComponent = () => {
   const { isEnabled } = useFeatureToggle('new-feature');
-  
+
   if (!isEnabled) {
     return <LegacyComponent />;
   }
-  
+
   return <NewComponent />;
 };
 ```

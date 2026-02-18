@@ -45,7 +45,7 @@ project and implement the high-efficiency Docker standards directly.
 ### **Open New Window with Forge-Patterns**
 
 You can now open a new IDE window with the
-`/Users/lucassantana/Desenvolvimento/forge-patterns` project and have immediate
+`$(pwd)` project and have immediate
 access to:
 
 1. **Complete Plan Documentation** - All 5 core plans with full implementation
@@ -180,7 +180,7 @@ The forge-patterns project now contains:
 - **✅ Quick Start Guides**: Step-by-step implementation instructions
 - **✅ Performance Benchmarks**: Expected results and validation criteria
 
-You can now open `/Users/lucassantana/Desenvolvimento/forge-patterns` in a new
+You can now open `$(pwd)` in a new
 IDE window and have everything you need to implement the high-efficiency Docker
 standards across your projects!
 

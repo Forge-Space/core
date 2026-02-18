@@ -3,7 +3,7 @@
 ## 🎯 **Integration Complete**
 
 Successfully integrated the **High-Efficiency Docker Standards** into the
-`/Users/lucassantana/Desenvolvimento/forge-patterns` repository, making these
+`$(pwd)` repository, making these
 patterns available across all Forge projects.
 
 ## 📋 **Files Created/Updated**

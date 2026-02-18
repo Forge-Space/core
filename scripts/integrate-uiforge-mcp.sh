@@ -27,7 +27,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 PROJECT_ROOT=${PROJECT_ROOT:-$(pwd)}
-FORGE_PATTERNS_DIR=${FORGE_PATTERNS_DIR:-"/Users/lucassantana/Desenvolvimento/forge-patterns"}
+FORGE_PATTERNS_DIR=${FORGE_PATTERNS_DIR:-"$(pwd)"}
 
 if [ ! -d "$FORGE_PATTERNS_DIR" ]; then
     echo "❌ Forge Patterns directory not found: $FORGE_PATTERNS_DIR"
