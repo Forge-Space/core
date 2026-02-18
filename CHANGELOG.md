@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
 - **`patterns/python/`**: Python project template and tooling patterns for Forge ecosystem use cases (AI/ML scripts, automation, MCP server extensions) — `pyproject.toml` with ruff + mypy + pytest, entry point template, and test template; mirrors `scripts/bootstrap/project.sh python` type
 - **`patterns/shell/`**: Shell scripting conventions for all Forge bash scripts — `conventions/header.sh` (standard `set -euo pipefail`, colour helpers, `require_cmd`/`guard_cmd`) and `conventions/guard.sh` (`ensure_dir`, `safe_copy`, `require_env`, `make_tmpfile`); extracted from patterns in `scripts/security/` and `scripts/bootstrap/`
 - **`patterns/code-quality/eslint/base.config.mjs`**: new composable ESLint 9 flat-config base for Node.js/TypeScript projects — uses `typescript-eslint` unified package with `strictTypeChecked` + `stylisticTypeChecked` presets, `projectService: true` for full type-aware linting, and `eslint-plugin-import` for cycle/duplicate detection
@@ -31,8 +32,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `test:plugins`, `test:feature-toggles`, `test:integration`, `test:all` npm scripts
 - **`patterns/shared-constants/`**: Centralised reusable constants from the Forge ecosystem — `network.ts` (timeouts, retries, gateway URL), `mcp-protocol.ts` (JSON-RPC version, MCP methods), `environments.ts` (NODE_ENVS, LOG_LEVELS, guard functions), `ai-providers.ts` (AI_PROVIDERS registry, helper functions), `feature-flags.ts` (FeatureFlag interface, createFeatureFlags, resolveFeatureFlag), `storage.ts` (IndexedDBStoreConfig, createStorageConfig, COMMON_STORE_NAMES), `index.ts` (barrel re-export)
 - `test:shared-constants` npm script (44 tests, 0 failures)
-- **`patterns/shell/linting/.shellcheckrc`**: strict shellcheck configuration — `shell=bash`, `enable=all`, disables only SC1091 (source not following) and SC2034 (unused variable in sourced files)
-- **`scripts/lint-shell.sh`**: unified shell linting runner — runs `shellcheck` (static analysis) and `shfmt` (formatting check) on all `.sh` files; `STRICT=1` mode for CI; graceful skip when tools are absent locally
 
 ### Removed
 
