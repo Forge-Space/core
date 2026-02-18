@@ -1,0 +1,125 @@
+# Network Security Policy
+# Controls traffic flow and security for UIForge applications
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: uiforge-network-policy
+  labels:
+    app: uiforge-app
+spec:
+  podSelector:
+    matchLabels:
+      app: uiforge-app
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow traffic from ingress controller
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ingress-nginx
+    ports:
+    - protocol: TCP
+      port: 3000
+  # Allow traffic from monitoring
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: monitoring
+    ports:
+    - protocol: TCP
+      port: 3000
+  # Allow traffic from same namespace
+  - from:
+    - podSelector: {}
+    ports:
+    - protocol: TCP
+      port: 3000
+  egress:
+  # Allow DNS resolution
+  - to: []
+    ports:
+    - protocol: UDP
+      port: 53
+  # Allow database access
+  - to:
+    - podSelector:
+        matchLabels:
+          app: postgres
+    ports:
+    - protocol: TCP
+      port: 5432
+  # Allow Redis access
+  - to:
+    - podSelector:
+        matchLabels:
+          app: redis
+    ports:
+    - protocol: TCP
+      port: 6379
+  # Allow external API calls
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443
+    - protocol: TCP
+      port: 80
+---
+# Pod Disruption Budget
+# Ensures availability during maintenance
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: uiforge-pdb
+  labels:
+    app: uiforge-app
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: uiforge-app
+---
+# Resource Quota for Namespace
+# Prevents resource exhaustion
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: uiforge-quota
+  namespace: default
+spec:
+  hard:
+    requests.cpu: "2"
+    requests.memory: 4Gi
+    limits.cpu: "4"
+    limits.memory: 8Gi
+    persistentvolumeclaims: "4"
+    pods: "10"
+    services: "5"
+    secrets: "10"
+    configmaps: "10"
+---
+# Limit Range for Pods
+# Sets default resource limits
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: uiforge-limits
+  namespace: default
+spec:
+  limits:
+  - default:
+      cpu: "500m"
+      memory: "512Mi"
+    defaultRequest:
+      cpu: "100m"
+      memory: "128Mi"
+    type: Container
+  - max:
+      cpu: "2"
+      memory: "2Gi"
+    min:
+      cpu: "50m"
+      memory: "64Mi"
+    type: Container

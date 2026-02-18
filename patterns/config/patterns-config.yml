@@ -1,0 +1,80 @@
+# UIForge Patterns Configuration
+# Controls which infrastructure patterns are enabled
+# All patterns are designed for zero-cost local development
+
+infrastructure:
+  docker: true
+  kubernetes: false
+  terraform: false
+  feature_toggles: false
+  localstack: false
+
+cost_management:
+  enforce_zero_cost: true
+  free_tier_monitoring: true
+  local_development_only: true
+  validate_no_cloud_credentials: true
+
+aws:
+  use_localstack: true
+  free_tier_only: true
+  region: us-west-2
+  account_id: REPLACE_WITH_ACCOUNT_ID
+  profile: default
+
+kubernetes:
+  provider: minikube  # Options: minikube, k3s, kind
+  cluster_name: uiforge-local
+  node_count: 1
+  memory: 4096
+  cpus: 2
+  version: "1.28"
+  
+terraform:
+  backend: local
+  state_file: terraform.tfstate
+  lock_file: .terraform.lock.hcl
+  workspace: default
+  
+feature_toggles:
+  provider: unleash
+  local_instance: true
+  database: sqlite
+  port: 4242
+  
+localstack:
+  version: "latest"
+  port: 4566
+  services:
+    - s3
+    - dynamodb
+    - lambda
+    - apigateway
+    - sqs
+    - sns
+    - iam
+    - cloudwatch
+  persistence:
+    type: volume  # Options: volume, tmpfs
+
+learning:
+  certification: aws-solutions-architect
+  current_level: 1  # 1-5 progressive complexity
+  focus_areas:
+    - resilient_architectures
+    - high_performance
+    - secure_applications
+    - cost_optimization
+    - operational_excellence
+
+monitoring:
+  local_metrics: true
+  prometheus_port: 9090
+  grafana_port: 3001
+  log_level: info
+
+security:
+  zero_secrets_policy: true
+  validate_placeholders: true
+  enforce_non_root: true
+  scan_images: true

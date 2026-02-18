@@ -1,0 +1,51 @@
+# Cost Configuration for Forge Patterns
+# Defines cost monitoring and optimization settings
+
+# Global cost settings
+global:
+  currency: "USD"
+  monitoring_enabled: true
+  alerts_enabled: true
+  reporting_frequency: "weekly"
+
+# Documentation budget limits
+documentation:
+  max_file_size_mb: 1
+  max_total_size_mb: 50
+  max_file_count: 100
+  large_file_threshold_kb: 100
+
+# Maintenance budget
+maintenance:
+  outdated_file_threshold_days: 365
+  duplicate_name_check: true
+  empty_file_check: true
+  tiny_file_threshold_kb: 1
+
+# Optimization settings
+optimization:
+  consolidation_threshold: 5
+  size_monitoring: true
+  performance_monitoring: true
+  link_validation: true
+
+# Alert thresholds
+alerts:
+  file_size_warning: "80%"
+  file_count_warning: "80%"
+  maintenance_warning: "30 days"
+  optimization_suggestion: "weekly"
+
+# Reporting settings
+reporting:
+  include_metrics: true
+  include_recommendations: true
+  include_trends: true
+  export_formats: ["text", "json"]
+
+# Free tier optimization
+free_tier:
+  enabled: true
+  static_hosting: true
+  no_external_dependencies: true
+  cache_optimization: true

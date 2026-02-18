@@ -1,0 +1,128 @@
+version: '3.8'
+
+services:
+  localstack:
+    image: localstack/localstack:latest
+    container_name: uiforge-localstack
+    ports:
+      - "4566:4566"      # Main API endpoint
+      - "4510-4559:4510-4559"  # External service ports
+      - "8080:8080"      # Web UI
+    environment:
+      - SERVICES=s3,dynamodb,lambda,apigateway,sqs,sns,iam,cloudwatch,logs
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+      - PORT_WEB_UI=8080
+      - LAMBDA_EXECUTOR=docker-reuse
+      - LAMBDA_DOCKER_NETWORK=uiforge-local-network
+      - KINESIS_ERROR_PROBABILITY=0.0
+      - DYNAMODB_ERROR_PROBABILITY=0.0
+      - SQS_ERROR_PROBABILITY=0.0
+      - S3_ERROR_PROBABILITY=0.0
+      - LOCALSTACK_API_KEY=REPLACE_WITH_LOCALSTACK_API_KEY
+      - LOCALSTACK_HOSTNAME=localstack
+    volumes:
+      - "./data:/tmp/localstack/data"
+      - "./lambda:/tmp/localstack/lambda"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - uiforge-local-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4566/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+  # Optional: Redis for caching simulation
+  redis:
+    image: redis:7-alpine
+    container_name: uiforge-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - "./redis-data:/data"
+    networks:
+      - uiforge-local-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Optional: PostgreSQL for RDS simulation
+  postgres:
+    image: postgres:15-alpine
+    container_name: uiforge-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=uiforge
+      - POSTGRES_USER=uiforge
+      - POSTGRES_PASSWORD=REPLACE_WITH_POSTGRES_PASSWORD
+    volumes:
+      - "./postgres-data:/var/lib/postgresql/data"
+      - "./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql"
+    networks:
+      - uiforge-local-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U uiforge"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Optional: Elasticsearch for OpenSearch simulation
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: uiforge-elasticsearch
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - "./elasticsearch-data:/usr/share/elasticsearch/data"
+    networks:
+      - uiforge-local-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Optional: Kibana for Elasticsearch
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.0
+    container_name: uiforge-kibana
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    networks:
+      - uiforge-local-network
+    depends_on:
+      - elasticsearch
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5601/api/status || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  uiforge-local-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  postgres-data:
+  redis-data:
+  elasticsearch-data:

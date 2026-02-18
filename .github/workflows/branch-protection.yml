@@ -1,0 +1,130 @@
+name: Branch Protection
+
+on:
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  check-branch-protection:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Check branch name follows conventions
+        run: |
+          BRANCH_NAME=${GITHUB_HEAD_REF}
+          echo "Checking branch: $BRANCH_NAME"
+          
+          # Allow main, develop, and feature branches
+          if [[ "$BRANCH_NAME" =~ ^(main|develop)$ ]]; then
+            echo "✅ Protected branch name: $BRANCH_NAME"
+            exit 0
+          fi
+          
+          # Check feature branch naming
+          if [[ "$BRANCH_NAME" =~ ^(feature|fix|hotfix|chore|docs|refactor|test|perf)/.+$ ]]; then
+            echo "✅ Branch follows naming convention: $BRANCH_NAME"
+            exit 0
+          fi
+          
+          echo "❌ Branch name doesn't follow conventions"
+          echo "Expected: feature/*, fix/*, hotfix/*, chore/*, docs/*, refactor/*, test/*, perf/*"
+          exit 1
+          
+      - name: Check commit messages follow Angular convention
+        run: |
+          echo "Checking commit messages..."
+          
+          # Get commit messages from PR
+          COMMITS=$(git log --pretty=format:"%s" origin/main..HEAD)
+          
+          for COMMIT in $COMMITS; do
+            echo "Checking: $COMMIT"
+            
+            # Check Angular convention
+            if [[ "$COMMIT" =~ ^(feat|fix|docs|style|refactor|perf|test|chore|build|ci|revert)(\(.+\))?: .+$ ]]; then
+              echo "✅ $COMMIT follows convention"
+            else
+              echo "❌ $COMMIT doesn't follow Angular convention"
+              echo "Expected: type(scope): description"
+              exit 1
+            fi
+          done
+          
+      - name: Check for merge commits
+        run: |
+          echo "Checking for merge commits..."
+          
+          MERGE_COMMITS=$(git log --oneline --merges origin/main..HEAD | wc -l)
+          
+          if [ "$MERGE_COMMITS" -gt 0 ]; then
+            echo "❌ Found $MERGE_COMMITS merge commits in PR"
+            echo "Please rebase to avoid merge commits"
+            exit 1
+          else
+            echo "✅ No merge commits found"
+          fi
+          
+      - name: Check file size limits
+        run: |
+          echo "Checking file sizes..."
+          
+          # Find files larger than 1MB
+          LARGE_FILES=$(find . -type f -not -path "./.git/*" -not -path "./node_modules/*" -size +1M)
+          
+          if [ -n "$LARGE_FILES" ]; then
+            echo "❌ Found large files:"
+            echo "$LARGE_FILES"
+            echo "Please keep files under 1MB or use Git LFS"
+            exit 1
+          else
+            echo "✅ No large files found"
+          fi
+
+  validate-tbd-workflow:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Validate Trunk Based Development workflow
+        run: |
+          echo "Validating TBD workflow..."
+          
+          # Check if we're working against main (trunk)
+          if [ "$GITHUB_BASE_REF" = "main" ]; then
+            echo "✅ Working against trunk (main)"
+            
+            # Check if branch is up to date with main
+            BEHIND=$(git rev-list --count HEAD..origin/main)
+            if [ "$BEHIND" -gt 0 ]; then
+              echo "❌ Branch is $BEHIND commits behind main"
+              echo "Please sync with main before creating PR"
+              exit 1
+            else
+              echo "✅ Branch is up to date with main"
+            fi
+          else
+            echo "ℹ️ Not targeting main branch"
+          fi
+          
+      - name: Check for long-lived branches
+        run: |
+          echo "Checking branch age..."
+          
+          # Get branch creation date
+          BRANCH_AGE=$(git log --since="2 weeks ago" --pretty=format:"%h" | wc -l)
+          
+          if [ "$BRANCH_AGE" -eq 0 ]; then
+            echo "ℹ️ Branch is older than 2 weeks"
+            echo "Consider merging or updating the branch"
+          else
+            echo "✅ Branch is recent"
+          fi

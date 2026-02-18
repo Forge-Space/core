@@ -1,0 +1,45 @@
+{
+  "name": "@uiforge/feature-toggles",
+  "version": "1.0.0",
+  "description": "UIForge feature toggle library for Node.js applications",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src --ext .js,.ts",
+    "lint:fix": "eslint src --ext .js,.ts --fix",
+    "type-check": "tsc --noEmit",
+    "build": "tsc",
+    "prepublishOnly": "npm run build && npm run test"
+  },
+  "keywords": ["feature-flags", "feature-toggles", "unleash", "uiforge", "experiments", "a-b-testing"],
+  "author": "UIForge Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LucasSantana-Dev/uiforge-patterns"
+  },
+  "dependencies": {
+    "unleash-client-node": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.0",
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "eslint-config-prettier": "^9.0.0",
+    "jest": "^29.5.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "files": ["dist", "README.md"],
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "name": "forge-patterns",
+  "version": "1.0.0",
+  "description": "Shared configuration, workflows, and architectural patterns for the UIForge ecosystem",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint . --ext .js,.ts --fix",
+    "lint:check": "eslint . --ext .js,.ts",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "validate": "npm run lint:check && npm run format:check && npm run test",
+    "test": "node patterns/cost/scripts/validate-development-workflow.sh",
+    "prepare": "husky install",
+    "pre-commit": "npm run lint && npm run format && npm run test"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.45.0",
+    "eslint-config-prettier": "^8.8.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.2.3",
+    "prettier": "^3.0.0",
+    "typescript": "^5.1.6"
+  },
+  "lint-staged": {
+    "*.{js,ts}": ["eslint --fix", "prettier --write"],
+    "*.{json,yml,yaml}": ["prettier --write"],
+    "*.md": ["prettier --write"]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "pre-push": "npm run validate"
+    }
+  },
+  "keywords": [
+    "patterns",
+    "architecture",
+    "mcp",
+    "uiforge",
+    "development",
+    "workflow",
+    "typescript",
+    "eslint",
+    "prettier"
+  ],
+  "author": "UIForge Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LucasSantana-Dev/uiforge-patterns.git"
+  },
+  "bugs": {
+    "url": "https://github.com/LucasSantana-Dev/uiforge-patterns/issues"
+  },
+  "homepage": "https://github.com/LucasSantana-Dev/uiforge-patterns#readme",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}
