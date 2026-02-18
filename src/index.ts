@@ -75,7 +75,9 @@ export class ForgePatterns {
    */
   getPatternPath(category: string, name: string): string {
     const patterns = this.getPatterns();
-    const categoryPatterns = patterns[category as keyof typeof patterns] as Record<string, string> | undefined;
+    const categoryPatterns = patterns[category as keyof typeof patterns] as
+      | Record<string, string>
+      | undefined;
 
     if (categoryPatterns === undefined) {
       throw new Error(`Category not found: ${category}`);

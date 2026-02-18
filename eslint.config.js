@@ -7,13 +7,7 @@ module.exports = [
   js.configs.recommended,
   prettier,
   {
-    ignores: [
-      'node_modules/**',
-      'dist/**',
-      'build/**',
-      'coverage/**',
-      '**/*.min.js'
-    ]
+    ignores: ['node_modules/**', 'dist/**', 'build/**', 'coverage/**', '**/*.min.js']
   },
   {
     files: ['**/*.js', '**/*.ts'],
@@ -49,7 +43,10 @@ module.exports = [
     rules: {
       'no-console': 'warn',
       'no-debugger': 'error',
-      'no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' }],
+      'no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' }
+      ],
       '@typescript-eslint/no-unused-vars': [
         'warn',
         {
