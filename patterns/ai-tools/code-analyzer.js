@@ -654,7 +654,7 @@ class AICodeAnalyzer {
     return Math.max(0, quality.score);
   }
 
-  calculateFunctionLength(content, threshold) {
+  calculateFunctionLength(content, _threshold) {
     const functions = content.match(/function\s+\w+\s*\([^)]*\)\s*{/g) || [];
     let maxLength = 0;
 
@@ -668,7 +668,7 @@ class AICodeAnalyzer {
     return maxLength;
   }
 
-  calculateParameterCount(content, threshold) {
+  calculateParameterCount(content, _threshold) {
     const functions = content.match(/function\s+\w+\s*\([^)]*\)/g) || [];
     let maxCount = 0;
 
@@ -681,7 +681,7 @@ class AICodeAnalyzer {
     return maxCount;
   }
 
-  calculateNestingDepth(content, threshold) {
+  calculateNestingDepth(content, _threshold) {
     let maxDepth = 0;
     let currentDepth = 0;
 
