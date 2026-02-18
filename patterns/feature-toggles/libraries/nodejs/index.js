@@ -21,7 +21,7 @@ class UIForgeFeatureToggles {
     this.client = null;
     this.globalFeatures = new Set();
     this.projectFeatures = new Set();
-    
+
     this.initialize();
   }
 
@@ -46,7 +46,7 @@ class UIForgeFeatureToggles {
         } else {
           this.client.on('ready', resolve);
           this.client.on('error', reject);
-          
+
           // Timeout after 10 seconds
           setTimeout(() => reject(new Error('Unleash client initialization timeout')), 10000);
         }
@@ -158,7 +158,7 @@ class UIForgeFeatureToggles {
       'enhanced-logging',
       'maintenance-mode'
     ];
-    
+
     return globalFeatures.includes(featureName) || featureName.startsWith('global.');
   }
 
@@ -226,7 +226,7 @@ class UIForgeFeatureToggles {
       const response = await fetch(`${this.config.unleashUrl}/api/admin/features`, {
         method: 'POST',
         headers: {
-          'Authorization': this.config.clientKey,
+          Authorization: this.config.clientKey,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -234,10 +234,12 @@ class UIForgeFeatureToggles {
           description: `Global feature: ${featureName}`,
           type: 'release',
           enabled: true,
-          strategies: [{
-            name: 'default',
-            parameters: {}
-          }]
+          strategies: [
+            {
+              name: 'default',
+              parameters: {}
+            }
+          ]
         })
       });
 
@@ -259,16 +261,19 @@ class UIForgeFeatureToggles {
     }
 
     try {
-      const response = await fetch(`${this.config.unleashUrl}/api/admin/features/global.${featureName}`, {
-        method: 'PATCH',
-        headers: {
-          'Authorization': this.config.clientKey,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          enabled: false
-        })
-      });
+      const response = await fetch(
+        `${this.config.unleashUrl}/api/admin/features/global.${featureName}`,
+        {
+          method: 'PATCH',
+          headers: {
+            Authorization: this.config.clientKey,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            enabled: false
+          })
+        }
+      );
 
       return response.ok;
     } catch (error) {
@@ -286,11 +291,11 @@ class UIForgeFeatureToggles {
   async addProjectFeature(featureName, description = '') {
     try {
       const namespacedFeature = `${this.config.projectNamespace}.${featureName}`;
-      
+
       const response = await fetch(`${this.config.unleashUrl}/api/admin/features`, {
         method: 'POST',
         headers: {
-          'Authorization': this.config.clientKey,
+          Authorization: this.config.clientKey,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -298,10 +303,12 @@ class UIForgeFeatureToggles {
           description: description || `Project feature: ${featureName}`,
           type: 'release',
           enabled: false,
-          strategies: [{
-            name: 'default',
-            parameters: {}
-          }]
+          strategies: [
+            {
+              name: 'default',
+              parameters: {}
+            }
+          ]
         })
       });
 
@@ -324,13 +331,16 @@ class UIForgeFeatureToggles {
   async removeProjectFeature(featureName) {
     try {
       const namespacedFeature = `${this.config.projectNamespace}.${featureName}`;
-      
-      const response = await fetch(`${this.config.unleashUrl}/api/admin/features/${namespacedFeature}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': this.config.clientKey
+
+      const response = await fetch(
+        `${this.config.unleashUrl}/api/admin/features/${namespacedFeature}`,
+        {
+          method: 'DELETE',
+          headers: {
+            Authorization: this.config.clientKey
+          }
         }
-      });
+      );
 
       if (response.ok) {
         this.projectFeatures.delete(featureName);
@@ -362,7 +372,7 @@ class UIForgeFeatureToggles {
     if (this.client && typeof this.client.destroy === 'function') {
       this.client.destroy();
     }
-    
+
     this.globalFeatures.clear();
     this.projectFeatures.clear();
     this.context = {};

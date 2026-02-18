@@ -8,7 +8,30 @@
 // Version information
 export const VERSION = '1.0.0';
 
+// Type definitions
+export interface ProjectConfig {
+  name: string;
+  patterns: string[];
+  features: Record<string, boolean>;
+  options: Record<string, unknown>;
+}
+
 // Main Forge Patterns class
+export function createProjectConfig(
+  projectName: string,
+  options?: Record<string, unknown>
+): ProjectConfig {
+  return {
+    name: projectName,
+    patterns: ['code-quality', 'security', 'docker'],
+    features: {
+      'feature-toggles': true,
+      monitoring: true
+    },
+    options: options || {}
+  };
+}
+
 export class ForgePatterns {
   private static instance: ForgePatterns;
 
@@ -28,21 +51,21 @@ export class ForgePatterns {
         routing: 'patterns/mcp-gateway/routing',
         security: 'patterns/mcp-gateway/security',
         performance: 'patterns/mcp-gateway/performance',
-        authentication: 'patterns/mcp-gateway/authentication',
+        authentication: 'patterns/mcp-gateway/authentication'
       },
       mcpServers: {
         aiProviders: 'patterns/mcp-servers/ai-providers',
         templates: 'patterns/mcp-servers/templates',
-        uiGeneration: 'patterns/mcp-servers/ui-generation',
+        uiGeneration: 'patterns/mcp-servers/ui-generation'
       },
       sharedInfrastructure: {
-        sleepArchitecture: 'patterns/shared-infrastructure/sleep-architecture',
+        sleepArchitecture: 'patterns/shared-infrastructure/sleep-architecture'
       },
       codeQuality: {
         eslint: 'patterns/code-quality/eslint',
         prettier: 'patterns/code-quality/prettier',
-        typescript: 'patterns/code-quality/typescript',
-      },
+        typescript: 'patterns/code-quality/typescript'
+      }
     };
   }
 
@@ -57,7 +80,7 @@ export class ForgePatterns {
       throw new Error(`Category not found: ${category}`);
     }
 
-    const patternPath = (categoryPatterns as any)[name];
+    const patternPath = (categoryPatterns as Record<string, string>)[name];
     if (!patternPath) {
       throw new Error(`Pattern not found: ${category}.${name}`);
     }

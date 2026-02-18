@@ -316,7 +316,11 @@ class EncryptionService {
   }
 
   decrypt(encryptedData: EncryptedData, key: string): string {
-    const decipher = crypto.createDecipheriv(this.algorithm, key, Buffer.from(encryptedData.iv, 'hex'));
+    const decipher = crypto.createDecipheriv(
+      this.algorithm,
+      key,
+      Buffer.from(encryptedData.iv, 'hex')
+    );
     decipher.setAAD(Buffer.from('additional-data'));
     decipher.setAuthTag(Buffer.from(encryptedData.tag, 'hex'));
 

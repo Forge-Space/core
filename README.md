@@ -56,7 +56,7 @@ npx forge-patterns integrate --project=uiforge-webapp
 
 ## 📁 Repository Structure
 
-```
+```bash
 uiforge-patterns/
 ├── .github/
 │   ├── workflows/          # CI/CD workflow templates

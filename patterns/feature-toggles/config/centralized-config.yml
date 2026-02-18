@@ -7,7 +7,7 @@ unleash:
   api_url: "http://localhost:4242/api"
   admin_url: "http://localhost:4242/admin"
   client_key: "default:development"
-  
+
 # Cross-Project Configuration
 cross_project:
   enabled: true
@@ -26,7 +26,7 @@ projects:
       - performance-monitoring
       - circuit-breaker
       - health-checks
-  
+
   uiforge-mcp:
     namespace: "uiforge-mcp"
     description: "UIForge MCP - AI-powered UI generation"
@@ -37,7 +37,7 @@ projects:
       - cost-optimization
       - provider-load-balancing
       - streaming-responses
-  
+
   uiforge-webapp:
     namespace: "uiforge-webapp"
     description: "UIForge WebApp - Frontend application"
@@ -55,22 +55,22 @@ global_features:
     description: "Enable debug logging and diagnostics"
     type: "boolean"
     default: false
-    
+
   - name: "beta-features"
     description: "Enable beta features for testing"
     type: "boolean"
     default: false
-    
+
   - name: "experimental-ui"
     description: "Enable experimental UI components"
     type: "boolean"
     default: false
-    
+
   - name: "enhanced-logging"
     description: "Enable enhanced logging and monitoring"
     type: "boolean"
     default: false
-    
+
   - name: "maintenance-mode"
     description: "Put system in maintenance mode"
     type: "boolean"
@@ -82,20 +82,20 @@ strategies:
     name: "default"
     description: "Default strategy for all users"
     parameters: {}
-    
+
   beta-users:
     name: "beta-users"
     description: "Enable features for beta users"
     parameters:
       userIds: ["user1", "user2", "user3"]
-      
+
   gradual-rollout:
     name: "gradual-rollout"
     description: "Gradual rollout strategy"
     parameters:
       rolloutPercentage: 25
       stickiness: "userId"
-      
+
   environment-based:
     name: "environment-based"
     description: "Enable features based on environment"
@@ -108,12 +108,12 @@ environments:
     unleash_url: "http://localhost:4242"
     client_key: "default:development"
     auto_create_features: true
-    
+
   staging:
     unleash_url: "https://staging-unleash.uiforge.com"
     client_key: "staging:production"
     auto_create_features: false
-    
+
   production:
     unleash_url: "https://unleash.uiforge.com"
     client_key: "production:client"
@@ -122,20 +122,20 @@ environments:
 # Monitoring and Analytics
 monitoring:
   enabled: true
-  metrics_interval: 60000  # 1 minute
+  metrics_interval: 60000 # 1 minute
   analytics_enabled: true
   feature_usage_tracking: true
-  
+
 # Security Configuration
 security:
-  require_authentication: false  # Set to true in production
+  require_authentication: false # Set to true in production
   allowed_origins:
     - "http://localhost:3000"
     - "http://localhost:8080"
     - "https://uiforge.com"
-  
+
 # Cache Configuration
 cache:
   enabled: true
-  ttl: 300  # 5 minutes
+  ttl: 300 # 5 minutes
   max_size: 1000
