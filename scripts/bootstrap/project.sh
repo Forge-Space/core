@@ -280,7 +280,7 @@ docker-compose up -d
 This project includes Docker patterns for consistent development and deployment:
 
 ### Development Environment
-```bash
+\`\`\`bash
 # Start development environment
 docker-compose up -d
 
@@ -289,10 +289,10 @@ docker-compose logs -f app
 
 # Stop environment
 docker-compose down
-```
+\`\`\`
 
 ### Production Deployment
-```bash
+\`\`\`bash
 # Build production image
 docker build -t $PROJECT_NAME .
 
@@ -301,14 +301,14 @@ docker run -p 3000:3000 $PROJECT_NAME
 
 # Or use production compose
 docker-compose -f docker-compose.prod.yml up -d
-```
+\`\`\`
 
 ## 🎛️ Centralized Feature Toggles
 
 This project includes centralized feature toggle management for the UIForge ecosystem:
 
 ### Start Unleash Instance
-```bash
+\`\`\`bash
 # Start Unleash feature toggle service
 docker run -p 4242:4242 unleashorg/unleash-server
 
@@ -317,10 +317,10 @@ curl http://localhost:4242/api/health
 
 # Access Unleash UI
 open http://localhost:4242
-```
+\`\`\`
 
 ### Manage Features with CLI
-```bash
+\`\`\`bash
 # Enable global features
 ./scripts/forge-features enable global.debug-mode
 ./scripts/forge-features enable global.beta-features
@@ -335,14 +335,14 @@ open http://localhost:4242
 
 # List all available features
 ./scripts/forge-features list
-```
+\`\`\`
 
 ## 🎛️ Feature Toggles
 
 This project includes feature toggle patterns for dynamic feature management:
 
 ### Feature Toggle Setup
-```bash
+\`\`\`bash
 # Install feature toggle library
 npm install @uiforge/feature-toggles
 

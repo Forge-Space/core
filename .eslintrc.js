@@ -15,6 +15,7 @@ module.exports = {
     // Core consistency rules
     'no-console': 'warn',
     'no-debugger': 'error',
+    'no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
     // TypeScript rules
     '@typescript-eslint/no-unused-vars': [
       'warn',

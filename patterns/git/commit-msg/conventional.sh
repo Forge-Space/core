@@ -9,7 +9,8 @@ COMMIT_MSG_FILE=$1
 COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
 
 # Check if commit message follows conventional commit format
-if [[ ! "$COMMIT_MSG" =~ ^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\(.+\))?: .+ ]]; then
+CONVENTIONAL_PATTERN='^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\(.+\))?: .+'
+if [[ ! "$COMMIT_MSG" =~ $CONVENTIONAL_PATTERN ]]; then
   echo "❌ Commit message does not follow conventional commit format"
   echo ""
   echo "Expected format: <type>(<scope>): <description>"
