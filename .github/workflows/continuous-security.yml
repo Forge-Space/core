@@ -39,7 +39,7 @@ jobs:
           echo "=================================" >> security-dashboard.txt
 
       - name: Upload Security Dashboard
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: security-dashboard
           path: security-dashboard.txt
@@ -68,7 +68,7 @@ jobs:
           echo "- Update security tools as needed" >> weekly-security-report.md
 
       - name: Upload Weekly Report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: weekly-security-report
           path: weekly-security-report.md
