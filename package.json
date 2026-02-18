@@ -22,7 +22,7 @@
     "validate": "npm run lint:check && npm run format:check && npm run test",
     "test": "bash patterns/cost/scripts/validate-development-workflow.sh",
     "prepare": "npm run build && husky install",
-    "pre-commit": "npm run lint && npm run format && npm run test && .husky/pre-commit-backup-check",
+    "pre-commit": "npm run lint && npm run format && npm run test && .husky/pre-commit-backup-check && ./scripts/prevent-duplicates.sh",
     "prepack": "npm run build",
     "publish": "npm publish --access public",
     "integrate": "node scripts/integrate.js",
