@@ -1,0 +1,60 @@
+{
+  "name": "forge-patterns-vscode",
+  "displayName": "Forge Patterns",
+  "description": "Pattern discovery, application, and validation for UIForge ecosystem projects",
+  "version": "0.1.0",
+  "publisher": "{{PUBLISHER}}",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "forgePatterns.listPatterns",
+        "title": "Forge Patterns: List Available Patterns"
+      },
+      {
+        "command": "forgePatterns.applyPattern",
+        "title": "Forge Patterns: Apply Pattern"
+      },
+      {
+        "command": "forgePatterns.validateCompliance",
+        "title": "Forge Patterns: Validate Pattern Compliance"
+      }
+    ],
+    "configuration": {
+      "title": "Forge Patterns",
+      "properties": {
+        "forgePatterns.repoPath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to local forge-patterns repository (leave empty to use bundled patterns)"
+        },
+        "forgePatterns.mcpServerUrl": {
+          "type": "string",
+          "default": "",
+          "description": "URL of the MCP context server for project context integration"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.0",
+    "@vscode/vsce": "^2.22.0"
+  }
+}
