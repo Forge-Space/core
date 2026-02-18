@@ -26,7 +26,7 @@ export function validateProjectSlug(project: string): void {
   if (!SAFE_PROJECT_SLUG.test(project)) {
     throw new Error(
       `Invalid project slug "${project}". ` +
-      'Slugs must be lowercase kebab-case (e.g. "my-project").'
+        'Slugs must be lowercase kebab-case (e.g. "my-project").'
     );
   }
 }
@@ -57,11 +57,13 @@ function ensureStoreDir(): void {
 
 export function listProjects(): ProjectMeta[] {
   ensureStoreDir();
-  const files = readdirSync(STORE_DIR).filter((f) => f.endsWith('.meta.json'));
-  return files.map((f) => {
-    const raw = readFileSync(resolve(STORE_DIR, f), 'utf-8');
-    return JSON.parse(raw) as ProjectMeta;
-  }).sort((a, b) => a.project.localeCompare(b.project));
+  const files = readdirSync(STORE_DIR).filter(f => f.endsWith('.meta.json'));
+  return files
+    .map(f => {
+      const raw = readFileSync(resolve(STORE_DIR, f), 'utf-8');
+      return JSON.parse(raw) as ProjectMeta;
+    })
+    .sort((a, b) => a.project.localeCompare(b.project));
 }
 
 export function projectExists(project: string): boolean {
@@ -71,7 +73,9 @@ export function projectExists(project: string): boolean {
 export function readContext(project: string): string {
   const cp = contentPath(project);
   if (!existsSync(cp)) {
-    throw new Error(`No context found for project "${project}". Use update_project_context to add it.`);
+    throw new Error(
+      `No context found for project "${project}". Use update_project_context to add it.`
+    );
   }
   return readFileSync(cp, 'utf-8');
 }

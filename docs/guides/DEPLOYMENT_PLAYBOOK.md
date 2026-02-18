@@ -128,7 +128,8 @@ services:
 
 **Infrastructure as Code (Large Scale):**
 
-~~Kubernetes patterns have been removed from the project. Consider using Terraform for infrastructure management.~~
+~~Kubernetes patterns have been removed from the project. Consider using
+Terraform for infrastructure management.~~
 
 ### Database Requirements
 

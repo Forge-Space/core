@@ -8,17 +8,16 @@ import {
   PerformanceTracker,
   LoggerTransport
 } from './types.js';
-import {
-  ConsoleTransport,
-  JsonTransport,
-  FileTransport
-} from './transports.js';
+import { ConsoleTransport, JsonTransport, FileTransport } from './transports.js';
 
 /**
  * Performance Tracker Implementation
  */
 class PerformanceTrackerImpl implements PerformanceTracker {
-  private timers = new Map<string, { startTime: number; operation: string; context?: Record<string, any> }>();
+  private timers = new Map<
+    string,
+    { startTime: number; operation: string; context?: Record<string, any> }
+  >();
 
   start(operation: string, context?: Record<string, any>): string {
     const trackingId = this.generateTrackingId();
@@ -55,19 +54,29 @@ class PerformanceTrackerImpl implements PerformanceTracker {
       this.end(trackingId, { success: true });
       return result;
     } catch (error) {
-      this.end(trackingId, { success: false, error: error instanceof Error ? error.message : String(error) });
+      this.end(trackingId, {
+        success: false,
+        error: error instanceof Error ? error.message : String(error)
+      });
       throw error;
     }
   }
 
-  async trackAsync<T>(operation: string, fn: () => Promise<T>, context?: Record<string, any>): Promise<T> {
+  async trackAsync<T>(
+    operation: string,
+    fn: () => Promise<T>,
+    context?: Record<string, any>
+  ): Promise<T> {
     const trackingId = this.start(operation, context);
     try {
       const result = await fn();
       this.end(trackingId, { success: true });
       return result;
     } catch (error) {
-      this.end(trackingId, { success: false, error: error instanceof Error ? error.message : String(error) });
+      this.end(trackingId, {
+        success: false,
+        error: error instanceof Error ? error.message : String(error)
+      });
       throw error;
     }
   }
@@ -201,11 +210,7 @@ export class Logger implements ILogger {
     this.isClosed = true;
 
     // Close transports that support closing
-    await Promise.all(
-      this.transports
-        .filter(t => 'close' in t)
-        .map(t => (t as any).close())
-    );
+    await Promise.all(this.transports.filter(t => 'close' in t).map(t => (t as any).close()));
   }
 
   // Private methods
@@ -217,7 +222,11 @@ export class Logger implements ILogger {
     this.writeToTransports(entry);
   }
 
-  private createLogEntry(level: LogLevel, message: string, context?: Record<string, any>): LogEntry {
+  private createLogEntry(
+    level: LogLevel,
+    message: string,
+    context?: Record<string, any>
+  ): LogEntry {
     const entry: LogEntry = {
       timestamp: new Date().toISOString(),
       level,
@@ -262,12 +271,15 @@ export class Logger implements ILogger {
     this.metrics.logsByLevel[entry.level] = (this.metrics.logsByLevel[entry.level] || 0) + 1;
 
     // Calculate error rate
-    const errorLogs = this.metrics.logsByLevel[LogLevel.ERROR] + this.metrics.logsByLevel[LogLevel.FATAL];
+    const errorLogs =
+      this.metrics.logsByLevel[LogLevel.ERROR] + this.metrics.logsByLevel[LogLevel.FATAL];
     this.metrics.errorRate = this.metrics.totalLogs > 0 ? errorLogs / this.metrics.totalLogs : 0;
 
     // Update average log size (simplified)
     const logSize = JSON.stringify(entry).length;
-    this.metrics.averageLogSize = (this.metrics.averageLogSize * (this.metrics.totalLogs - 1) + logSize) / this.metrics.totalLogs;
+    this.metrics.averageLogSize =
+      (this.metrics.averageLogSize * (this.metrics.totalLogs - 1) + logSize) /
+      this.metrics.totalLogs;
   }
 
   private writeToTransports(entry: LogEntry): void {
@@ -277,7 +289,8 @@ export class Logger implements ILogger {
       } catch (error) {
         // Track transport errors but don't let them break logging
         const transportName = transport.name || 'unknown';
-        this.metrics.transportErrors[transportName] = (this.metrics.transportErrors[transportName] || 0) + 1;
+        this.metrics.transportErrors[transportName] =
+          (this.metrics.transportErrors[transportName] || 0) + 1;
 
         // Try to log the error to console as fallback
         if (transport.name !== 'console') {
@@ -347,12 +360,14 @@ export class Logger implements ILogger {
     }
 
     if (this.config.enableFile && this.config.filePath) {
-      transports.push(new FileTransport(
-        this.config.filePath,
-        this.config.level,
-        this.config.maxFileSize,
-        this.config.maxFiles
-      ));
+      transports.push(
+        new FileTransport(
+          this.config.filePath,
+          this.config.level,
+          this.config.maxFileSize,
+          this.config.maxFiles
+        )
+      );
     }
 
     // Add custom transports if provided

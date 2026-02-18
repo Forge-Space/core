@@ -8,7 +8,7 @@ export enum LogLevel {
   INFO = 2,
   WARN = 3,
   ERROR = 4,
-  FATAL = 5,
+  FATAL = 5
 }
 
 /**
@@ -109,28 +109,28 @@ export interface ILogger {
   warn(message: string, context?: Record<string, any>): void;
   error(message: string, error?: Error | Record<string, any>, context?: Record<string, any>): void;
   fatal(message: string, error?: Error | Record<string, any>, context?: Record<string, any>): void;
-  
+
   // Performance tracking
   startTimer(operation: string, context?: Record<string, any>): string;
   endTimer(trackingId: string, context?: Record<string, any>): void;
-  
+
   // Context management
   setContext(context: Record<string, any>): void;
   getContext(): Record<string, any>;
   clearContext(): void;
-  
+
   // Correlation management
   setCorrelation(correlation: Partial<CorrelationContext>): void;
   getCorrelation(): CorrelationContext;
   clearCorrelation(): void;
-  
+
   // Child logger with context
   child(context: Record<string, any>): ILogger;
-  
+
   // Metrics and health
   getMetrics(): LoggerMetrics;
   health(): Promise<boolean>;
-  
+
   // Lifecycle
   close(): Promise<void>;
 }

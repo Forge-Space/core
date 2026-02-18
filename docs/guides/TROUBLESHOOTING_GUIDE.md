@@ -2,7 +2,9 @@
 
 ## Overview
 
-This guide provides solutions to common issues you might encounter when using UIForge Patterns. It covers integration problems, CLI tool issues, feature toggle problems, and general troubleshooting steps.
+This guide provides solutions to common issues you might encounter when using
+UIForge Patterns. It covers integration problems, CLI tool issues, feature
+toggle problems, and general troubleshooting steps.
 
 ## Quick Diagnosis
 
@@ -37,6 +39,7 @@ ls package.json  # Should exist
 ### Problem: Integration Script Fails
 
 **Symptoms:**
+
 - Integration script exits with error
 - Files not copied to project
 - Package.json not updated
@@ -44,20 +47,22 @@ ls package.json  # Should exist
 **Solutions:**
 
 1. **Check Project Structure**
+
    ```bash
    # Ensure you're in project root
    pwd
    ls package.json  # Should exist
-   
+
    # If package.json doesn't exist, create it
    npm init -y
    ```
 
 2. **Check Permissions**
+
    ```bash
    # Ensure script is executable
    chmod +x scripts/forge-features
-   
+
    # Check write permissions
    ls -la patterns/
    ```
@@ -71,21 +76,24 @@ ls package.json  # Should exist
 ### Problem: ESLint Errors After Integration
 
 **Symptoms:**
+
 - Linting errors appear after integration
 - Code formatting issues
 
 **Solutions:**
 
 1. **Run Lint Fix**
+
    ```bash
    npm run lint
    ```
 
 2. **Check Configuration**
+
    ```bash
    # Verify ESLint config exists
    cat .eslintrc.js
-   
+
    # Check for syntax errors
    node -c .eslintrc.js
    ```
@@ -99,16 +107,18 @@ ls package.json  # Should exist
 ### Problem: TypeScript Compilation Errors
 
 **Symptoms:**
+
 - TypeScript errors after integration
 - Type definitions missing
 
 **Solutions:**
 
 1. **Check TypeScript Config**
+
    ```bash
    # Verify tsconfig.json exists
    cat tsconfig.json
-   
+
    # Check for syntax errors
    npx tsc --noEmit
    ```
@@ -123,17 +133,20 @@ ls package.json  # Should exist
 ### Problem: forge-features Command Not Found
 
 **Symptoms:**
+
 - Command not found error
 - Permission denied
 
 **Solutions:**
 
 1. **Check File Existence**
+
    ```bash
    ls -la scripts/forge-features
    ```
 
 2. **Make Executable**
+
    ```bash
    chmod +x scripts/forge-features
    ```
@@ -146,26 +159,30 @@ ls package.json  # Should exist
 ### Problem: CLI Help Command Fails
 
 **Symptoms:**
+
 - Help command exits with error
 - No output or error message
 
 **Solutions:**
 
 1. **Check Script Syntax**
+
    ```bash
    bash -n scripts/forge-features
    ```
 
 2. **Test with Bash Explicitly**
+
    ```bash
    bash scripts/forge-features help
    ```
 
 3. **Check for Special Characters**
+
    ```bash
    # Check file encoding
    file scripts/forge-features
-   
+
    # Convert to Unix line endings if needed
    dos2unix scripts/forge-features
    ```
@@ -173,22 +190,25 @@ ls package.json  # Should exist
 ### Problem: Feature Enable/Disable Commands Fail
 
 **Symptoms:**
+
 - Commands fail with connection errors
 - Unable to connect to Unleash server
 
 **Solutions:**
 
 1. **Check Unleash Server**
+
    ```bash
    # Test connectivity
    curl $UNLEASH_URL/api/health
-   
+
    # Check environment variables
    echo $UNLEASH_URL
    echo $UNLEASH_CLIENT_KEY
    ```
 
 2. **Set Environment Variables**
+
    ```bash
    export UNLEASH_URL=http://localhost:4242
    export UNLEASH_CLIENT_KEY=default:development
@@ -206,21 +226,24 @@ ls package.json  # Should exist
 ### Problem: Feature Toggle Library Not Working
 
 **Symptoms:**
+
 - Library import errors
 - unleash-client-node not found
 
 **Solutions:**
 
 1. **Install Dependencies**
+
    ```bash
    npm install unleash-client-node
    ```
 
 2. **Check Library Path**
+
    ```bash
    # Verify library exists
    ls patterns/feature-toggles/libraries/nodejs/index.js
-   
+
    # Check syntax
    node -c patterns/feature-toggles/libraries/nodejs/index.js
    ```
@@ -233,16 +256,18 @@ ls package.json  # Should exist
 ### Problem: Configuration File Not Found
 
 **Symptoms:**
+
 - Configuration file missing
 - YAML parsing errors
 
 **Solutions:**
 
 1. **Check Configuration Path**
+
    ```bash
    # Verify config exists
    ls patterns/feature-toggles/config/centralized-config.yml
-   
+
    # Check YAML syntax
    python -c "import yaml; yaml.safe_load(open('patterns/feature-toggles/config/centralized-config.yml'))"
    ```
@@ -257,12 +282,14 @@ ls package.json  # Should exist
 ### Problem: Feature Status Not Updating
 
 **Symptoms:**
+
 - Feature status doesn't change
 - Stale feature values
 
 **Solutions:**
 
 1. **Check Unleash Connection**
+
    ```bash
    # Test API connectivity
    curl -H "Authorization: $UNLEASH_CLIENT_KEY" \
@@ -270,6 +297,7 @@ ls package.json  # Should exist
    ```
 
 2. **Clear Cache**
+
    ```bash
    # Restart application to clear cache
    npm start
@@ -286,21 +314,24 @@ ls package.json  # Should exist
 ### Problem: Slow Integration
 
 **Symptoms:**
+
 - Integration takes longer than expected
 - Performance degradation
 
 **Solutions:**
 
 1. **Run Performance Benchmark**
+
    ```bash
    node test/performance-benchmark.js
    ```
 
 2. **Check System Resources**
+
    ```bash
    # Check memory usage
    free -h
-   
+
    # Check disk space
    df -h
    ```
@@ -314,28 +345,32 @@ ls package.json  # Should exist
 ### Problem: High Memory Usage
 
 **Symptoms:**
+
 - Memory usage increases over time
 - Application crashes
 
 **Solutions:**
 
 1. **Monitor Memory Usage**
+
    ```bash
    # Check Node.js memory
    node --max-old-space-size=4096 your-app.js
    ```
 
 2. **Check for Memory Leaks**
+
    ```bash
    # Use Node.js debugging
    node --inspect your-app.js
    ```
 
 3. **Optimize Feature Toggle Usage**
+
    ```javascript
    // Cache feature status
    const featureCache = new Map();
-   
+
    function isFeatureEnabled(featureName) {
      if (!featureCache.has(featureName)) {
        featureCache.set(featureName, features.isEnabled(featureName));
@@ -349,29 +384,33 @@ ls package.json  # Should exist
 ### Problem: Environment Variables Not Set
 
 **Symptoms:**
+
 - Undefined environment variables
 - Configuration errors
 
 **Solutions:**
 
 1. **Check Environment Variables**
+
    ```bash
    # List all environment variables
    env | grep -E "(UNLEASH|NODE_ENV|DEBUG)"
    ```
 
 2. **Set Environment Variables**
+
    ```bash
    # For current session
    export UNLEASH_URL=http://localhost:4242
    export UNLEASH_CLIENT_KEY=default:development
    export NODE_ENV=development
-   
+
    # For permanent configuration
    echo 'export UNLEASH_URL=http://localhost:4242' >> ~/.bashrc
    ```
 
 3. **Create .env File**
+
    ```bash
    # Create .env file
    cat > .env << EOF
@@ -380,7 +419,7 @@ ls package.json  # Should exist
    NODE_ENV=development
    DEBUG=true
    EOF
-   
+
    # Load .env file
    source .env
    ```
@@ -388,21 +427,24 @@ ls package.json  # Should exist
 ### Problem: Network Connectivity Issues
 
 **Symptoms:**
+
 - Cannot connect to Unleash server
 - Timeout errors
 
 **Solutions:**
 
 1. **Test Network Connectivity**
+
    ```bash
    # Test basic connectivity
    ping google.com
-   
+
    # Test Unleash server
    curl -I $UNLEASH_URL
    ```
 
 2. **Check Firewall Settings**
+
    ```bash
    # Check if port is blocked
    telnet $UNLEASH_HOST 4242
@@ -420,21 +462,24 @@ ls package.json  # Should exist
 ### Problem: Git Hooks Not Working
 
 **Symptoms:**
+
 - Pre-commit hooks not running
 - Hooks failing silently
 
 **Solutions:**
 
 1. **Check Git Hooks**
+
    ```bash
    # List hooks
    ls -la .git/hooks/
-   
+
    # Check hook permissions
    chmod +x .git/hooks/pre-commit
    ```
 
 2. **Test Hooks Manually**
+
    ```bash
    # Run pre-commit hook manually
    .git/hooks/pre-commit
@@ -449,18 +494,21 @@ ls package.json  # Should exist
 ### Problem: CI/CD Pipeline Failures
 
 **Symptoms:**
+
 - Build failures in CI
 - Test failures in pipeline
 
 **Solutions:**
 
 1. **Check CI Configuration**
+
    ```bash
    # Verify workflow files
    cat .github/workflows/ci.yml
    ```
 
 2. **Run Tests Locally**
+
    ```bash
    # Run same tests as CI
    npm run test
@@ -503,7 +551,8 @@ journalctl -u your-app
 
 ### Community Support
 
-1. **GitHub Issues**: [Create an issue](https://github.com/uiforge/forge-patterns/issues)
+1. **GitHub Issues**:
+   [Create an issue](https://github.com/uiforge/forge-patterns/issues)
 2. **Documentation**: [UIForge Patterns Docs](../README.md)
 3. **Architecture**: [Architecture Decisions](../architecture-decisions/)
 
@@ -512,6 +561,7 @@ journalctl -u your-app
 When reporting issues, include:
 
 1. **Environment Information**
+
    ```bash
    node --version
    npm --version
@@ -537,12 +587,14 @@ When reporting issues, include:
 ### Regular Maintenance
 
 1. **Update Dependencies**
+
    ```bash
    npm update
    npm audit fix
    ```
 
 2. **Run Validation Tests**
+
    ```bash
    npm run validate
    node test/feature-toggle-validation.js
@@ -564,11 +616,13 @@ When reporting issues, include:
 ### Backup and Recovery
 
 1. **Backup Configuration**
+
    ```bash
    cp patterns/feature-toggles/config/centralized-config.yml backup/
    ```
 
 2. **Version Control**
+
    ```bash
    git add .
    git commit -m "Backup before major changes"
@@ -581,4 +635,6 @@ When reporting issues, include:
    npm install
    ```
 
-This troubleshooting guide should help you resolve most common issues with UIForge Patterns. For additional help, don't hesitate to reach out to the community through GitHub issues.
+This troubleshooting guide should help you resolve most common issues with
+UIForge Patterns. For additional help, don't hesitate to reach out to the
+community through GitHub issues.

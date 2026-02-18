@@ -7,11 +7,7 @@ import {
   ReadResourceRequestSchema
 } from '@modelcontextprotocol/sdk/types.js';
 
-import {
-  getProjectResources,
-  findResourceByUri,
-  readResourceContent
-} from './resources.js';
+import { getProjectResources, findResourceByUri, readResourceContent } from './resources.js';
 import {
   TOOLS,
   handleGetProjectContext,
@@ -34,7 +30,7 @@ const server = new Server(
 
 server.setRequestHandler(ListResourcesRequestSchema, async () => {
   return {
-    resources: getProjectResources().map((r) => ({
+    resources: getProjectResources().map(r => ({
       uri: r.uri,
       name: r.name,
       description: r.description,
@@ -43,7 +39,7 @@ server.setRequestHandler(ListResourcesRequestSchema, async () => {
   };
 });
 
-server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
+server.setRequestHandler(ReadResourceRequestSchema, async request => {
   const { uri } = request.params;
   const resource = findResourceByUri(uri);
 
@@ -66,7 +62,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
   return { tools: TOOLS };
 });
 
-server.setRequestHandler(CallToolRequestSchema, async (request) => {
+server.setRequestHandler(CallToolRequestSchema, async request => {
   const { name, arguments: args } = request.params;
 
   try {
@@ -104,7 +100,7 @@ async function main() {
   process.stderr.write('UIForge Context MCP Server v2.0.0 running on stdio\n');
 }
 
-main().catch((err) => {
+main().catch(err => {
   process.stderr.write(`Fatal error: ${err instanceof Error ? err.message : String(err)}\n`);
   process.exit(1);
 });

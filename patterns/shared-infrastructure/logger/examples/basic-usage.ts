@@ -54,12 +54,14 @@ const asyncFunction = async () => {
   return 'result';
 };
 
-perfLogger.trackAsync('api-call', asyncFunction, {
-  endpoint: '/api/data',
-  method: 'GET'
-}).then(result => {
-  console.log('Async result:', result);
-});
+perfLogger
+  .trackAsync('api-call', asyncFunction, {
+    endpoint: '/api/data',
+    method: 'GET'
+  })
+  .then(result => {
+    console.log('Async result:', result);
+  });
 
 // Example 4: Child Loggers
 console.log('\n=== Child Logger Example ===');
@@ -145,15 +147,19 @@ errorLogger.fatal('Critical system error', new Error('OUT_OF_MEMORY'), {
 });
 
 // Error with context object
-errorLogger.error('Validation error', {
-  field: 'email',
-  value: 'invalid-email',
-  message: 'Invalid email format',
-  code: 'VALIDATION_ERROR'
-}, {
-  userId: '12345',
-  endpoint: '/api/users'
-});
+errorLogger.error(
+  'Validation error',
+  {
+    field: 'email',
+    value: 'invalid-email',
+    message: 'Invalid email format',
+    code: 'VALIDATION_ERROR'
+  },
+  {
+    userId: '12345',
+    endpoint: '/api/users'
+  }
+);
 
 // Example 8: Different Log Levels
 console.log('\n=== Log Levels Example ===');
@@ -190,17 +196,15 @@ tagsLogger.warn('Slow query detected', {
 // Example 10: Redacted Sensitive Data
 console.log('\n=== Sensitive Data Redaction Example ===');
 
-const secureLogger = LoggerFactory.create(
-  {
-    service: 'secure-service',
-    version: '1.0.0',
-    environment: 'production',
-    level: LogLevel.INFO,
-    enableConsole: true,
-    enableStructured: false,
-    redactFields: ['password', 'token', 'secret', 'key', 'auth', 'ssn', 'creditcard']
-  }
-);
+const secureLogger = LoggerFactory.create({
+  service: 'secure-service',
+  version: '1.0.0',
+  environment: 'production',
+  level: LogLevel.INFO,
+  enableConsole: true,
+  enableStructured: false,
+  redactFields: ['password', 'token', 'secret', 'key', 'auth', 'ssn', 'creditcard']
+});
 
 secureLogger.info('User login attempt', {
   userId: '12345',
@@ -244,10 +248,13 @@ cleanupLogger.info('Service shutting down...');
 cleanupLogger.warn('Cleaning up resources');
 
 // Close the logger (important for file transports)
-cleanupLogger.close().then(() => {
-  console.log('Logger closed successfully');
-}).catch(error => {
-  console.error('Error closing logger:', error);
-});
+cleanupLogger
+  .close()
+  .then(() => {
+    console.log('Logger closed successfully');
+  })
+  .catch(error => {
+    console.error('Error closing logger:', error);
+  });
 
 console.log('\n=== Examples Complete ===');

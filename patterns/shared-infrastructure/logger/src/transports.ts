@@ -11,8 +11,8 @@ export class ConsoleTransport implements LoggerTransport {
   private colors = {
     [LogLevel.TRACE]: '\x1b[90m', // Gray
     [LogLevel.DEBUG]: '\x1b[36m', // Cyan
-    [LogLevel.INFO]: '\x1b[32m',  // Green
-    [LogLevel.WARN]: '\x1b[33m',  // Yellow
+    [LogLevel.INFO]: '\x1b[32m', // Green
+    [LogLevel.WARN]: '\x1b[33m', // Yellow
     [LogLevel.ERROR]: '\x1b[31m', // Red
     [LogLevel.FATAL]: '\x1b[35m' // Magenta
   };
@@ -225,11 +225,7 @@ export class FilteredTransport implements LoggerTransport {
   private transport: LoggerTransport;
   private filter: (entry: LogEntry) => boolean;
 
-  constructor(
-    transport: LoggerTransport,
-    filter: (entry: LogEntry) => boolean,
-    level?: LogLevel
-  ) {
+  constructor(transport: LoggerTransport, filter: (entry: LogEntry) => boolean, level?: LogLevel) {
     this.transport = transport;
     this.filter = filter;
     this.level = level ?? transport.level;
@@ -275,10 +271,6 @@ export class MultiTransport implements LoggerTransport {
   }
 
   async close(): Promise<void> {
-    await Promise.all(
-      this.transports
-        .filter(t => 'close' in t)
-        .map(t => (t as any).close())
-    );
+    await Promise.all(this.transports.filter(t => 'close' in t).map(t => (t as any).close()));
   }
 }

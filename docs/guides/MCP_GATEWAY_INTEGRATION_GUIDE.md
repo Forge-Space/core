@@ -2,7 +2,10 @@
 
 ## Overview
 
-This guide provides step-by-step instructions for integrating UIForge Patterns into an MCP Gateway project. The integration process is automated and includes centralized feature toggle management, security patterns, and performance optimization.
+This guide provides step-by-step instructions for integrating UIForge Patterns
+into an MCP Gateway project. The integration process is automated and includes
+centralized feature toggle management, security patterns, and performance
+optimization.
 
 ## Prerequisites
 
@@ -60,24 +63,28 @@ The integration script will:
 The MCP Gateway integration includes these pattern categories:
 
 #### 🔐 Security Patterns
+
 - **Authentication**: JWT-based authentication patterns
 - **Authorization**: Role-based access control
 - **Security Headers**: CORS, CSP, and security middleware
 - **Input Validation**: Request validation and sanitization
 
 #### ⚡ Performance Patterns
+
 - **Rate Limiting**: Request rate limiting and throttling
 - **Circuit Breaker**: Fault tolerance and resilience
 - **Health Checks**: Application health monitoring
 - **Performance Monitoring**: Metrics and observability
 
 #### 🎛️ Feature Toggle Patterns
+
 - **Centralized Configuration**: Feature toggle management
 - **CLI Tool**: forge-features for feature control
 - **Library Integration**: Node.js SDK for feature access
 - **Cross-Project Features**: Global and project-specific features
 
 #### 🏗️ Architecture Patterns
+
 - **Gateway Routing**: Request routing and load balancing
 - **Middleware Stack**: Composable middleware patterns
 - **Error Handling**: Consistent error response patterns
@@ -91,7 +98,7 @@ The integration creates these configuration files in your project:
 # ESLint configuration
 .eslintrc.js
 
-# Prettier configuration  
+# Prettier configuration
 .prettierrc.json
 
 # TypeScript configuration
@@ -199,6 +206,7 @@ features.setContext({
 ### Available Features
 
 #### Global Features
+
 - `global.debug-mode`: Enable debug logging and monitoring
 - `global.beta-features`: Enable beta functionality
 - `global.experimental-ui`: Enable experimental UI components
@@ -206,6 +214,7 @@ features.setContext({
 - `global.maintenance-mode`: Put system in maintenance mode
 
 #### MCP Gateway Specific Features
+
 - `mcp-gateway.rate-limiting`: Request rate limiting
 - `mcp-gateway.request-validation`: Input validation middleware
 - `mcp-gateway.security-headers`: Security headers middleware
@@ -241,10 +250,12 @@ app.use((req, res, next) => {
 // Rate limiting based on feature toggle
 if (features.isEnabled('rate-limiting')) {
   const rateLimit = require('express-rate-limit');
-  app.use(rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: features.getVariant('rate-limiting').payload?.max || 100
-  }));
+  app.use(
+    rateLimit({
+      windowMs: 15 * 60 * 1000, // 15 minutes
+      max: features.getVariant('rate-limiting').payload?.max || 100
+    })
+  );
 }
 
 // Security headers based on feature toggle
@@ -264,7 +275,7 @@ app.use((err, req, res, next) => {
     path: req.path,
     method: req.method
   };
-  
+
   // Enhanced logging if debug mode is enabled
   if (features.isEnabled('debug-mode')) {
     console.error('Debug error details:', {
@@ -274,7 +285,7 @@ app.use((err, req, res, next) => {
       features: features.getAllFeatures()
     });
   }
-  
+
   // Custom error responses based on features
   if (features.isEnabled('experimental-ui')) {
     return res.status(500).json({
@@ -284,7 +295,7 @@ app.use((err, req, res, next) => {
       timestamp: new Date().toISOString()
     });
   }
-  
+
   res.status(500).json({ error: 'Internal Server Error' });
 });
 ```
@@ -326,18 +337,22 @@ node test/performance-benchmark.js
 ### Common Issues
 
 #### Integration Fails
+
 - **Solution**: Ensure your project has a package.json file
 - **Check**: Verify you're in the project root directory
 
 #### Feature Toggle Library Errors
+
 - **Solution**: Install unleash-client-node dependency
 - **Command**: `npm install unleash-client-node`
 
 #### CLI Tool Not Working
+
 - **Solution**: Make the script executable
 - **Command**: `chmod +x scripts/forge-features`
 
 #### ESLint Errors After Integration
+
 - **Solution**: Run the lint fix command
 - **Command**: `npm run lint`
 
@@ -396,4 +411,5 @@ Based on our benchmarks, expect:
 - **Memory Usage**: <1MB for all operations
 - **Feature Lookup**: <1ms for feature checks
 
-These metrics ensure that the integration has minimal impact on your application performance.
+These metrics ensure that the integration has minimal impact on your application
+performance.

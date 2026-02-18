@@ -1,6 +1,9 @@
 # UIForge Context MCP Server
 
-The `uiforge-context-server` (v2) is a local stdio MCP server and the **absolute source of truth** for all UIForge project contexts. It manages a centralized `context-store/` directory — agents can read any project's context and write updates back through the same interface.
+The `uiforge-context-server` (v2) is a local stdio MCP server and the **absolute
+source of truth** for all UIForge project contexts. It manages a centralized
+`context-store/` directory — agents can read any project's context and write
+updates back through the same interface.
 
 ## Architecture
 
@@ -23,21 +26,23 @@ src/mcp-context-server/
 
 ## Resources
 
-Resources are enumerated dynamically from the store. Each registered project is exposed at:
+Resources are enumerated dynamically from the store. Each registered project is
+exposed at:
 
 ```
 uiforge://context/<project-slug>
 ```
 
-Current projects: `forge-patterns`, `uiforge-webapp`, `uiforge-mcp`, `mcp-gateway`
+Current projects: `forge-patterns`, `uiforge-webapp`, `uiforge-mcp`,
+`mcp-gateway`
 
 ## Tools
 
-| Tool                     | Description                                                                 |
-| ------------------------ | --------------------------------------------------------------------------- |
-| `get_project_context`    | Returns the full context document for a project from the store              |
-| `update_project_context` | Writes/overwrites a project's context in the store (creates if new)         |
-| `list_projects`          | Lists all registered projects with slugs, descriptions, and last-updated    |
+| Tool                     | Description                                                              |
+| ------------------------ | ------------------------------------------------------------------------ |
+| `get_project_context`    | Returns the full context document for a project from the store           |
+| `update_project_context` | Writes/overwrites a project's context in the store (creates if new)      |
+| `list_projects`          | Lists all registered projects with slugs, descriptions, and last-updated |
 
 ### `update_project_context` parameters
 
@@ -149,7 +154,9 @@ update_project_context({
 
 ## Rebuilding After Changes
 
-Only rebuild when the TypeScript source changes. The store is read at request time — updating context via `update_project_context` takes effect immediately without a rebuild.
+Only rebuild when the TypeScript source changes. The store is read at request
+time — updating context via `update_project_context` takes effect immediately
+without a rebuild.
 
 ```bash
 npm run mcp-context:build

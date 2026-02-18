@@ -25,28 +25,40 @@ module.exports = {
     },
 
     async 'feature:toggle'(featureName, enabled, api) {
-      await this.trackEvent('feature_toggle', {
-        feature: featureName,
-        enabled,
-        timestamp: new Date().toISOString(),
-        userAgent: this.getUserAgent()
-      }, api);
+      await this.trackEvent(
+        'feature_toggle',
+        {
+          feature: featureName,
+          enabled,
+          timestamp: new Date().toISOString(),
+          userAgent: this.getUserAgent()
+        },
+        api
+      );
     },
 
     async 'plugin:loaded'(plugin, api) {
-      await this.trackEvent('plugin_loaded', {
-        plugin: plugin.name,
-        version: plugin.version,
-        timestamp: new Date().toISOString()
-      }, api);
+      await this.trackEvent(
+        'plugin_loaded',
+        {
+          plugin: plugin.name,
+          version: plugin.version,
+          timestamp: new Date().toISOString()
+        },
+        api
+      );
     },
 
     async 'system:error'(error, api) {
-      await this.trackEvent('system_error', {
-        error: error.message,
-        stack: error.stack,
-        timestamp: new Date().toISOString()
-      }, api);
+      await this.trackEvent(
+        'system_error',
+        {
+          error: error.message,
+          stack: error.stack,
+          timestamp: new Date().toISOString()
+        },
+        api
+      );
     }
   },
 
@@ -59,7 +71,7 @@ module.exports = {
   async initializeAnalytics(api) {
     try {
       // Load configuration
-      this.config = await api.getConfig() || this.config;
+      this.config = (await api.getConfig()) || this.config;
 
       // Start flush interval
       this.flushInterval = setInterval(() => {
@@ -125,7 +137,7 @@ module.exports = {
    */
   async sendToAnalytics(events) {
     // Mock implementation - in reality this would make HTTP request
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       setTimeout(() => {
         console.log(`[ANALYTICS] Sent ${events.length} events`);
         resolve();
@@ -157,11 +169,15 @@ module.exports = {
     await this.initializeAnalytics(api);
 
     // Track plugin initialization
-    await this.trackEvent('plugin_initialized', {
-      plugin: 'analytics-plugin',
-      version: '1.0.0',
-      timestamp: new Date().toISOString()
-    }, api);
+    await this.trackEvent(
+      'plugin_initialized',
+      {
+        plugin: 'analytics-plugin',
+        version: '1.0.0',
+        timestamp: new Date().toISOString()
+      },
+      api
+    );
   },
 
   /**

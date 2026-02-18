@@ -2,7 +2,10 @@
 
 ## Welcome to UIForge Patterns!
 
-This guide will help you get started with UIForge Patterns quickly and effectively. Whether you're a new developer joining the team or an existing developer exploring the patterns, this guide will walk you through everything you need to know.
+This guide will help you get started with UIForge Patterns quickly and
+effectively. Whether you're a new developer joining the team or an existing
+developer exploring the patterns, this guide will walk you through everything
+you need to know.
 
 ## 🚀 Quick Start
 
@@ -42,6 +45,7 @@ ls patterns/
 #### 1.1 What are UIForge Patterns?
 
 UIForge Patterns is a comprehensive collection of:
+
 - **Shared configurations** for consistent development
 - **Architectural patterns** for scalable applications
 - **Automation scripts** for streamlined workflows
@@ -49,7 +53,8 @@ UIForge Patterns is a comprehensive collection of:
 
 #### 1.2 Key Concepts
 
-- **Hub-and-Spoke Architecture**: Centralized control with distributed implementation
+- **Hub-and-Spoke Architecture**: Centralized control with distributed
+  implementation
 - **Feature Toggles**: Cross-project feature management
 - **Pattern Library**: Reusable code and configuration patterns
 - **Integration Scripts**: Automated project setup
@@ -66,6 +71,7 @@ forge-patterns/
 ```
 
 **Recommended Reading:**
+
 - [Main README](../README.md)
 - [Architecture Overview](../ecosystem/OVERVIEW.md)
 - [Project Context](../project/PROJECT_CONTEXT.MD)
@@ -110,6 +116,7 @@ node ../forge-patterns/test/feature-toggle-validation.js
 ```
 
 **Recommended Reading:**
+
 - [MCP Gateway Integration Guide](MCP_GATEWAY_INTEGRATION_GUIDE.md)
 - [UIForge MCP Integration Guide](UIFORGE_MCP_INTEGRATION_GUIDE.md)
 - [Feature Toggle Documentation](../patterns/feature-toggles/README.md)
@@ -161,6 +168,7 @@ echo 'module.exports = { myFunction: () => {} };' > patterns/my-custom-pattern/i
 ```
 
 **Recommended Reading:**
+
 - [Troubleshooting Guide](TROUBLESHOOTING_GUIDE.md)
 - [Architecture Decisions](../architecture-decisions/)
 - [Security Standards](../standards/SECURITY.md)
@@ -170,36 +178,39 @@ echo 'module.exports = { myFunction: () => {} };' > patterns/my-custom-pattern/i
 ### Daily Workflow
 
 1. **Start Your Day**
+
    ```bash
    # Pull latest changes
    git pull origin main
-   
+
    # Check for updates
    npm update
-   
+
    # Run validation
    npm run validate
    ```
 
 2. **Work on Features**
+
    ```bash
    # Create feature branch
    git checkout -b feature/my-new-feature
-   
+
    # Make changes
    # Test changes
    npm run validate
    ```
 
 3. **End Your Day**
+
    ```bash
    # Run tests
    npm test
-   
+
    # Commit changes
    git add .
    git commit -m "feat: add my new feature"
-   
+
    # Push changes
    git push origin feature/my-new-feature
    ```
@@ -251,12 +262,14 @@ npm audit
 **Use Case**: API gateways, authentication services, routing systems
 
 **Key Features**:
+
 - Rate limiting and security patterns
 - Performance monitoring
 - Circuit breaker patterns
 - Health check endpoints
 
 **Getting Started**:
+
 ```bash
 node scripts/integrate.js integrate --project=mcp-gateway
 ```
@@ -266,12 +279,14 @@ node scripts/integrate.js integrate --project=mcp-gateway
 **Use Case**: AI-powered MCP servers, UI generation services
 
 **Key Features**:
+
 - AI provider integration
 - Streaming responses
 - Template management
 - Cost optimization
 
 **Getting Started**:
+
 ```bash
 node scripts/integrate.js integrate --project=uiforge-mcp
 ```
@@ -281,12 +296,14 @@ node scripts/integrate.js integrate --project=uiforge-mcp
 **Use Case**: Frontend applications, web interfaces
 
 **Key Features**:
+
 - Code quality patterns
 - Feature toggle UI
 - Analytics integration
 - Dark mode support
 
 **Getting Started**:
+
 ```bash
 node scripts/integrate.js integrate --project=uiforge-webapp
 ```
@@ -488,4 +505,5 @@ Remember: Every expert was once a beginner. Don't hesitate to ask for help!
 
 ---
 
-**Welcome to the UIForge Patterns community! We're excited to have you aboard.** 🚀
+**Welcome to the UIForge Patterns community! We're excited to have you aboard.**
+🚀

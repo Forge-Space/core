@@ -34,14 +34,7 @@
     }
   },
   "include": ["src/**/*.ts", "patterns/shared-constants/**/*.ts"],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "build",
-    "coverage",
-    "**/*.test.ts",
-    "**/*.spec.ts"
-  ],
+  "exclude": ["node_modules", "dist", "build", "coverage", "**/*.test.ts", "**/*.spec.ts"],
   "ts-node": {
     "esm": true,
     "experimentalSpecifierResolution": "node"

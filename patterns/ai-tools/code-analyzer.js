@@ -49,7 +49,6 @@ class AICodeAnalyzer {
     await this.loadPerformanceRules();
     await this.loadQualityMetrics();
 
-     
     console.log('AI Code Analyzer initialized');
   }
 
@@ -142,16 +141,24 @@ class AICodeAnalyzer {
 
         // Aggregate scores
         projectAnalysis.summary.securityScore += this.calculateSecurityScore(fileAnalysis.security);
-        projectAnalysis.summary.performanceScore += this.calculatePerformanceScore(fileAnalysis.performance);
+        projectAnalysis.summary.performanceScore += this.calculatePerformanceScore(
+          fileAnalysis.performance
+        );
         projectAnalysis.summary.qualityScore += this.calculateQualityScore(fileAnalysis.quality);
       }
 
       // Calculate average scores
       const fileCount = projectAnalysis.summary.totalFiles;
       if (fileCount > 0) {
-        projectAnalysis.summary.securityScore = Math.round(projectAnalysis.summary.securityScore / fileCount);
-        projectAnalysis.summary.performanceScore = Math.round(projectAnalysis.summary.performanceScore / fileCount);
-        projectAnalysis.summary.qualityScore = Math.round(projectAnalysis.summary.qualityScore / fileCount);
+        projectAnalysis.summary.securityScore = Math.round(
+          projectAnalysis.summary.securityScore / fileCount
+        );
+        projectAnalysis.summary.performanceScore = Math.round(
+          projectAnalysis.summary.performanceScore / fileCount
+        );
+        projectAnalysis.summary.qualityScore = Math.round(
+          projectAnalysis.summary.qualityScore / fileCount
+        );
       }
 
       // Get project-level recommendations
@@ -741,7 +748,20 @@ class AICodeAnalyzer {
   }
 
   isCodeFile(filePath) {
-    const extensions = ['.js', '.ts', '.jsx', '.tsx', '.vue', '.py', '.java', '.go', '.rs', '.php', '.rb', '.cs'];
+    const extensions = [
+      '.js',
+      '.ts',
+      '.jsx',
+      '.tsx',
+      '.vue',
+      '.py',
+      '.java',
+      '.go',
+      '.rs',
+      '.php',
+      '.rb',
+      '.cs'
+    ];
     return extensions.some(ext => filePath.endsWith(ext));
   }
 

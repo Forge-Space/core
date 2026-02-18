@@ -148,7 +148,6 @@ class PluginManager extends EventEmitter {
 
       this.emit('after:plugin:load', plugin);
       console.log(`Loaded plugin: ${plugin.name} v${plugin.version}`);
-
     } catch (error) {
       console.error(`Failed to load plugin ${pluginPath}:`, error);
       this.failedPlugins.add(pluginPath);
@@ -199,9 +198,9 @@ class PluginManager extends EventEmitter {
       registerHook: (hookName, handler) => this.registerHook(pluginName, hookName, handler),
       unregisterHook: (hookName, handler) => this.unregisterHook(pluginName, hookName, handler),
       emitHook: async (hookName, ...args) => this.emitHook(hookName, ...args),
-      getPlugin: (name) => this.getPlugin(name),
+      getPlugin: name => this.getPlugin(name),
       getAllPlugins: () => this.getAllPlugins(),
-      getConfig: async (key) => this.getPluginConfig(pluginName, key),
+      getConfig: async key => this.getPluginConfig(pluginName, key),
       setConfig: async (key, value) => this.setPluginConfig(pluginName, key, value),
       log: (level, message, ...args) => this.pluginLog(pluginName, level, message, ...args),
       on: (event, handler) => this.on(event, handler),
@@ -267,7 +266,6 @@ class PluginManager extends EventEmitter {
 
       this.emit('after:plugin:unload', plugin);
       console.log(`Unloaded plugin: ${pluginName}`);
-
     } catch (error) {
       console.error(`Failed to unload plugin ${pluginName}:`, error);
       this.emit('plugin:error', { plugin: pluginName, error });
@@ -276,9 +274,7 @@ class PluginManager extends EventEmitter {
 
   unregisterPluginHooks(pluginName) {
     for (const hookName of Object.keys(this.hooks)) {
-      this.hooks[hookName] = this.hooks[hookName].filter(
-        hook => hook.plugin !== pluginName
-      );
+      this.hooks[hookName] = this.hooks[hookName].filter(hook => hook.plugin !== pluginName);
     }
   }
 

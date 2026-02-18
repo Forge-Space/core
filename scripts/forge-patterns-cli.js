@@ -38,7 +38,7 @@ program
   .description('List all available patterns')
   .option('--category <category>', 'Filter by category (ai, cloud-native, docker, etc.)')
   .option('--json', 'Output as JSON')
-  .action(async (options) => {
+  .action(async options => {
     const patterns = await discoverPatterns(options.category);
 
     if (options.json) {
@@ -52,7 +52,9 @@ program
     for (const [category, items] of Object.entries(grouped)) {
       console.log(chalk.bold.yellow(`  ${category}/`));
       for (const item of items) {
-        console.log(chalk.gray('    ├── ') + chalk.white(item.name) + chalk.gray(` — ${item.description}`));
+        console.log(
+          chalk.gray('    ├── ') + chalk.white(item.name) + chalk.gray(` — ${item.description}`)
+        );
       }
       console.log();
     }
@@ -65,10 +67,10 @@ program
 program
   .command('info <pattern>')
   .description('Show details about a specific pattern')
-  .action(async (patternPath) => {
+  .action(async patternPath => {
     const fullPath = path.join(PATTERNS_DIR, patternPath, 'README.md');
 
-    if (!await fs.pathExists(fullPath)) {
+    if (!(await fs.pathExists(fullPath))) {
       console.error(chalk.red(`\n❌ Pattern not found: ${patternPath}`));
       console.log(chalk.gray('Run `forge-patterns list` to see available patterns.\n'));
       process.exit(1);
@@ -89,13 +91,14 @@ program
 program
   .command('search <query>')
   .description('Search patterns by name or description')
-  .action(async (query) => {
+  .action(async query => {
     const patterns = await discoverPatterns();
     const q = query.toLowerCase();
-    const matches = patterns.filter(p =>
-      p.name.toLowerCase().includes(q) ||
-      p.description.toLowerCase().includes(q) ||
-      p.category.toLowerCase().includes(q)
+    const matches = patterns.filter(
+      p =>
+        p.name.toLowerCase().includes(q) ||
+        p.description.toLowerCase().includes(q) ||
+        p.category.toLowerCase().includes(q)
     );
 
     if (matches.length === 0) {
@@ -120,7 +123,7 @@ program
   .action(async (patternPath, options) => {
     const sourcePath = path.join(PATTERNS_DIR, patternPath);
 
-    if (!await fs.pathExists(sourcePath)) {
+    if (!(await fs.pathExists(sourcePath))) {
       console.error(chalk.red(`\n❌ Pattern not found: ${patternPath}`));
       console.log(chalk.gray('Run `forge-patterns list` to see available patterns.\n'));
       process.exit(1);
@@ -137,11 +140,16 @@ program
       const relative = path.relative(sourcePath, file);
       const dest = path.join(targetPath, relative);
       if (options.dryRun) {
-        console.log(chalk.gray('  [dry-run] ') + chalk.white(`→ ${path.join('patterns', patternPath, relative)}`));
+        console.log(
+          chalk.gray('  [dry-run] ') +
+            chalk.white(`→ ${path.join('patterns', patternPath, relative)}`)
+        );
       } else {
         await fs.ensureDir(path.dirname(dest));
         await fs.copy(file, dest, { overwrite: false });
-        console.log(chalk.green('  ✓ ') + chalk.white(path.join('patterns', patternPath, relative)));
+        console.log(
+          chalk.green('  ✓ ') + chalk.white(path.join('patterns', patternPath, relative))
+        );
       }
     }
 
@@ -159,7 +167,7 @@ program
   .command('validate')
   .description('Validate patterns in the current project against BR-001 to BR-005')
   .option('--target <dir>', 'Target directory', process.cwd())
-  .action(async (options) => {
+  .action(async options => {
     console.log(chalk.bold.cyan('\n🔍 Validating patterns...\n'));
 
     const checks = [
@@ -198,7 +206,7 @@ program
 async function discoverPatterns(categoryFilter) {
   const patterns = [];
 
-  if (!await fs.pathExists(PATTERNS_DIR)) {
+  if (!(await fs.pathExists(PATTERNS_DIR))) {
     return patterns;
   }
 
@@ -267,7 +275,7 @@ async function getFilesRecursive(dir) {
     const fullPath = path.join(dir, entry);
     const stat = await fs.stat(fullPath);
     if (stat.isDirectory()) {
-      files.push(...await getFilesRecursive(fullPath));
+      files.push(...(await getFilesRecursive(fullPath)));
     } else {
       files.push(fullPath);
     }
@@ -304,17 +312,22 @@ async function checkNoSecrets(targetDir) {
   return {
     rule: 'BR-001 Zero-Secrets',
     passed: violations.length === 0,
-    message: violations.length === 0
-      ? 'No hardcoded secrets detected'
-      : `${violations.length} file(s) may contain hardcoded secrets`,
+    message:
+      violations.length === 0
+        ? 'No hardcoded secrets detected'
+        : `${violations.length} file(s) may contain hardcoded secrets`,
     details: violations.slice(0, 5)
   };
 }
 
 async function checkDocumentation(targetDir) {
   const patternsPath = path.join(targetDir, 'patterns');
-  if (!await fs.pathExists(patternsPath)) {
-    return { rule: 'BR-004 Documentation', passed: true, message: 'No patterns directory found — skipped' };
+  if (!(await fs.pathExists(patternsPath))) {
+    return {
+      rule: 'BR-004 Documentation',
+      passed: true,
+      message: 'No patterns directory found — skipped'
+    };
   }
 
   const categories = await fs.readdir(patternsPath);
@@ -325,7 +338,7 @@ async function checkDocumentation(targetDir) {
     const stat = await fs.stat(catPath);
     if (!stat.isDirectory()) continue;
     const readme = path.join(catPath, 'README.md');
-    if (!await fs.pathExists(readme)) {
+    if (!(await fs.pathExists(readme))) {
       missing.push(`patterns/${cat}/README.md`);
     }
   }
@@ -333,9 +346,10 @@ async function checkDocumentation(targetDir) {
   return {
     rule: 'BR-004 Documentation',
     passed: missing.length === 0,
-    message: missing.length === 0
-      ? 'All pattern categories have README.md'
-      : `${missing.length} pattern(s) missing README.md`,
+    message:
+      missing.length === 0
+        ? 'All pattern categories have README.md'
+        : `${missing.length} pattern(s) missing README.md`,
     details: missing
   };
 }
@@ -359,9 +373,10 @@ async function checkVersioning(targetDir) {
   return {
     rule: 'BR-002 Pattern Versioning',
     passed: validVersion && hasChangelog,
-    message: validVersion && hasChangelog
-      ? `Version ${version} with CHANGELOG.md present`
-      : `Missing: ${!validVersion ? 'valid semver version' : ''} ${!hasChangelog ? 'CHANGELOG.md' : ''}`.trim()
+    message:
+      validVersion && hasChangelog
+        ? `Version ${version} with CHANGELOG.md present`
+        : `Missing: ${!validVersion ? 'valid semver version' : ''} ${!hasChangelog ? 'CHANGELOG.md' : ''}`.trim()
   };
 }
 

@@ -6,8 +6,8 @@ Accepted
 
 ## Context
 
-As the UIForge ecosystem grew to include multiple projects (mcp-gateway, uiforge-mcp, uiforge-webapp),
-we faced challenges with feature management:
+As the UIForge ecosystem grew to include multiple projects (mcp-gateway,
+uiforge-mcp, uiforge-webapp), we faced challenges with feature management:
 
 - Inconsistent feature flags across projects
 - No unified way to enable/disable features ecosystem-wide
@@ -25,8 +25,8 @@ Key requirements:
 
 ## Decision
 
-We implemented a **centralized feature toggle system** using Unleash as the feature
-management backend with a custom CLI tool for developer interaction.
+We implemented a **centralized feature toggle system** using Unleash as the
+feature management backend with a custom CLI tool for developer interaction.
 
 ### Architecture Components
 
@@ -37,8 +37,10 @@ management backend with a custom CLI tool for developer interaction.
 
 ### Feature Namespacing
 
-- **Global Features**: `global.debug-mode`, `global.beta-features`, `global.experimental-ui`
-- **Project-Specific**: `mcp-gateway.rate-limiting`, `uiforge-mcp.ai-chat`, `uiforge-webapp.dark-mode`
+- **Global Features**: `global.debug-mode`, `global.beta-features`,
+  `global.experimental-ui`
+- **Project-Specific**: `mcp-gateway.rate-limiting`, `uiforge-mcp.ai-chat`,
+  `uiforge-webapp.dark-mode`
 
 ### Integration Points
 
@@ -50,26 +52,32 @@ management backend with a custom CLI tool for developer interaction.
 
 ### Positive Consequences
 
-- **Unified Control**: Single point for managing features across entire ecosystem
+- **Unified Control**: Single point for managing features across entire
+  ecosystem
 - **Real-time Updates**: Features can be enabled/disabled without redeployment
 - **Developer Experience**: CLI tool provides easy feature management
 - **Consistent Behavior**: Global features work consistently across all projects
-- **Beta Management**: Easy to coordinate beta releases and experimental features
+- **Beta Management**: Easy to coordinate beta releases and experimental
+  features
 - **Safety**: Features can be quickly disabled if issues arise
 
 ### Negative Consequences
 
-- **Dependency on Unleash**: Centralized feature system becomes critical dependency
+- **Dependency on Unleash**: Centralized feature system becomes critical
+  dependency
 - **Infrastructure Complexity**: Additional service to deploy and maintain
 - **Network Latency**: Feature lookups require network calls to Unleash
-- **Single Point of Failure**: Unleash outage affects feature management across ecosystem
+- **Single Point of Failure**: Unleash outage affects feature management across
+  ecosystem
 
 ### Mitigation Strategies
 
 - **Unleash High Availability**: Deploy Unleash with redundancy and backup
 - **Local Caching**: Feature toggle library includes local caching with fallback
-- **Graceful Degradation**: Applications continue functioning if Unleash is unavailable
-- **Monitoring**: Comprehensive monitoring of Unleash availability and performance
+- **Graceful Degradation**: Applications continue functioning if Unleash is
+  unavailable
+- **Monitoring**: Comprehensive monitoring of Unleash availability and
+  performance
 
 ## Implementation Details
 
@@ -129,9 +137,9 @@ projects:
       - security-headers
     strategies:
       default:
-        - name: "default"
+        - name: 'default'
           parameters: {}
-  
+
   uiforge-mcp:
     features:
       - ai-chat
@@ -150,6 +158,9 @@ projects:
 
 ## Related ADRs
 
-- [ADR-001: Hub-and-Spoke Ecosystem Architecture](ADR-001-ecosystem-design.md) - Updated to include feature toggle system
-- [ADR-002: Gateway as Central Authority](ADR-002-gateway-central-hub.md) - Gateway coordinates with feature system
-- [ADR-005: Integration Patterns](ADR-005-integration-patterns.md) - Updated for centralized feature management
+- [ADR-001: Hub-and-Spoke Ecosystem Architecture](ADR-001-ecosystem-design.md) -
+  Updated to include feature toggle system
+- [ADR-002: Gateway as Central Authority](ADR-002-gateway-central-hub.md) -
+  Gateway coordinates with feature system
+- [ADR-005: Integration Patterns](ADR-005-integration-patterns.md) - Updated for
+  centralized feature management

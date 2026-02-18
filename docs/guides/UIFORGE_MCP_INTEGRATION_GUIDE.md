@@ -2,7 +2,10 @@
 
 ## Overview
 
-This guide provides step-by-step instructions for integrating UIForge Patterns into a UIForge MCP project. The integration process is automated and includes centralized feature toggle management, AI provider patterns, and streaming capabilities.
+This guide provides step-by-step instructions for integrating UIForge Patterns
+into a UIForge MCP project. The integration process is automated and includes
+centralized feature toggle management, AI provider patterns, and streaming
+capabilities.
 
 ## Prerequisites
 
@@ -61,6 +64,7 @@ The integration script will:
 The UIForge MCP integration includes these pattern categories:
 
 #### 🤖 AI Provider Patterns
+
 - **OpenAI Integration**: GPT-3.5/4 API integration
 - **Anthropic Integration**: Claude API integration
 - **Provider Abstraction**: Unified AI provider interface
@@ -68,30 +72,35 @@ The UIForge MCP integration includes these pattern categories:
 - **Token Management**: Cost optimization and usage tracking
 
 #### 📡 Streaming Patterns
+
 - **Server-Sent Events**: Real-time response streaming
 - **WebSocket Streaming**: Bidirectional communication
 - **Response Chunking**: Large response handling
 - **Error Recovery**: Robust error handling in streams
 
 #### 🎨 Template Management
+
 - **Template Storage**: Centralized template repository
 - **Template Validation**: Schema validation for templates
 - **Dynamic Rendering**: Real-time template updates
 - **Version Control**: Template versioning and rollback
 
 #### 🎛️ Feature Toggle Patterns
+
 - **Centralized Configuration**: Feature toggle management
 - **CLI Tool**: forge-features for feature control
 - **Library Integration**: Node.js SDK for feature access
 - **Cross-Project Features**: Global and project-specific features
 
 #### 🏗️ Architecture Patterns
+
 - **MCP Server Setup**: Standard MCP server configuration
 - **Request Handling**: Consistent request/response patterns
 - **Error Handling**: Comprehensive error management
 - **Logging**: Structured logging with correlation IDs
 
 #### 🔄 Sleep Architecture
+
 - **Resource Optimization**: Efficient resource usage
 - **Lifecycle Management**: Automatic sleep/wake cycles
 - **Cost Control**: Usage-based scaling
@@ -104,7 +113,7 @@ The integration creates these configuration files in your project:
 # ESLint configuration
 .eslintrc.js
 
-# Prettier configuration  
+# Prettier configuration
 .prettierrc.json
 
 # TypeScript configuration
@@ -221,6 +230,7 @@ features.setContext({
 ### Available Features
 
 #### Global Features
+
 - `global.debug-mode`: Enable debug logging and monitoring
 - `global.beta-features`: Enable beta functionality
 - `global.experimental-ui`: Enable experimental UI components
@@ -228,6 +238,7 @@ features.setContext({
 - `global.maintenance-mode`: Put system in maintenance mode
 
 #### UIForge MCP Specific Features
+
 - `uiforge-mcp.ai-chat`: Enable AI chat functionality
 - `uiforge-mcp.template-management`: Enable template management
 - `uiforge-mcp.ui-generation`: Enable UI generation features
@@ -254,7 +265,7 @@ const aiManager = new AIProviderManager();
 // Configure providers based on features
 if (features.isEnabled('ai-chat')) {
   const provider = features.getVariant('ai-provider');
-  
+
   switch (provider.name) {
     case 'openai':
       aiManager.configureProvider('openai', {
@@ -263,7 +274,7 @@ if (features.isEnabled('ai-chat')) {
         maxTokens: provider.payload?.maxTokens || 2000
       });
       break;
-      
+
     case 'anthropic':
       aiManager.configureProvider('anthropic', {
         apiKey: process.env.ANTHROPIC_API_KEY,
@@ -296,17 +307,17 @@ if (features.isEnabled('streaming-responses')) {
     enableWebSocket: true,
     chunkSize: features.getVariant('streaming-chunk-size').payload?.size || 1024
   });
-  
+
   // Handle streaming responses
   app.post('/generate', async (req, res) => {
     const prompt = req.body.prompt;
-    
+
     // Set up streaming response
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
-    
+
     const stream = streamingManager.createStream(res);
-    
+
     try {
       await generateStreamingResponse(prompt, stream);
     } catch (error) {
@@ -350,10 +361,10 @@ if (features.isEnabled('cost-optimization')) {
     maxSleepTime: 3600000, // 1 hour
     enableMetrics: features.isEnabled('enhanced-logging')
   });
-  
+
   // Set up automatic sleep/wake
   sleepManager.configureAutoSleep();
-  
+
   // Handle requests with sleep management
   app.use(async (req, res, next) => {
     await sleepManager.ensureAwake();
@@ -399,22 +410,27 @@ node test/performance-benchmark.js
 ### Common Issues
 
 #### Integration Fails
+
 - **Solution**: Ensure your project has a package.json file
 - **Check**: Verify you're in the project root directory
 
 #### AI Provider Errors
+
 - **Solution**: Check API keys and provider configuration
 - **Command**: Verify environment variables are set
 
 #### Feature Toggle Library Errors
+
 - **Solution**: Install unleash-client-node dependency
 - **Command**: `npm install unleash-client-node`
 
 #### CLI Tool Not Working
+
 - **Solution**: Make the script executable
 - **Command**: `chmod +x scripts/forge-features`
 
 #### ESLint Errors After Integration
+
 - **Solution**: Run the lint fix command
 - **Command**: `npm run lint`
 
@@ -479,4 +495,5 @@ Based on our benchmarks, expect:
 - **Memory Usage**: <1MB for all operations
 - **Feature Lookup**: <1ms for feature checks
 
-These metrics ensure that the integration has minimal impact on your application performance.
+These metrics ensure that the integration has minimal impact on your application
+performance.

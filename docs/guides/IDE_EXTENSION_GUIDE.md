@@ -1,6 +1,7 @@
 # IDE Extension Guide
 
-Setup guide for VS Code and JetBrains IDEs to get the best development experience with UIForge Patterns.
+Setup guide for VS Code and JetBrains IDEs to get the best development
+experience with UIForge Patterns.
 
 ## VS Code
 
@@ -200,18 +201,18 @@ Covers IntelliJ IDEA, GoLand, CLion (Rust), and WebStorm.
 
 Install via **Settings → Plugins → Marketplace**:
 
-| Plugin | Purpose |
-| --- | --- |
-| **Prettier** | Code formatting (JS/TS) |
-| **ESLint** | JavaScript/TypeScript linting |
-| **Go** | Go language support (IntelliJ) |
-| **Rust** | Rust language support |
-| **Docker** | Docker integration |
-| **Makefile Language** | Makefile syntax support |
-| **TOML** | TOML file support (Cargo.toml) |
-| **Conventional Commit** | Commit message helper |
-| **GitToolBox** | Enhanced Git integration |
-| **SonarLint** | Local code quality analysis |
+| Plugin                  | Purpose                        |
+| ----------------------- | ------------------------------ |
+| **Prettier**            | Code formatting (JS/TS)        |
+| **ESLint**              | JavaScript/TypeScript linting  |
+| **Go**                  | Go language support (IntelliJ) |
+| **Rust**                | Rust language support          |
+| **Docker**              | Docker integration             |
+| **Makefile Language**   | Makefile syntax support        |
+| **TOML**                | TOML file support (Cargo.toml) |
+| **Conventional Commit** | Commit message helper          |
+| **GitToolBox**          | Enhanced Git integration       |
+| **SonarLint**           | Local code quality analysis    |
 
 Install via CLI (IntelliJ IDEA):
 
@@ -230,13 +231,15 @@ idea installPlugins \
 
 1. **Settings → Editor → Code Style → JavaScript**
 2. Click **Set from… → Prettier**
-3. Enable **Run on save** under **Settings → Languages & Frameworks → JavaScript → Prettier**
+3. Enable **Run on save** under **Settings → Languages & Frameworks → JavaScript
+   → Prettier**
 
 **For Go** (GoLand):
 
 1. **Settings → Editor → Code Style → Go**
 2. Enable **Run gofmt on save**
-3. Set **golangci-lint** as the external linter under **Settings → Tools → Go Linter**
+3. Set **golangci-lint** as the external linter under **Settings → Tools → Go
+   Linter**
 
 **For Rust** (CLion):
 
@@ -248,7 +251,9 @@ idea installPlugins \
 **For Java** (IntelliJ IDEA):
 
 1. **Settings → Editor → Code Style → Java**
-2. Import Google Java Style: download from [google/styleguide](https://github.com/google/styleguide) and import via **Manage → Import**
+2. Import Google Java Style: download from
+   [google/styleguide](https://github.com/google/styleguide) and import via
+   **Manage → Import**
 3. Enable **Optimize imports on save** and **Reformat code on save**
 
 ### Run Configurations
@@ -307,18 +312,19 @@ trim_trailing_whitespace = false
 
 ## Windsurf / Cursor
 
-The forge-patterns repo ships with pre-configured Windsurf rules and workflows under `.windsurf/`.
+The forge-patterns repo ships with pre-configured Windsurf rules and workflows
+under `.windsurf/`.
 
 ### Available Workflows
 
-| Command | Description |
-| --- | --- |
-| `/quality-checks` | Run lint + test |
-| `/security-scan` | Run all security scripts |
-| `/verify` | Full pre-PR verification |
-| `/run-tests` | Complete test suite |
+| Command               | Description               |
+| --------------------- | ------------------------- |
+| `/quality-checks`     | Run lint + test           |
+| `/security-scan`      | Run all security scripts  |
+| `/verify`             | Full pre-PR verification  |
+| `/run-tests`          | Complete test suite       |
 | `/pattern-compliance` | Validate BR-001 to BR-005 |
-| `/bootstrap-project` | Set up a new project |
+| `/bootstrap-project`  | Set up a new project      |
 
 ### Active Rules
 
@@ -369,5 +375,7 @@ echo "IDE setup complete!"
 ## 🔗 Related
 
 - [`CONTRIBUTING.md`](../../CONTRIBUTING.md) — contribution guidelines
-- [`patterns/code-quality/`](../../patterns/code-quality/) — ESLint and Prettier configs
-- [`.windsurf/workflows/`](../../.windsurf/workflows/) — Windsurf workflow definitions
+- [`patterns/code-quality/`](../../patterns/code-quality/) — ESLint and Prettier
+  configs
+- [`.windsurf/workflows/`](../../.windsurf/workflows/) — Windsurf workflow
+  definitions

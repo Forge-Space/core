@@ -32,9 +32,12 @@ feature toggle management**. This means:
 - **Specialized Spokes (MCP Servers)**: Focus on specific capabilities like UI
   generation, with minimal cross-cutting concerns
 - **Management Interface**: Connects to the hub for all operations
-- **NEW**: **Centralized Feature Toggle System**: Unified feature management across all projects using Unleash
-- **NEW**: **Cross-Project Feature Namespacing**: Global and project-specific feature isolation
-- **NEW**: **CLI Tool Management**: forge-features CLI for centralized feature control
+- **NEW**: **Centralized Feature Toggle System**: Unified feature management
+  across all projects using Unleash
+- **NEW**: **Cross-Project Feature Namespacing**: Global and project-specific
+  feature isolation
+- **NEW**: **CLI Tool Management**: forge-features CLI for centralized feature
+  control
 
 ## Consequences
 
@@ -50,9 +53,12 @@ feature toggle management**. This means:
   components
 - **Simplified Deployment**: Each component can be deployed and updated
   independently
-- **NEW**: **Unified Feature Control**: Centralized feature toggle management across all projects
-- **NEW**: **Cross-Project Consistency**: Features can be enabled/disabled consistently across ecosystem
-- **NEW**: **Real-time Feature Updates**: Immediate feature changes without redeployment
+- **NEW**: **Unified Feature Control**: Centralized feature toggle management
+  across all projects
+- **NEW**: **Cross-Project Consistency**: Features can be enabled/disabled
+  consistently across ecosystem
+- **NEW**: **Real-time Feature Updates**: Immediate feature changes without
+  redeployment
 - **NEW**: **Developer Experience**: CLI tool for easy feature management
 
 ### Negative Consequences
@@ -64,9 +70,12 @@ feature toggle management**. This means:
 - **Complexity**: Additional infrastructure for managing the gateway and its
   state
 - **Single Point of Failure**: Gateway failure affects the entire ecosystem
-- **NEW**: **Feature Toggle Dependency**: Centralized feature system becomes critical dependency
-- **NEW**: **Unleash Infrastructure**: Additional infrastructure to maintain for feature management
-- **NEW**: **Cross-Project Coupling**: Features create coupling between otherwise independent projects
+- **NEW**: **Feature Toggle Dependency**: Centralized feature system becomes
+  critical dependency
+- **NEW**: **Unleash Infrastructure**: Additional infrastructure to maintain for
+  feature management
+- **NEW**: **Cross-Project Coupling**: Features create coupling between
+  otherwise independent projects
 
 ## Alternatives Considered
 

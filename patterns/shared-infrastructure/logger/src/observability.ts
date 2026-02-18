@@ -23,12 +23,12 @@ export class MetricsCollector {
     const key = this.buildKey(name, tags);
     const values = this.histograms.get(key) || [];
     values.push(value);
-    
+
     // Keep only last 1000 values to prevent memory issues
     if (values.length > 1000) {
       values.shift();
     }
-    
+
     this.histograms.set(key, values);
   }
 
@@ -45,35 +45,38 @@ export class MetricsCollector {
 
     const duration = Date.now() - timer.startTime;
     this.timers.delete(timerId);
-    
+
     // Extract metric name from timer ID
     const [metricName, ...tagParts] = timerId.split('_');
     const tags = this.parseTagParts(tagParts.slice(0, -2)); // Remove timestamp and random parts
-    
+
     this.recordHistogram(metricName, duration, tags);
-    
+
     return duration;
   }
 
   getMetrics(): {
     counters: Record<string, number>;
     gauges: Record<string, number>;
-    histograms: Record<string, { count: number; min: number; max: number; avg: number; p95: number; p99: number }>;
+    histograms: Record<
+      string,
+      { count: number; min: number; max: number; avg: number; p95: number; p99: number }
+    >;
   } {
     const histograms: Record<string, any> = {};
-    
+
     for (const [key, values] of this.histograms.entries()) {
       if (values.length === 0) continue;
-      
+
       const sorted = [...values].sort((a, b) => a - b);
       const count = values.length;
       const min = sorted[0];
       const max = sorted[sorted.length - 1];
       const avg = values.reduce((sum, val) => sum + val, 0) / count;
-      
+
       const p95Index = Math.floor(count * 0.95);
       const p99Index = Math.floor(count * 0.99);
-      
+
       histograms[key] = {
         count,
         min,
@@ -102,25 +105,25 @@ export class MetricsCollector {
     if (!tags || Object.keys(tags).length === 0) {
       return name;
     }
-    
+
     const tagPairs = Object.entries(tags)
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([key, value]) => `${key}=${value}`)
       .join(',');
-    
+
     return `${name}{${tagPairs}}`;
   }
 
   private parseTagParts(parts: string[]): Record<string, string> {
     const tags: Record<string, string> = {};
-    
+
     for (const part of parts) {
       if (part.includes('=')) {
         const [key, value] = part.split('=');
         tags[key] = value;
       }
     }
-    
+
     return tags;
   }
 }
@@ -375,9 +378,7 @@ export class AlertManager {
   }
 
   getAlertHistory(limit?: number): Alert[] {
-    return limit 
-      ? this.alertHistory.slice(-limit)
-      : this.alertHistory;
+    return limit ? this.alertHistory.slice(-limit) : this.alertHistory;
   }
 
   private matchesRule(entry: LogEntry, rule: AlertRule): boolean {
@@ -405,9 +406,10 @@ export class AlertManager {
 
     // Check rate limiting
     if (rule.conditions.rateLimit) {
-      const recentAlerts = this.alertHistory.filter(alert => 
-        alert.ruleName === rule.name &&
-        Date.now() - new Date(alert.timestamp).getTime() < rule.conditions.rateLimit.windowMs
+      const recentAlerts = this.alertHistory.filter(
+        alert =>
+          alert.ruleName === rule.name &&
+          Date.now() - new Date(alert.timestamp).getTime() < rule.conditions.rateLimit.windowMs
       );
 
       if (recentAlerts.length >= rule.conditions.rateLimit.maxAlerts) {

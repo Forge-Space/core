@@ -17,28 +17,40 @@ module.exports = {
     },
 
     async 'feature:toggle'(featureName, enabled, api) {
-      await this.trackEvent('feature_toggle', {
-        feature: featureName,
-        enabled,
-        timestamp: new Date().toISOString(),
-        environment: process.env.NODE_ENV || 'development'
-      }, api);
+      await this.trackEvent(
+        'feature_toggle',
+        {
+          feature: featureName,
+          enabled,
+          timestamp: new Date().toISOString(),
+          environment: process.env.NODE_ENV || 'development'
+        },
+        api
+      );
     },
 
     async 'plugin:loaded'(plugin, api) {
-      await this.trackEvent('plugin_loaded', {
-        plugin: plugin.name,
-        version: plugin.version,
-        timestamp: new Date().toISOString()
-      }, api);
+      await this.trackEvent(
+        'plugin_loaded',
+        {
+          plugin: plugin.name,
+          version: plugin.version,
+          timestamp: new Date().toISOString()
+        },
+        api
+      );
     },
 
     async 'system:error'(error, api) {
-      await this.trackEvent('system_error', {
-        error: error.message,
-        stack: error.stack,
-        timestamp: new Date().toISOString()
-      }, api);
+      await this.trackEvent(
+        'system_error',
+        {
+          error: error.message,
+          stack: error.stack,
+          timestamp: new Date().toISOString()
+        },
+        api
+      );
     },
 
     async 'analytics:track'(event, api) {
@@ -52,7 +64,7 @@ module.exports = {
 
   async initializeAnalytics(api) {
     try {
-      this.config = await api.getConfig() || {
+      this.config = (await api.getConfig()) || {
         endpoint: process.env.ANALYTICS_ENDPOINT || 'https://analytics.example.com/events',
         batchSize: parseInt(process.env.ANALYTICS_BATCH_SIZE) || 100,
         flushInterval: parseInt(process.env.ANALYTICS_FLUSH_INTERVAL) || 30000,
@@ -117,7 +129,7 @@ module.exports = {
 
   async sendToAnalytics(events) {
     // Mock implementation - in production, this would make HTTP requests
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       setTimeout(() => {
         console.log(`[ANALYTICS] Sent ${events.length} events to ${this.config.endpoint}`);
         resolve();
@@ -144,11 +156,15 @@ module.exports = {
     api.log('info', 'Analytics plugin initializing...');
     await this.initializeAnalytics(api);
 
-    await this.trackEvent('plugin_initialized', {
-      plugin: 'analytics-plugin',
-      version: '1.0.0',
-      timestamp: new Date().toISOString()
-    }, api);
+    await this.trackEvent(
+      'plugin_initialized',
+      {
+        plugin: 'analytics-plugin',
+        version: '1.0.0',
+        timestamp: new Date().toISOString()
+      },
+      api
+    );
   },
 
   async cleanup() {

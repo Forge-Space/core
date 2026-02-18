@@ -1,9 +1,9 @@
-import { 
-  LoggerFactory, 
-  ConfigBuilder, 
-  LogLevel, 
-  ConsoleTransport, 
-  JsonTransport, 
+import {
+  LoggerFactory,
+  ConfigBuilder,
+  LogLevel,
+  ConsoleTransport,
+  JsonTransport,
   FileTransport,
   MetricsCollector,
   DistributedTracer,
@@ -15,8 +15,7 @@ import {
 console.log('=== Custom Transport Configuration ===');
 
 const customLogger = LoggerFactory.create(
-  ConfigBuilder
-    .create()
+  ConfigBuilder.create()
     .service('custom-service')
     .version('2.1.0')
     .environment('production')
@@ -66,17 +65,17 @@ const simulateApiRequests = () => {
     const method = ['GET', 'POST', 'PUT', 'DELETE'][Math.floor(Math.random() * 4)];
     const status = [200, 201, 400, 404, 500][Math.floor(Math.random() * 5)];
     const duration = Math.floor(Math.random() * 1000) + 50;
-    
+
     metricsCollector.incrementCounter('api.requests', 1, {
       method,
       status: status.toString()
     });
-    
+
     metricsCollector.recordHistogram('api.response_time', duration, {
       method,
       endpoint: '/api/data'
     });
-    
+
     if (i % 10 === 0) {
       metricsCollector.setGauge('memory.usage', Math.random() * 100, {
         type: 'heap'
@@ -91,7 +90,10 @@ simulateApiRequests();
 const metrics = metricsCollector.getMetrics();
 console.log('API Metrics Summary:');
 console.log('Total requests:', metrics.counters['api.requests{method=GET,status=200}'] || 0);
-console.log('Average response time:', metrics.histograms['api.response_time{method=GET,endpoint=/api/data}']?.avg || 0);
+console.log(
+  'Average response time:',
+  metrics.histograms['api.response_time{method=GET,endpoint=/api/data}']?.avg || 0
+);
 
 // Example 4: Distributed Tracing
 console.log('\n=== Distributed Tracing ===');
@@ -106,44 +108,44 @@ const simulateRequestFlow = async () => {
     'http.url': '/api/process',
     'user.id': '12345'
   });
-  
+
   tracer.addTags(rootSpan.spanId, {
     'service.name': 'api-gateway',
     'service.version': '1.0.0'
   });
-  
+
   // Database operation
   const dbSpan = tracer.startSpan('database-query', {
     'db.operation': 'SELECT',
     'db.table': 'users'
   });
-  
+
   tracer.addEvent(dbSpan.spanId, 'query.start', {
     query: 'SELECT * FROM users WHERE id = ?'
   });
-  
+
   // Simulate database work
   await new Promise(resolve => setTimeout(resolve, 50));
-  
+
   tracer.addEvent(dbSpan.spanId, 'query.complete', {
     rowsAffected: 1
   });
-  
+
   tracer.finishSpan(dbSpan.spanId);
-  
+
   // Cache operation
   const cacheSpan = tracer.startSpan('cache-operation', {
     'cache.operation': 'get',
     'cache.key': 'user:12345'
   });
-  
+
   await new Promise(resolve => setTimeout(resolve, 10));
-  
+
   tracer.finishSpan(cacheSpan.spanId);
-  
+
   // Finish root span
   tracer.finishSpan(rootSpan.spanId);
-  
+
   console.log('Request flow completed');
 };
 
@@ -199,7 +201,7 @@ healthChecker.registerCheck('disk-space', {
     // Simulate disk space check
     const usagePercent = Math.random() * 100;
     const isHealthy = usagePercent < 90;
-    
+
     return {
       healthy: isHealthy,
       message: `Disk usage: ${usagePercent.toFixed(1)}%`,
@@ -220,7 +222,7 @@ healthChecker.runChecks().then(healthReport => {
   console.log('Total Checks:', healthReport.summary.total);
   console.log('Healthy Checks:', healthReport.summary.healthy);
   console.log('Unhealthy Checks:', healthReport.summary.unhealthy);
-  
+
   healthReport.checks.forEach(check => {
     console.log(`- ${check.name}: ${check.status} (${check.duration}ms)`);
   });
@@ -300,9 +302,7 @@ console.log('\n=== Environment-based Configuration ===');
 import { ConfigUtils } from '../config/index.js';
 
 // Create logger for current environment
-const envLogger = LoggerFactory.create(
-  ConfigUtils.createForEnvironment('env-service', '1.0.0')
-);
+const envLogger = LoggerFactory.create(ConfigUtils.createForEnvironment('env-service', '1.0.0'));
 
 envLogger.info('Environment-based logger initialized');
 envLogger.info(`Running in: ${process.env.NODE_ENV || 'development'}`);
@@ -335,7 +335,7 @@ for (let i = 0; i < 500; i++) {
     batchId: Math.floor(i / batchSize),
     timestamp: Date.now()
   });
-  
+
   if (logBatch.length >= batchSize) {
     perfOptLogger.info(`Processing batch ${Math.floor(i / batchSize)}`, {
       batchSize: logBatch.length,
@@ -407,12 +407,12 @@ setTimeout(() => {
     traceId: `trace_${Date.now()}`,
     userId: 'user_123'
   });
-  
+
   serviceB.info('Processing cross-service request');
   serviceB.info('Request completed');
 }, 100);
 
-serviceA.endTimer(correlationId, { 
+serviceA.endTimer(correlationId, {
   service: 'service-b',
   status: 'success'
 });

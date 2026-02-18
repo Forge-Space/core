@@ -72,9 +72,16 @@
     "typescript-eslint": "^8.56.0"
   },
   "lint-staged": {
-    "*.{js,ts}": ["eslint --fix", "prettier --write"],
-    "*.{json,yml,yaml}": ["prettier --write"],
-    "*.md": ["prettier --write"]
+    "*.{js,ts}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,yml,yaml}": [
+      "prettier --write"
+    ],
+    "*.md": [
+      "prettier --write"
+    ]
   },
   "husky": {
     "hooks": {

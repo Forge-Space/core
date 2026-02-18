@@ -2,20 +2,26 @@
 
 ## 🎯 **Overview**
 
-This guide provides step-by-step instructions for implementing Forge Patterns v1.0.0 across the Forge ecosystem projects. The integration process is automated with scripts that handle pattern copying, configuration updates, and example creation.
+This guide provides step-by-step instructions for implementing Forge Patterns
+v1.0.0 across the Forge ecosystem projects. The integration process is automated
+with scripts that handle pattern copying, configuration updates, and example
+creation.
 
 ## 📋 **Target Projects**
 
 ### **Priority 1: Core Infrastructure**
+
 - **mcp-gateway** - Core MCP gateway with routing and security
 - **uiforge-mcp** - MCP server with AI integration
 
 ### **Priority 2: User Interface**
+
 - **uiforge-webapp** - Next.js web application
 
 ## 🚀 **Quick Start Integration**
 
 ### **Option 1: Automated Integration (Recommended)**
+
 ```bash
 # Clone Forge Patterns
 git clone https://github.com/LucasSantana-Dev/forge-patterns.git
@@ -26,6 +32,7 @@ cd forge-patterns
 ```
 
 ### **Option 2: Individual Project Integration**
+
 ```bash
 # For each project, run the specific integration script
 ./scripts/integrate-mcp-gateway.sh /path/to/mcp-gateway
@@ -38,6 +45,7 @@ cd forge-patterns
 ### **Step 1: MCP Gateway Integration**
 
 #### **Manual Integration**
+
 ```bash
 # Navigate to MCP Gateway project
 cd /path/to/mcp-gateway
@@ -53,12 +61,14 @@ rm -rf forge-patterns-temp
 ```
 
 #### **What Gets Integrated**
+
 - ✅ **MCP Gateway Patterns**: Routing, security, performance
 - ✅ **Shared Infrastructure**: Sleep architecture patterns
 - ✅ **Development Tools**: ESLint, Prettier, TypeScript
 - ✅ **Configuration**: Package.json, tsconfig.json
 
 #### **Post-Integration Steps**
+
 ```bash
 # Install new dependencies
 npm install
@@ -71,6 +81,7 @@ cat docs/forge-patterns-integration.md
 ```
 
 #### **Code Implementation Example**
+
 ```typescript
 // src/gateway/index.ts
 import { CoreRouter } from '../patterns/mcp-gateway/routing/core-router';
@@ -88,6 +99,7 @@ app.use('/api/mcp/*', router.middleware);
 ### **Step 2: UIForge MCP Integration**
 
 #### **Manual Integration**
+
 ```bash
 # Navigate to UIForge MCP project
 cd /path/to/uiforge-mcp
@@ -103,12 +115,14 @@ rm -rf forge-patterns-temp
 ```
 
 #### **What Gets Integrated**
+
 - ✅ **MCP Server Patterns**: AI providers, templates, UI generation
 - ✅ **Shared Infrastructure**: Sleep architecture patterns
 - ✅ **Development Tools**: ESLint, Prettier, TypeScript
 - ✅ **Configuration**: Package.json, tsconfig.json
 
 #### **Post-Integration Steps**
+
 ```bash
 # Install new dependencies
 npm install
@@ -125,6 +139,7 @@ cat docs/forge-patterns-integration.md
 ```
 
 #### **Code Implementation Example**
+
 ```typescript
 // src/server/index.ts
 import { AIProviderManager } from '../patterns/mcp-servers/ai-providers/ai-provider-manager';
@@ -144,13 +159,14 @@ const response = await providerManager.generate(prompt, options);
 const rendered = await templateManager.renderTemplate('react-button', {
   componentName: 'SubmitButton',
   onClick: 'handleSubmit',
-  children: 'Submit',
+  children: 'Submit'
 });
 ```
 
 ### **Step 3: UIForge WebApp Integration**
 
 #### **Manual Integration**
+
 ```bash
 # Navigate to UIForge WebApp project
 cd /path/to/uiforge-webapp
@@ -166,11 +182,13 @@ rm -rf forge-patterns-temp
 ```
 
 #### **What Gets Integrated**
+
 - ✅ **UI/UX Patterns**: Code quality, feature toggles
 - ✅ **Development Tools**: ESLint, Prettier, TypeScript
 - ✅ **Configuration**: Package.json, Next.js config
 
 #### **Post-Integration Steps**
+
 ```bash
 # Install new dependencies
 npm install
@@ -183,6 +201,7 @@ cat docs/forge-patterns-integration.md
 ```
 
 #### **Code Implementation Example**
+
 ```typescript
 // components/NewDashboard.tsx
 import { useFeatureToggle } from '../patterns/feature-toggles/libraries/nodejs';
@@ -224,6 +243,7 @@ export default async function handler(req, res) {
 ### **Environment Variables**
 
 #### **For MCP Gateway**
+
 ```bash
 # .env
 OPENAI_API_KEY=your_openai_api_key
@@ -233,6 +253,7 @@ CACHE_TTL=300000
 ```
 
 #### **For UIForge MCP**
+
 ```bash
 # .env
 OPENAI_API_KEY=your_openai_api_key
@@ -242,6 +263,7 @@ AI_PROVIDER_DEFAULT=openai
 ```
 
 #### **For UIForge WebApp**
+
 ```bash
 # .env.local
 NEXT_PUBLIC_FEATURE_TOGGLE_API_URL=http://localhost:3000/api/feature-toggles
@@ -250,7 +272,8 @@ NEXT_PUBLIC_AI_SEARCH_API_URL=http://localhost:3001/api/ai-search
 
 ### **Package.json Updates**
 
-The integration scripts automatically update `package.json` with Forge Patterns dependencies:
+The integration scripts automatically update `package.json` with Forge Patterns
+dependencies:
 
 ```json
 {
@@ -280,6 +303,7 @@ The integration scripts automatically update `package.json` with Forge Patterns 
 ## 🚀 **Development Workflow**
 
 ### **1. Validation**
+
 ```bash
 # Run comprehensive validation
 npm run test
@@ -291,6 +315,7 @@ npm run test
 ```
 
 ### **2. Development**
+
 ```bash
 # Start development server
 npm run dev
@@ -303,6 +328,7 @@ npm start
 ```
 
 ### **3. Quality Gates**
+
 - **Pre-commit hooks**: Automatic linting and formatting
 - **CI/CD**: GitHub Actions validation
 - **Pull requests**: Automated quality checks
@@ -310,6 +336,7 @@ npm start
 ## 🔧 **Common Integration Patterns**
 
 ### **1. Express.js Integration**
+
 ```typescript
 import express from 'express';
 import { CoreRouter } from './patterns/mcp-gateway/routing/core-router';
@@ -323,26 +350,29 @@ app.use('/api/mcp/*', router.middleware);
 ```
 
 ### **2. Next.js Integration**
+
 ```typescript
 // next.config.js
 const nextConfig = {
   eslint: {
-    extends: ['./patterns/code-quality/eslint/base.config.js'],
+    extends: ['./patterns/code-quality/eslint/base.config.js']
   },
   prettier: {
-    './patterns/**/*.{js,jsx,ts,tsx}': './patterns/code-quality/prettier/base.config.js',
-  },
+    './patterns/**/*.{js,jsx,ts,tsx}':
+      './patterns/code-quality/prettier/base.config.js'
+  }
 };
 ```
 
 ### **3. React Integration**
+
 ```typescript
 // Feature toggle hook
 import { useFeatureToggle } from '../patterns/feature-toggles/libraries/nodejs';
 
 const MyComponent = () => {
   const { isEnabled } = useFeatureToggle('new-feature');
-  
+
   return isEnabled ? <NewFeature /> : <LegacyFeature />;
 };
 ```
@@ -350,6 +380,7 @@ const MyComponent = () => {
 ## 📊 **Validation and Testing**
 
 ### **Integration Validation**
+
 ```bash
 # Validate all integrations
 npm run test
@@ -360,6 +391,7 @@ npm run validate
 ```
 
 ### **Pattern Validation**
+
 ```bash
 # Validate MCP Gateway patterns
 curl -X GET http://localhost:3000/api/mcp/health
@@ -378,6 +410,7 @@ curl -X GET http://localhost:3002/api/feature-toggles
 ### **Common Issues**
 
 #### **Dependency Conflicts**
+
 ```bash
 # Clear npm cache
 npm cache clean --force
@@ -388,6 +421,7 @@ npm install
 ```
 
 #### **TypeScript Errors**
+
 ```bash
 # Check TypeScript configuration
 npx tsc --noEmit
@@ -397,6 +431,7 @@ npm install @types/node --save-dev
 ```
 
 #### **Linting Errors**
+
 ```bash
 # Auto-fix linting issues
 npm run lint
@@ -408,12 +443,14 @@ npx eslint path/to/file.js
 ### **Pattern Issues**
 
 #### **Import Errors**
+
 ```typescript
 // Use correct import paths
 import { CoreRouter } from '../patterns/mcp-gateway/routing/core-router';
 ```
 
 #### **Configuration Issues**
+
 ```bash
 # Check configuration files
 cat .eslintrc.js
@@ -422,6 +459,7 @@ cat package.json
 ```
 
 #### **Feature Toggle Issues**
+
 ```bash
 # Check feature toggle configuration
 curl http://localhost:3000/api/feature-toggles
@@ -433,16 +471,19 @@ console.log(featureToggleManager.getFeatureStatus('feature-name'));
 ## 📚 **Documentation and Resources**
 
 ### **Integration Documentation**
+
 - `docs/forge-patterns-integration.md` (per project)
 - `examples/` (integration examples)
 - `patterns/` (pattern documentation)
 
 ### **Forge Patterns Documentation**
+
 - [Main Documentation](https://github.com/LucasSantana-Dev/forge-patterns)
 - [Pattern Library](https://github.com/LucasSantana-Dev/forge-patterns/tree/main/patterns)
 - [Development Guide](https://github.com/LucasSantana-Dev/forge-patterns/tree/main/docs)
 
 ### **Support and Community**
+
 - [GitHub Issues](https://github.com/LucasSantana-Dev/forge-patterns/issues)
 - [Discussions](https://github.com/LucasSantana-Dev/forge-patterns/discussions)
 - [Wiki](https://github.com/LucasSantana-Dev/forge-patterns/wiki)
@@ -450,6 +491,7 @@ console.log(featureToggleManager.getFeatureStatus('feature-name'));
 ## 🎯 **Success Criteria**
 
 ### **✅ Integration Success Indicators**
+
 - All validation scripts pass
 - Patterns are correctly imported
 - Examples compile and run
@@ -457,6 +499,7 @@ console.log(featureToggleManager.getFeatureStatus('feature-name'));
 - Performance metrics are working
 
 ### **✅ Production Readiness**
+
 - Security headers are applied
 - Rate limiting is active
 - Caching is configured
@@ -464,6 +507,7 @@ console.log(featureToggleManager.getFeatureStatus('feature-name'));
 - Monitoring is operational
 
 ### **✅ Developer Experience**
+
 - Zero configuration required
 - IntelliSense working
 - Auto-formatting active
@@ -472,11 +516,13 @@ console.log(featureToggleManager.getFeatureStatus('feature-name'));
 
 ## 🎉 **Conclusion**
 
-Forge Patterns v1.0.0 is now ready for integration across all Forge projects! The automated integration scripts make it simple to get started with:
+Forge Patterns v1.0.0 is now ready for integration across all Forge projects!
+The automated integration scripts make it simple to get started with:
 
 - **Zero Configuration**: Clone and run the integration script
 - **Professional Development**: Automated quality gates and validation
 - **Production Ready**: Security, performance, and monitoring built-in
 - **Comprehensive Coverage**: All essential patterns included
 
-**Start integrating today to leverage the power of Forge Patterns across the Forge ecosystem!** 🚀
+**Start integrating today to leverage the power of Forge Patterns across the
+Forge ecosystem!** 🚀

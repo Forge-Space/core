@@ -12,7 +12,8 @@ export const TOOLS = [
       properties: {
         project: {
           type: 'string',
-          description: 'Project slug to retrieve context for (e.g. forge-patterns, uiforge-webapp, uiforge-mcp, mcp-gateway)'
+          description:
+            'Project slug to retrieve context for (e.g. forge-patterns, uiforge-webapp, uiforge-mcp, mcp-gateway)'
         }
       },
       required: ['project']
@@ -30,7 +31,8 @@ export const TOOLS = [
       properties: {
         project: {
           type: 'string',
-          description: 'Project slug (e.g. forge-patterns, uiforge-webapp, uiforge-mcp, mcp-gateway). Use a short kebab-case identifier for new projects.'
+          description:
+            'Project slug (e.g. forge-patterns, uiforge-webapp, uiforge-mcp, mcp-gateway). Use a short kebab-case identifier for new projects.'
         },
         title: {
           type: 'string',
@@ -42,7 +44,8 @@ export const TOOLS = [
         },
         content: {
           type: 'string',
-          description: 'Full markdown content of the project context document. This is the complete source of truth.'
+          description:
+            'Full markdown content of the project context document. This is the complete source of truth.'
         }
       },
       required: ['project', 'title', 'description', 'content']
@@ -64,10 +67,12 @@ export function handleGetProjectContext(args: Record<string, unknown>): string {
   if (!project) throw new Error('Missing required argument: project');
 
   if (!projectExists(project)) {
-    const available = listProjects().map((p) => p.project).join(', ');
+    const available = listProjects()
+      .map(p => p.project)
+      .join(', ');
     throw new Error(
       `No context found for project "${project}". ` +
-      `Available projects: ${available || '(none yet — use update_project_context to add one)'}`
+        `Available projects: ${available || '(none yet — use update_project_context to add one)'}`
     );
   }
 
@@ -102,7 +107,7 @@ export function handleListProjects(): string {
     return '# UIForge Context Store\n\nNo projects registered yet. Use `update_project_context` to add one.';
   }
   const lines = projects.map(
-    (p) => `- **${p.project}** — ${p.description}\n  _Last updated: ${p.updatedAt}_`
+    p => `- **${p.project}** — ${p.description}\n  _Last updated: ${p.updatedAt}_`
   );
   return `# UIForge Context Store\n\n${lines.join('\n')}`;
 }

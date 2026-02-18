@@ -4,8 +4,10 @@
 
 ### 🎯 Project Overview
 
-- [Project Context](project/PROJECT_CONTEXT.MD) - Complete project guide and context
-- [Getting Started](project/getting-started.md) - Quick start guide for new users
+- [Project Context](project/PROJECT_CONTEXT.MD) - Complete project guide and
+  context
+- [Getting Started](project/getting-started.md) - Quick start guide for new
+  users
 
 ### 🏗️ Architecture
 
@@ -36,14 +38,17 @@
 
 ### 🔧 Pattern Documentation
 
-- [UI/UX Development Patterns](patterns/ui-ux-development/) - Web application patterns
+- [UI/UX Development Patterns](patterns/ui-ux-development/) - Web application
+  patterns
 - [MCP Gateway Patterns](patterns/mcp-gateway/) - Gateway architecture patterns
 - [MCP Server Patterns](patterns/mcp-servers/) - AI-powered server patterns
-- [Shared Infrastructure Patterns](patterns/shared-infrastructure/) - Common infrastructure patterns
+- [Shared Infrastructure Patterns](patterns/shared-infrastructure/) - Common
+  infrastructure patterns
 
 ### 📦 Release History
 
-- [v1.0.0 Release](archive/implementation-summaries/RELEASE_V1.0.0.md) - Initial release
+- [v1.0.0 Release](archive/implementation-summaries/RELEASE_V1.0.0.md) - Initial
+  release
 
 ## 🚀 Quick Navigation
 
@@ -57,9 +62,12 @@
 
 ### For MCP Developers
 
-1. **Gateway Architecture**: [Gateway Central Hub](architecture-decisions/ADR-002-gateway-central-hub.md)
-2. **Server Design**: [MCP Server Design](architecture-decisions/ADR-003-mcp-server-design.md)
-3. **Sleep Architecture**: See `../patterns/shared-infrastructure/sleep-architecture/`
+1. **Gateway Architecture**:
+   [Gateway Central Hub](architecture-decisions/ADR-002-gateway-central-hub.md)
+2. **Server Design**:
+   [MCP Server Design](architecture-decisions/ADR-003-mcp-server-design.md)
+3. **Sleep Architecture**: See
+   `../patterns/shared-infrastructure/sleep-architecture/`
 4. **Logging & Observability**: See `../patterns/shared-infrastructure/logger/`
 
 ### For Project Managers
@@ -107,9 +115,12 @@
 
 ### Integrating MCP Services?
 
-1. Review [Gateway Architecture](architecture-decisions/ADR-002-gateway-central-hub.md)
-2. Implement [Server Design](architecture-decisions/ADR-003-mcp-server-design.md)
-3. Add observability with the [Logger Module](../patterns/shared-infrastructure/logger/README.md)
+1. Review
+   [Gateway Architecture](architecture-decisions/ADR-002-gateway-central-hub.md)
+2. Implement
+   [Server Design](architecture-decisions/ADR-003-mcp-server-design.md)
+3. Add observability with the
+   [Logger Module](../patterns/shared-infrastructure/logger/README.md)
 
 ## 🔍 Search & Discovery
 

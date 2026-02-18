@@ -64,10 +64,8 @@ class AdvancedFeatureToggles {
         await this.loadABTestConfigurations();
       }
 
-       
       console.log(`Advanced Feature Toggles initialized for ${this.options.appName}`);
     } catch (error) {
-       
       console.error('Failed to initialize Advanced Feature Toggles:', error);
       throw error;
     }
@@ -157,7 +155,6 @@ class AdvancedFeatureToggles {
     abTest.isActive = true;
     abTest.startDate = new Date();
 
-     
     console.log(`A/B test started for feature: ${featureName}`);
     return abTest;
   }
@@ -177,9 +174,8 @@ class AdvancedFeatureToggles {
     const results = this.generateABTestResults(abTest);
     abTest.results = results;
 
-     
     console.log(`A/B test stopped for feature: ${featureName}`);
-     
+
     console.log('Results:', results);
 
     return results;
@@ -247,7 +243,6 @@ class AdvancedFeatureToggles {
     strategy.isActive = true;
     strategy.currentPhase = 0;
 
-     
     console.log(`Rollout strategy started for feature: ${featureName}`);
     return this.executeRolloutPhase(strategy);
   }
@@ -407,7 +402,7 @@ class AdvancedFeatureToggles {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
       const char = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
+      hash = (hash << 5) - hash + char;
       hash = hash & hash; // Convert to 32-bit integer
     }
     return hash;
@@ -463,7 +458,6 @@ class AdvancedFeatureToggles {
           timestamp
         });
       } catch (error) {
-         
         console.error('Analytics callback error:', error);
       }
     });
@@ -580,7 +574,9 @@ class AdvancedFeatureToggles {
       memoryUsage: process.memoryUsage(),
       activeFeatures: this.metrics.featureUsage.size,
       activeABTests: Array.from(this.abTests.values()).filter(test => test.isActive).length,
-      activeRollouts: Array.from(this.rolloutStrategies.values()).filter(strategy => strategy.isActive).length
+      activeRollouts: Array.from(this.rolloutStrategies.values()).filter(
+        strategy => strategy.isActive
+      ).length
     };
 
     this.metrics.performanceMetrics.set(Date.now(), metrics);
@@ -588,7 +584,9 @@ class AdvancedFeatureToggles {
     // Keep only last 100 data points
     if (this.metrics.performanceMetrics.size > DEFAULT_PERFORMANCE_LIMIT) {
       const keys = Array.from(this.metrics.performanceMetrics.keys()).sort((a, b) => b - a);
-      keys.slice(DEFAULT_PERFORMANCE_LIMIT).forEach(key => this.metrics.performanceMetrics.delete(key));
+      keys
+        .slice(DEFAULT_PERFORMANCE_LIMIT)
+        .forEach(key => this.metrics.performanceMetrics.delete(key));
     }
   }
 
@@ -611,10 +609,10 @@ class AdvancedFeatureToggles {
 
   parseTimeRange(timeRange) {
     const units = {
-      'h': 60 * 60 * 1000,
-      'd': 24 * 60 * 60 * 1000,
-      'w': 7 * 24 * 60 * 60 * 1000,
-      'm': 60 * 1000
+      h: 60 * 60 * 1000,
+      d: 24 * 60 * 60 * 1000,
+      w: 7 * 24 * 60 * 60 * 1000,
+      m: 60 * 1000
     };
 
     const match = timeRange.match(/^(\d+)([hdwm])$/);
@@ -637,7 +635,9 @@ class AdvancedFeatureToggles {
 
   aggregateRolloutAnalytics(strategy) {
     return {
-      duration: strategy.isActive ? Date.now() - strategy.startDate : strategy.endDate - strategy.startDate,
+      duration: strategy.isActive
+        ? Date.now() - strategy.startDate
+        : strategy.endDate - strategy.startDate,
       progress: strategy.results.rolloutProgress,
       userImpact: strategy.results.userImpact,
       currentPhase: strategy.currentPhase,
@@ -648,7 +648,7 @@ class AdvancedFeatureToggles {
   calculateStatisticalSignificance(abTest) {
     // Simplified statistical significance calculation
     // In a real implementation, you'd use proper statistical tests
-    const {conversions} = abTest.results;
+    const { conversions } = abTest.results;
     const variants = Object.keys(conversions);
 
     if (variants.length < 2) {
@@ -683,7 +683,12 @@ class AdvancedFeatureToggles {
       const path = require('path');
 
       const configPath = path.join(__dirname, '../config/ab-tests.json');
-      if (await fs.access(configPath).then(() => true).catch(() => false)) {
+      if (
+        await fs
+          .access(configPath)
+          .then(() => true)
+          .catch(() => false)
+      ) {
         const config = await fs.readFile(configPath, 'utf8');
         const tests = JSON.parse(config);
 
@@ -692,7 +697,6 @@ class AdvancedFeatureToggles {
         }
       }
     } catch (error) {
-       
       console.log('No A/B test configurations found, using defaults');
     }
   }
