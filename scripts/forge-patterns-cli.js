@@ -52,7 +52,7 @@ program
     for (const [category, items] of Object.entries(grouped)) {
       console.log(chalk.bold.yellow(`  ${category}/`));
       for (const item of items) {
-        console.log(chalk.gray(`    ├── `) + chalk.white(item.name) + chalk.gray(` — ${item.description}`));
+        console.log(chalk.gray('    ├── ') + chalk.white(item.name) + chalk.gray(` — ${item.description}`));
       }
       console.log();
     }
@@ -148,7 +148,7 @@ program
     if (options.dryRun) {
       console.log(chalk.yellow('\n  [dry-run] No files were written.\n'));
     } else {
-      console.log(chalk.bold.green(`\n✅ Pattern applied successfully!\n`));
+      console.log(chalk.bold.green('\n✅ Pattern applied successfully!\n'));
       console.log(chalk.gray(`  Review the README at: patterns/${patternPath}/README.md\n`));
     }
   });
@@ -165,7 +165,7 @@ program
     const checks = [
       await checkNoSecrets(options.target),
       await checkDocumentation(options.target),
-      await checkVersioning(options.target),
+      await checkVersioning(options.target)
     ];
 
     let passed = 0;
@@ -223,7 +223,7 @@ async function discoverPatterns(categoryFilter) {
       category,
       name: category,
       path: category,
-      description: description.slice(0, 80) + (description.length > 80 ? '…' : ''),
+      description: description.slice(0, 80) + (description.length > 80 ? '…' : '')
     });
 
     // Also discover sub-patterns
@@ -244,7 +244,7 @@ async function discoverPatterns(categoryFilter) {
         category,
         name: entry,
         path: `${category}/${entry}`,
-        description: subDesc.slice(0, 80) + (subDesc.length > 80 ? '…' : ''),
+        description: subDesc.slice(0, 80) + (subDesc.length > 80 ? '…' : '')
       });
     }
   }
@@ -280,7 +280,7 @@ async function checkNoSecrets(targetDir) {
     /password\s*=\s*['"][^'"{{]+['"]/i,
     /api[_-]?key\s*=\s*['"][^'"{{]+['"]/i,
     /secret\s*=\s*['"][^'"{{]+['"]/i,
-    /token\s*=\s*['"][^'"{{]+['"]/i,
+    /token\s*=\s*['"][^'"{{]+['"]/i
   ];
 
   const violations = [];
@@ -307,7 +307,7 @@ async function checkNoSecrets(targetDir) {
     message: violations.length === 0
       ? 'No hardcoded secrets detected'
       : `${violations.length} file(s) may contain hardcoded secrets`,
-    details: violations.slice(0, 5),
+    details: violations.slice(0, 5)
   };
 }
 
@@ -336,7 +336,7 @@ async function checkDocumentation(targetDir) {
     message: missing.length === 0
       ? 'All pattern categories have README.md'
       : `${missing.length} pattern(s) missing README.md`,
-    details: missing,
+    details: missing
   };
 }
 
@@ -350,7 +350,7 @@ async function checkVersioning(targetDir) {
   let version = null;
   if (hasPkg) {
     const pkg = await fs.readJson(pkgPath);
-    version = pkg.version;
+    ({ version } = pkg);
   }
 
   const semverPattern = /^\d+\.\d+\.\d+$/;
@@ -361,7 +361,7 @@ async function checkVersioning(targetDir) {
     passed: validVersion && hasChangelog,
     message: validVersion && hasChangelog
       ? `Version ${version} with CHANGELOG.md present`
-      : `Missing: ${!validVersion ? 'valid semver version' : ''} ${!hasChangelog ? 'CHANGELOG.md' : ''}`.trim(),
+      : `Missing: ${!validVersion ? 'valid semver version' : ''} ${!hasChangelog ? 'CHANGELOG.md' : ''}`.trim()
   };
 }
 

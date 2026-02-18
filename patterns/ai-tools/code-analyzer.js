@@ -697,7 +697,7 @@ class AICodeAnalyzer {
     return maxDepth;
   }
 
-  calculateLineLength(content, threshold) {
+  calculateLineLength(content, _threshold) {
     const lines = content.split('\n');
     let maxLength = 0;
 
@@ -708,7 +708,7 @@ class AICodeAnalyzer {
     return maxLength;
   }
 
-  findLineNumber(match, pattern) {
+  findLineNumber(match, _pattern) {
     const lines = match.input.split('\n');
     for (let i = 0; i < lines.length; i++) {
       if (lines[i].includes(match[0])) {
