@@ -1,35 +1,13 @@
-# UIForge Patterns Documentation
+# Forge Patterns Documentation
 
 ## 📚 Documentation Structure
 
 ### 🎯 Project Overview
 
-- [Project Context](project/PROJECT_CONTEXT.MD) - Complete project guide and
-  context
-- [Getting Started](project/getting-started.md) - Quick start guide for new
-  users
+- [Project Context](project/PROJECT_CONTEXT.MD) - Complete project guide and context
+- [Getting Started](project/getting-started.md) - Quick start guide for new users
 
-### 📊 Implementation Reports
-
-- [All Issues Resolved](reports/ALL_ISSUES_RESOLVED.md) - Issue resolution
-  summary
-- [Complete Integration Summary](reports/COMPLETE_INTEGRATION_SUMMARY.md) -
-  Integration report
-- [Docker Standards Integration](reports/DOCKER_STANDARDS_INTEGRATION.md) -
-  Docker implementation
-- [Issues Fixed Summary](reports/ISSUES_FIXED_SUMMARY.md) - Issues summary
-- [Plans Integration Complete](reports/PLANS_INTEGRATION_COMPLETE.md) - Plans
-  integration
-- [Scalable Docker Implementation](reports/SCALABLE_DOCKER_COMPOSE_IMPLEMENTATION_COMPLETE.md) -
-  Docker scaling
-- [Documentation Organization Analysis](reports/DOCUMENTATION_ORGANIZATION_ANALYSIS.md) -
-  Documentation analysis
-- [Infrastructure Patterns Analysis](reports/INFRASTRUCTURE_PATTERNS_ANALYSIS.md) -
-  Infrastructure analysis
-- [Complete Project Analysis](reports/COMPLETE_PROJECT_ANALYSIS.md) - Full
-  project analysis
-
-### 🏗️ Architecture Patterns
+### 🏗️ Architecture
 
 - [Architecture Decisions](architecture-decisions/) - ADRs and design decisions
   - [Ecosystem Design](architecture-decisions/ADR-001-ecosystem-design.md)
@@ -37,6 +15,7 @@
   - [MCP Server Design](architecture-decisions/ADR-003-mcp-server-design.md)
   - [Webapp Architecture](architecture-decisions/ADR-004-webapp-architecture.md)
   - [Integration Patterns](architecture-decisions/ADR-005-integration-patterns.md)
+  - [Centralized Feature Toggles](architecture-decisions/ADR-006-centralized-feature-toggles.md)
 - [Ecosystem Overview](ecosystem/) - System architecture and integration
   - [Architecture](ecosystem/ARCHITECTURE.md)
   - [Integration Guide](ecosystem/INTEGRATION_GUIDE.md)
@@ -46,6 +25,8 @@
 
 - [User Guides](guides/) - Deployment and user journey guides
   - [Deployment Playbook](guides/DEPLOYMENT_PLAYBOOK.md)
+  - [Developer Onboarding](guides/DEVELOPER_ONBOARDING.md)
+  - [Troubleshooting Guide](guides/TROUBLESHOOTING_GUIDE.md)
   - [User Journey](guides/USER_JOURNEY.md)
 - [Development Standards](standards/) - Coding and security standards
   - [Development Standards](standards/DEVELOPMENT.md)
@@ -55,15 +36,14 @@
 
 ### 🔧 Pattern Documentation
 
-- [UI/UX Development Patterns](patterns/ui-ux-development/) - Web application
-  patterns
-  - [Enhanced Script Formatting](patterns/ui-ux-development/ENHANCED_SCRIPT_FORMATTING.md)
-  - [Terraform Kubernetes Cost Monitoring](patterns/ui-ux-development/TERRAFORM_KUBERNETES_COST_MONITORING.md)
-  - [Validation Report](patterns/ui-ux-development/VALIDATION_REPORT.md)
+- [UI/UX Development Patterns](patterns/ui-ux-development/) - Web application patterns
 - [MCP Gateway Patterns](patterns/mcp-gateway/) - Gateway architecture patterns
 - [MCP Server Patterns](patterns/mcp-servers/) - AI-powered server patterns
-- [Shared Infrastructure Patterns](patterns/shared-infrastructure/) - Common
-  infrastructure patterns
+- [Shared Infrastructure Patterns](patterns/shared-infrastructure/) - Common infrastructure patterns
+
+### 📦 Release History
+
+- [v1.0.0 Release](archive/implementation-summaries/RELEASE_V1.0.0.md) - Initial release
 
 ## 🚀 Quick Navigation
 
@@ -73,25 +53,20 @@
 2. **Code Quality**: See `../patterns/code-quality/`
 3. **Docker Patterns**: See `../patterns/docker/`
 4. **Cost Monitoring**: See `../patterns/cost/`
+5. **Logging**: See `../patterns/shared-infrastructure/logger/`
 
 ### For MCP Developers
 
-1. **Gateway Architecture**:
-   [Gateway Central Hub](architecture-decisions/ADR-002-gateway-central-hub.md)
-2. **Server Design**:
-   [MCP Server Design](architecture-decisions/ADR-003-mcp-server-design.md)
-3. **Docker Optimization**:
-   [Docker Optimization Lightweight MCP](../plans/docker-optimization-lightweight-mcp-c1f908.md)
-4. **Sleep Architecture**:
-   [Serverless MCP Sleep Architecture](../plans/serverless-mcp-sleep-architecture-c1f908.md)
+1. **Gateway Architecture**: [Gateway Central Hub](architecture-decisions/ADR-002-gateway-central-hub.md)
+2. **Server Design**: [MCP Server Design](architecture-decisions/ADR-003-mcp-server-design.md)
+3. **Sleep Architecture**: See `../patterns/shared-infrastructure/sleep-architecture/`
+4. **Logging & Observability**: See `../patterns/shared-infrastructure/logger/`
 
 ### For Project Managers
 
 1. **Project Overview**: [Project Context](project/PROJECT_CONTEXT.MD)
-2. **Integration Status**:
-   [Complete Integration Summary](reports/COMPLETE_INTEGRATION_SUMMARY.md)
-3. **Architecture**: [Ecosystem Overview](ecosystem/OVERVIEW.md)
-4. **Deployment**: [Deployment Playbook](guides/DEPLOYMENT_PLAYBOOK.md)
+2. **Architecture**: [Ecosystem Overview](ecosystem/OVERVIEW.md)
+3. **Deployment**: [Deployment Playbook](guides/DEPLOYMENT_PLAYBOOK.md)
 
 ## 📋 Pattern Categories
 
@@ -106,15 +81,13 @@
 
 - **Gateway Architecture**: Central authentication, routing, authority
 - **Server Design**: AI-powered UI generation patterns
-- **Docker Optimization**: Lightweight MCP service optimization
 - **Sleep Architecture**: Serverless-like sleep/wake patterns
 
 ### 🔧 Shared Infrastructure Patterns
 
-- **Performance**: Sleep/wake architecture implementation
-- **Docker**: Multi-stage builds and optimization
-- **Resource Management**: Cost and resource optimization
-- **Integration**: How patterns work together
+- **Logger Module**: Structured logging, observability, distributed tracing
+- **Docker Optimization**: Multi-stage builds and lightweight containers
+- **Sleep Architecture**: Resource optimization patterns
 
 ## 🎯 Getting Started
 
@@ -134,31 +107,20 @@
 
 ### Integrating MCP Services?
 
-1. Review
-   [Gateway Architecture](architecture-decisions/ADR-002-gateway-central-hub.md)
-2. Implement
-   [Server Design](architecture-decisions/ADR-003-mcp-server-design.md)
-3. Apply
-   [Docker Optimization](../plans/docker-optimization-lightweight-mcp-c1f908.md)
-4. Use
-   [Sleep Architecture](../plans/serverless-mcp-sleep-architecture-c1f908.md)
-
-## 📊 Project Status
-
-- **Pattern Coverage**: 100% of UI + MCP development scenarios
-- **Documentation Coverage**: 100% for all patterns and workflows
-- **Integration Status**: Complete ecosystem integration
-- **Quality Standards**: 80% test coverage, automated validation
+1. Review [Gateway Architecture](architecture-decisions/ADR-002-gateway-central-hub.md)
+2. Implement [Server Design](architecture-decisions/ADR-003-mcp-server-design.md)
+3. Add observability with the [Logger Module](../patterns/shared-infrastructure/logger/README.md)
 
 ## 🔍 Search & Discovery
 
 Looking for something specific?
 
 - **UI Patterns**: Check `../patterns/code-quality/`, `../patterns/docker/`
-- **MCP Patterns**: Check `../plans/` for MCP-specific plans
+- **MCP Patterns**: Check `../patterns/mcp-gateway/`, `../patterns/mcp-servers/`
 - **Architecture**: Check `architecture-decisions/` and `ecosystem/`
 - **Guides**: Check `guides/` for step-by-step instructions
+- **Logging**: Check `../patterns/shared-infrastructure/logger/`
 
 ---
 
-_This documentation is continuously updated. Last updated: February 2026_
+_Last updated: February 2026_

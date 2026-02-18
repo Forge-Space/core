@@ -15,7 +15,8 @@ UIForge Patterns provides a comprehensive set of shared configurations, workflow
 - 🛡️ **Security First**: Built-in security scanning and validation
 - 🐳 **Docker Patterns**: Containerization and deployment patterns
 - 🎛️ **Centralized Feature Toggles**: Cross-project feature management with CLI control
-- 🚀 **High Performance**: Sub-100ms integration times and optimized patterns
+- � **Logger Module**: Comprehensive logging with observability and distributed tracing
+- �🚀 **High Performance**: Sub-100ms integration times and optimized patterns
 
 ## 📋 Projects Using These Patterns
 

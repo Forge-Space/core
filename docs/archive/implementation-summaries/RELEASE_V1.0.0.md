@@ -53,8 +53,8 @@ patterns/
 ├── docker/            # ✅ High-efficiency Docker standards
 ├── cost/              # ✅ Cost monitoring and optimization
 ├── feature-toggles/   # ✅ Feature flag management
-├── kubernetes/        # ✅ Kubernetes deployment patterns
-└── terraform/         # ✅ Infrastructure as code
+├── terraform/         # ✅ Infrastructure as code
+└── [Other patterns]   # ✅ Additional development patterns
 ```
 
 ## 🎯 **Key Features**

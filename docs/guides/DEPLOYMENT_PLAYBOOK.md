@@ -126,29 +126,9 @@ services:
       - LOG_LEVEL=info
 ```
 
-**Kubernetes (Large Scale):**
+**Infrastructure as Code (Large Scale):**
 
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: uiforge-gateway
-spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      app: uiforge-gateway
-  template:
-    metadata:
-      labels:
-        app: uiforge-gateway
-    spec:
-      containers:
-        - name: gateway
-          image: uiforge/gateway:latest
-          ports:
-            - containerPort: 8080
-```
+~~Kubernetes patterns have been removed from the project. Consider using Terraform for infrastructure management.~~
 
 ### Database Requirements
 

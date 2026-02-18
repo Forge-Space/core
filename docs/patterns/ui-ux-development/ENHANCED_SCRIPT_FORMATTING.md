@@ -66,11 +66,11 @@ export NC='\033[0m' # No Color
 - **Sections**: Environment Check, File Analysis, Optimization Patterns
 - **Features**: Resource summary boxes, cost recommendations
 
-### **3. Kubernetes Cost Monitor**
+### **3. Infrastructure Cost Monitor**
 
-- **Header**: ☸️ KUBERNETES COST MONITOR
-- **Sections**: Cluster Analysis, Resource Costs, Optimization
-- **Features**: Container resource analysis, scaling recommendations
+- **Header**: 🏗️ INFRASTRUCTURE COST MONITOR
+- **Sections**: Environment Check, File Analysis, Optimization Patterns
+- **Features**: Resource summary boxes, cost recommendations
 
 ### **4. Development Workflow Validator**
 
@@ -140,9 +140,6 @@ export NC='\033[0m' # No Color
 
 # Professional Terraform cost monitoring
 ./patterns/cost/scripts/terraform-cost-monitor.sh
-
-# Comprehensive Kubernetes cost analysis
-./patterns/cost/scripts/kubernetes-cost-monitor.sh
 
 # Complete development workflow validation
 ./patterns/cost/scripts/validate-development-workflow.sh

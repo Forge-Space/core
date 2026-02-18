@@ -1,0 +1,22 @@
+{
+  "enabled": true,
+  "endpoint": "https://analytics.example.com/events",
+  "batchSize": 100,
+  "flushInterval": 30000,
+  "timeout": 5000,
+  "retries": 3,
+  "tracking": {
+    "featureToggles": true,
+    "pluginEvents": true,
+    "systemErrors": true,
+    "userActions": true
+  },
+  "filters": {
+    "environments": ["production", "staging"],
+    "excludeEvents": ["debug", "trace"]
+  },
+  "sampling": {
+    "enabled": false,
+    "rate": 1.0
+  }
+}

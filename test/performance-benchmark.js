@@ -49,9 +49,9 @@ class PerformanceBenchmark {
 
       this.results.benchmarks.push({
         name: testName,
-        duration: duration,
-        memoryDelta: memoryDelta,
-        result: result,
+        duration,
+        memoryDelta,
+        result,
         status: 'passed'
       });
 
@@ -67,7 +67,7 @@ class PerformanceBenchmark {
 
       this.results.benchmarks.push({
         name: testName,
-        duration: duration,
+        duration,
         error: error.message,
         status: 'failed'
       });
@@ -290,7 +290,7 @@ class PerformanceBenchmark {
       const report = await this.generateReport();
 
       this.log('=' .repeat(60));
-      this.log(`📊 Benchmark Summary:`);
+      this.log('📊 Benchmark Summary:');
       this.log(`  Total Tests: ${report.summary.totalTests}`);
       this.log(`  Passed: ${report.summary.passed}`);
       this.log(`  Failed: ${report.summary.failed}`);

@@ -28,10 +28,10 @@ export TERRAFORM_HEADER='
 ║              Infrastructure as Code Cost Analysis             ║
 ╚══════════════════════════════════════════════════════════════╝'
 
-export KUBERNETES_HEADER='
+export INFRASTRUCTURE_HEADER='
 ╔══════════════════════════════════════════════════════════════╗
-║                  ☸️ KUBERNETES COST MONITOR                  ║
-║              Container Orchestration Cost Analysis          ║
+║                🏗️ INFRASTRUCTURE COST MONITOR                ║
+║              Infrastructure Cost Analysis                 ║
 ╚══════════════════════════════════════════════════════════════╝'
 
 export FREE_TIER_HEADER='
@@ -143,15 +143,15 @@ draw_box() {
     local title=$1
     local content=$2
     local width=60
-    
+
     echo "${BOX_TOP_LEFT}$(printf "%*s" $width | tr ' ' "$BOX_HORIZONTAL")${BOX_TOP_RIGHT}"
     printf "${BOX_VERTICAL}%*s%s%*s${BOX_VERTICAL}\n" $((($width - ${#title}) / 2)) "" "$title" $((($width - ${#title}) / 2)) ""
     echo "${BOX_T_RIGHT}$(printf "%*s" $width | tr ' ' "$BOX_HORIZONTAL")${BOX_T_LEFT}"
-    
+
     while IFS= read -r line; do
         printf "${BOX_VERTICAL} %-*s ${BOX_VERTICAL}\n" $((width - 2)) "$line"
     done <<< "$content"
-    
+
     echo "${BOX_BOTTOM_LEFT}$(printf "%*s" $width | tr ' ' "$BOX_HORIZONTAL")${BOX_BOTTOM_RIGHT}"
 }
 
@@ -159,7 +159,7 @@ draw_box() {
 show_status() {
     local status=$1
     local message=$2
-    
+
     case $status in
         "success")
             echo -e "${GREEN}${ICON_SUCCESS} $message${NC}"
@@ -184,7 +184,7 @@ print_list_item() {
     local icon=$1
     local item=$2
     local color=$3
-    
+
     case $color in
         "green")
             echo -e "${GREEN}$icon $item${NC}"
@@ -209,7 +209,7 @@ print_centered() {
     local text=$1
     local width=${2:-60}
     local padding=$((($width - ${#text}) / 2))
-    
+
     printf "%*s%s%*s\n" $padding "" "$text" $padding ""
 }
 
@@ -217,7 +217,7 @@ print_centered() {
 print_banner() {
     local text=$1
     local color=${2:-CYAN}
-    
+
     echo "$DOUBLE_SEPARATOR"
     print_centered "$text" 60
     echo "$DOUBLE_SEPARATOR"

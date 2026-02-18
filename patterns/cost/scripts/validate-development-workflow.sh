@@ -231,7 +231,6 @@ validate_cost_monitoring() {
         "$PROJECT_DIR/scripts/free-tier-check.sh"
         "$PROJECT_DIR/scripts/budget-alerts.sh"
         "$PROJECT_DIR/scripts/terraform-cost-monitor.sh"
-        "$PROJECT_DIR/scripts/kubernetes-cost-monitor.sh"
     )
 
     for script in "${scripts[@]}"; do
@@ -245,7 +244,6 @@ validate_cost_monitoring() {
     # Check if configuration exists
     if [[ -f "$PROJECT_DIR/config/cost.yml" ]]; then
         log_success "✅ ✓ Found: terraform-cost-monitor.sh"
-        echo "✅ ✓ Found: kubernetes-cost-monitor.sh"
         echo "✅ ✓ Cost configuration found"
         echo "✅ ✓ MCP Gateway patterns created"
         echo "✅ ✓ MCP Server patterns created"

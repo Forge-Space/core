@@ -166,7 +166,7 @@ class AdvancedFeatureToggles {
     abTest.results = results;
     
     console.log(`A/B test stopped for feature: ${featureName}`);
-    console.log(`Results:`, results);
+    console.log('Results:', results);
     
     return results;
   }
@@ -632,7 +632,7 @@ class AdvancedFeatureToggles {
   calculateStatisticalSignificance(abTest) {
     // Simplified statistical significance calculation
     // In a real implementation, you'd use proper statistical tests
-    const conversions = abTest.results.conversions;
+    const {conversions} = abTest.results;
     const variants = Object.keys(conversions);
     
     if (variants.length < 2) {
