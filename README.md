@@ -60,6 +60,7 @@ npx forge-patterns integrate --project=uiforge-webapp
 ## 📁 Repository Structure
 
 ```bash
+
 uiforge-patterns/
 ├── .github/
 │   ├── workflows/          # CI/CD workflow templates
@@ -117,6 +118,7 @@ forge-features status --project=mcp-gateway
 ```
 
 **Features**:
+
 - Global and project-specific feature namespaces
 - CLI tool for feature management
 - Real-time feature updates
@@ -125,6 +127,7 @@ forge-features status --project=mcp-gateway
 ### Code Quality Patterns
 
 #### ESLint Configuration
+
 ```javascript
 // Base ESLint config for TypeScript projects
 module.exports = {
