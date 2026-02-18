@@ -11,10 +11,7 @@ import {
 import {
   ConsoleTransport,
   JsonTransport,
-  FileTransport,
-  RemoteTransport,
-  FilteredTransport,
-  MultiTransport
+  FileTransport
 } from './transports.js';
 
 /**
@@ -192,7 +189,7 @@ export class Logger implements ILogger {
         }
       }
       return true;
-    } catch (error) {
+    } catch {
       return false;
     }
   }

@@ -15,8 +15,8 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "lint": "eslint . --ext .js,.ts --fix",
-    "lint:check": "eslint . --ext .js,.ts",
+    "lint": "eslint . --fix",
+    "lint:check": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "validate": "npm run lint:check && npm run format:check && npm run test",
@@ -24,7 +24,8 @@
     "test:plugins": "node test/plugin-system-validation.js",
     "test:feature-toggles": "node test/feature-toggle-validation.js",
     "test:integration": "node test/cross-project-integration.js",
-    "test:all": "npm run test && npm run test:plugins && npm run test:feature-toggles",
+    "test:shared-constants": "node test/shared-constants-validation.js",
+    "test:all": "npm run test && npm run test:plugins && npm run test:feature-toggles && npm run test:shared-constants",
     "prepare": "npm run build && husky install",
     "pre-commit": "npm run lint && npm run format && npm run test && .husky/pre-commit-backup-check",
     "prepack": "npm run build",
@@ -52,17 +53,22 @@
     "semver": "^7.5.4"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.2",
     "@types/fs-extra": "^11.0.1",
     "@types/node": "^25.2.3",
     "@types/semver": "^7.5.0",
-    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.56.0",
     "@typescript-eslint/parser": "^8.56.0",
-    "eslint": "^10.0.0",
+    "eslint": "^9.0.0",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-import-resolver-typescript": "^3.10.1",
+    "eslint-plugin-import": "^2.32.0",
+    "globals": "^17.3.0",
     "husky": "^8.0.3",
     "lint-staged": "^16.2.7",
-    "prettier": "^3.0.0",
-    "typescript": "^5.1.6"
+    "prettier": "^3.8.1",
+    "typescript": "^5.1.6",
+    "typescript-eslint": "^8.56.0"
   },
   "lint-staged": {
     "*.{js,ts}": [
@@ -104,7 +110,7 @@
   },
   "homepage": "https://github.com/LucasSantana-Dev/uiforge-patterns#readme",
   "engines": {
-    "node": ">=18.0.0",
+    "node": ">=20.11.0",
     "npm": ">=9.0.0"
   }
 }

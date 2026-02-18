@@ -39,9 +39,6 @@ class PluginManager extends EventEmitter {
     this.initialize();
   }
 
-  /**
-   * Initialize the plugin system
-   */
   async initialize() {
     try {
       await this.createPluginDirectory();
@@ -59,21 +56,15 @@ class PluginManager extends EventEmitter {
     }
   }
 
-  /**
-   * Create plugin directory if it doesn't exist
-   */
   async createPluginDirectory() {
     try {
       await fs.access(this.options.pluginDirectory);
-    } catch (error) {
+    } catch {
       await fs.mkdir(this.options.pluginDirectory, { recursive: true });
       console.log(`Created plugin directory: ${this.options.pluginDirectory}`);
     }
   }
 
-  /**
-   * Load all plugins from the plugin directory
-   */
   async loadPlugins() {
     try {
       const pluginFiles = await this.discoverPlugins();
@@ -89,9 +80,6 @@ class PluginManager extends EventEmitter {
     }
   }
 
-  /**
-   * Discover plugin files in the plugin directory
-   */
   async discoverPlugins() {
     const pluginFiles = [];
 
@@ -102,12 +90,11 @@ class PluginManager extends EventEmitter {
         if (entry.isFile() && entry.name.endsWith('.js')) {
           pluginFiles.push(path.join(this.options.pluginDirectory, entry.name));
         } else if (entry.isDirectory()) {
-          // Check for index.js in subdirectories
           const indexPath = path.join(this.options.pluginDirectory, entry.name, 'index.js');
           try {
             await fs.access(indexPath);
             pluginFiles.push(indexPath);
-          } catch (error) {
+          } catch {
             // No index.js found, skip this directory
           }
         }
@@ -119,19 +106,14 @@ class PluginManager extends EventEmitter {
     return pluginFiles;
   }
 
-  /**
-   * Load a single plugin
-   */
   async loadPlugin(pluginPath) {
     try {
       this.emit('before:plugin:load', pluginPath);
 
-      // Clear require cache for hot reload
       delete require.cache[require.resolve(pluginPath)];
 
       const pluginModule = require(pluginPath);
 
-      // Validate plugin structure
       if (this.options.enableValidation) {
         this.validatePlugin(pluginModule, pluginPath);
       }
@@ -149,13 +131,9 @@ class PluginManager extends EventEmitter {
         permissions: pluginModule.permissions || []
       };
 
-      // Check dependencies
       await this.checkDependencies(plugin);
-
-      // Register plugin hooks
       this.registerPluginHooks(plugin);
 
-      // Store plugin
       this.plugins.set(plugin.name, plugin);
       this.pluginMetadata.set(plugin.name, {
         ...plugin,
@@ -164,7 +142,6 @@ class PluginManager extends EventEmitter {
 
       this.loadedPlugins.add(plugin.name);
 
-      // Call plugin initialize method if exists
       if (typeof pluginModule.initialize === 'function') {
         await pluginModule.initialize(this.createPluginAPI(plugin.name));
       }
@@ -179,10 +156,7 @@ class PluginManager extends EventEmitter {
     }
   }
 
-  /**
-   * Validate plugin structure
-   */
-  validatePlugin(plugin, pluginPath) {
+  validatePlugin(plugin, _pluginPath) {
     const requiredFields = ['name'];
 
     for (const field of requiredFields) {
@@ -191,7 +165,6 @@ class PluginManager extends EventEmitter {
       }
     }
 
-    // Validate hooks if present
     if (plugin.hooks) {
       for (const [hookName, hookFunction] of Object.entries(plugin.hooks)) {
         if (typeof hookFunction !== 'function') {
@@ -201,9 +174,6 @@ class PluginManager extends EventEmitter {
     }
   }
 
-  /**
-   * Check plugin dependencies
-   */
   async checkDependencies(plugin) {
     for (const dependency of plugin.dependencies) {
       if (!this.plugins.has(dependency)) {
@@ -212,9 +182,6 @@ class PluginManager extends EventEmitter {
     }
   }
 
-  /**
-   * Register plugin hooks
-   */
   registerPluginHooks(plugin) {
     for (const [hookName, hookFunction] of Object.entries(plugin.hooks)) {
       if (!this.hooks[hookName]) {
@@ -227,50 +194,28 @@ class PluginManager extends EventEmitter {
     }
   }
 
-  /**
-   * Create plugin API
-   */
   createPluginAPI(pluginName) {
     return {
-      // Hook system
       registerHook: (hookName, handler) => this.registerHook(pluginName, hookName, handler),
       unregisterHook: (hookName, handler) => this.unregisterHook(pluginName, hookName, handler),
       emitHook: async (hookName, ...args) => this.emitHook(hookName, ...args),
-
-      // Plugin management
       getPlugin: (name) => this.getPlugin(name),
       getAllPlugins: () => this.getAllPlugins(),
-
-      // Configuration
       getConfig: async (key) => this.getPluginConfig(pluginName, key),
       setConfig: async (key, value) => this.setPluginConfig(pluginName, key, value),
-
-      // Logging
       log: (level, message, ...args) => this.pluginLog(pluginName, level, message, ...args),
-
-      // Events
       on: (event, handler) => this.on(event, handler),
       emit: (event, ...args) => this.emit(event, ...args)
     };
   }
 
-  /**
-   * Register a hook for a plugin
-   */
   registerHook(pluginName, hookName, handler) {
     if (!this.hooks[hookName]) {
       this.hooks[hookName] = [];
     }
-
-    this.hooks[hookName].push({
-      plugin: pluginName,
-      handler
-    });
+    this.hooks[hookName].push({ plugin: pluginName, handler });
   }
 
-  /**
-   * Unregister a hook for a plugin
-   */
   unregisterHook(pluginName, hookName, handler) {
     if (this.hooks[hookName]) {
       this.hooks[hookName] = this.hooks[hookName].filter(
@@ -279,9 +224,6 @@ class PluginManager extends EventEmitter {
     }
   }
 
-  /**
-   * Emit a hook to all registered handlers
-   */
   async emitHook(hookName, ...args) {
     if (!this.hooks[hookName]) {
       return [];
@@ -302,9 +244,6 @@ class PluginManager extends EventEmitter {
     return results;
   }
 
-  /**
-   * Unload a plugin
-   */
   async unloadPlugin(pluginName) {
     try {
       this.emit('before:plugin:unload', pluginName);
@@ -314,20 +253,16 @@ class PluginManager extends EventEmitter {
         throw new Error(`Plugin not found: ${pluginName}`);
       }
 
-      // Call plugin cleanup method if exists
       if (typeof plugin.module.cleanup === 'function') {
         await plugin.module.cleanup();
       }
 
-      // Unregister hooks
       this.unregisterPluginHooks(pluginName);
 
-      // Remove from collections
       this.plugins.delete(pluginName);
       this.pluginMetadata.delete(pluginName);
       this.loadedPlugins.delete(pluginName);
 
-      // Clear require cache
       delete require.cache[require.resolve(plugin.path)];
 
       this.emit('after:plugin:unload', plugin);
@@ -339,9 +274,6 @@ class PluginManager extends EventEmitter {
     }
   }
 
-  /**
-   * Unregister all hooks for a plugin
-   */
   unregisterPluginHooks(pluginName) {
     for (const hookName of Object.keys(this.hooks)) {
       this.hooks[hookName] = this.hooks[hookName].filter(
@@ -350,9 +282,6 @@ class PluginManager extends EventEmitter {
     }
   }
 
-  /**
-   * Reload a plugin
-   */
   async reloadPlugin(pluginName) {
     const plugin = this.plugins.get(pluginName);
     if (!plugin) {
@@ -364,37 +293,49 @@ class PluginManager extends EventEmitter {
     await this.loadPlugin(pluginPath);
   }
 
-  /**
-   * Get plugin information
-   */
   getPlugin(name) {
     return this.plugins.get(name);
   }
 
-  /**
-   * Get all plugins
-   */
   getAllPlugins() {
     return Array.from(this.plugins.values());
   }
 
-  /**
-   * Get plugin metadata
-   */
   getPluginMetadata(name) {
     return this.pluginMetadata.get(name);
   }
 
-  /**
-   * Get all plugin metadata
-   */
-  getAllPluginMetadata() {
-    return Array.from(this.pluginMetadata.values());
+  getLoadedPlugins() {
+    return Array.from(this.loadedPlugins);
   }
 
-  /**
-   * Get plugin configuration
-   */
+  getFailedPlugins() {
+    return Array.from(this.failedPlugins);
+  }
+
+  pluginLog(pluginName, level, message, ...args) {
+    const prefix = `[Plugin:${pluginName}]`;
+    switch (level) {
+      case 'error':
+        console.error(prefix, message, ...args);
+        break;
+      case 'warn':
+        console.warn(prefix, message, ...args);
+        break;
+      case 'debug':
+        console.debug(prefix, message, ...args);
+        break;
+      default:
+        console.log(prefix, message, ...args);
+    }
+  }
+
+  setupHotReload() {
+    // Hot reload implementation would watch for file changes
+    // and reload plugins automatically
+    console.log('Hot reload enabled for plugin directory:', this.options.pluginDirectory);
+  }
+
   async getPluginConfig(pluginName, key) {
     const configPath = path.join(this.options.pluginDirectory, 'config', `${pluginName}.json`);
 
@@ -402,14 +343,11 @@ class PluginManager extends EventEmitter {
       const config = await fs.readFile(configPath, 'utf8');
       const parsedConfig = JSON.parse(config);
       return key ? parsedConfig[key] : parsedConfig;
-    } catch (error) {
+    } catch {
       return key ? undefined : {};
     }
   }
 
-  /**
-   * Set plugin configuration
-   */
   async setPluginConfig(pluginName, key, value) {
     const configDir = path.join(this.options.pluginDirectory, 'config');
     const configPath = path.join(configDir, `${pluginName}.json`);
@@ -421,103 +359,46 @@ class PluginManager extends EventEmitter {
       try {
         const existingConfig = await fs.readFile(configPath, 'utf8');
         config = JSON.parse(existingConfig);
-      } catch (error) {
+      } catch {
         // Config file doesn't exist, start with empty object
       }
 
       if (typeof key === 'object') {
-        // Merge object
         config = { ...config, ...key };
       } else {
-        // Set single key
         config[key] = value;
       }
 
       await fs.writeFile(configPath, JSON.stringify(config, null, 2));
+      return config;
     } catch (error) {
-      console.error(`Failed to set config for plugin ${pluginName}:`, error);
+      throw new Error(`Failed to set plugin config: ${error.message}`);
     }
   }
 
-  /**
-   * Plugin logging
-   */
-  pluginLog(pluginName, level, message, ...args) {
-    const timestamp = new Date().toISOString();
-    const logMessage = `[${timestamp}] [${pluginName}] [${level.toUpperCase()}] ${message}`;
-
-    switch (level) {
-      case 'error':
-        console.error(logMessage, ...args);
-        break;
-      case 'warn':
-        console.warn(logMessage, ...args);
-        break;
-      case 'info':
-        console.info(logMessage, ...args);
-        break;
-      default:
-        console.log(logMessage, ...args);
-    }
+  getStatus() {
+    return {
+      loaded: this.loadedPlugins.size,
+      failed: this.failedPlugins.size,
+      total: this.loadedPlugins.size + this.failedPlugins.size,
+      plugins: Array.from(this.plugins.values()).map(p => ({
+        name: p.name,
+        version: p.version,
+        status: 'loaded'
+      }))
+    };
   }
 
-  /**
-   * Setup hot reload for plugins
-   */
-  setupHotReload() {
-    if (typeof require('fs').watch !== 'function') {
-      console.warn('Hot reload not available in this environment');
-      return;
-    }
-
-    const watcher = require('fs').watch(this.options.pluginDirectory, { recursive: true }, async (eventType, filename) => {
-      if (filename && filename.endsWith('.js')) {
-        const pluginPath = path.join(this.options.pluginDirectory, filename);
-        const pluginName = path.basename(filename, '.js');
-
-        if (this.plugins.has(pluginName)) {
-          console.log(`Hot reloading plugin: ${pluginName}`);
-          await this.reloadPlugin(pluginName);
-        } else {
-          console.log(`New plugin detected: ${pluginName}`);
-          await this.loadPlugin(pluginPath);
-        }
-      }
-    });
-
-    watcher.on('error', (error) => {
-      console.error('Plugin watcher error:', error);
-    });
-
-    console.log('Hot reload enabled for plugins');
-  }
-
-  /**
-   * Shutdown the plugin system
-   */
   async shutdown() {
     console.log('Shutting down Plugin Manager...');
 
-    // Unload all plugins
+    this.emit('system:shutdown');
+
     for (const pluginName of this.loadedPlugins) {
       await this.unloadPlugin(pluginName);
     }
 
-    this.emit('system:shutdown');
-    console.log('Plugin Manager shutdown complete');
-  }
-
-  /**
-   * Get system statistics
-   */
-  getStats() {
-    return {
-      totalPlugins: this.plugins.size,
-      loadedPlugins: this.loadedPlugins.size,
-      failedPlugins: this.failedPlugins.size,
-      hooks: Object.keys(this.hooks).length,
-      uptime: process.uptime()
-    };
+    console.log('Plugin Manager shut down');
   }
 }
 

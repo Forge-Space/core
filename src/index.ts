@@ -95,7 +95,7 @@ export class ForgePatterns {
     try {
       const patterns = this.getPatterns();
       return Object.keys(patterns).length > 0;
-    } catch (error) {
+    } catch {
       return false;
     }
   }
