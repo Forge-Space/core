@@ -8,9 +8,6 @@
 // Version information
 export const VERSION = '1.0.0';
 
-// Shared constants — centralised values from mcp-gateway, uiforge-mcp, UIForge
-export * from '../patterns/shared-constants/index.js';
-
 // Type definitions
 export interface ProjectConfig {
   name: string;
@@ -31,15 +28,17 @@ export function createProjectConfig(
       'feature-toggles': true,
       monitoring: true
     },
-    options: options ?? {}
+    options: options || {}
   };
 }
 
 export class ForgePatterns {
-  private static instance: ForgePatterns | undefined;
+  private static instance: ForgePatterns;
 
   static getInstance(): ForgePatterns {
-    ForgePatterns.instance ??= new ForgePatterns();
+    if (!ForgePatterns.instance) {
+      ForgePatterns.instance = new ForgePatterns();
+    }
     return ForgePatterns.instance;
   }
 
@@ -75,16 +74,14 @@ export class ForgePatterns {
    */
   getPatternPath(category: string, name: string): string {
     const patterns = this.getPatterns();
-    const categoryPatterns = patterns[category as keyof typeof patterns] as
-      | Record<string, string>
-      | undefined;
+    const categoryPatterns = patterns[category as keyof typeof patterns];
 
-    if (categoryPatterns === undefined) {
+    if (!categoryPatterns) {
       throw new Error(`Category not found: ${category}`);
     }
 
-    const patternPath = categoryPatterns[name];
-    if (patternPath === undefined) {
+    const patternPath = (categoryPatterns as Record<string, string>)[name];
+    if (!patternPath) {
       throw new Error(`Pattern not found: ${category}.${name}`);
     }
 
@@ -98,7 +95,7 @@ export class ForgePatterns {
     try {
       const patterns = this.getPatterns();
       return Object.keys(patterns).length > 0;
-    } catch {
+    } catch (_error) {
       return false;
     }
   }

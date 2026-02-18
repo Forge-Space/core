@@ -26,7 +26,9 @@ export class ConfigLoader {
     config.maxFiles = this.parseNumber(process.env.LOGGER_MAX_FILES, 5);
 
     // Feature flags
-    config.enableCorrelationIds = this.parseBoolean(process.env.LOGGER_ENABLE_CORRELATION || 'true');
+    config.enableCorrelationIds = this.parseBoolean(
+      process.env.LOGGER_ENABLE_CORRELATION || 'true'
+    );
     config.enableMetrics = this.parseBoolean(process.env.LOGGER_ENABLE_METRICS || 'true');
     config.enableTracing = this.parseBoolean(process.env.LOGGER_ENABLE_TRACING || 'false');
 
@@ -57,15 +59,22 @@ export class ConfigLoader {
 
   private static parseLogLevel(level?: string): LogLevel {
     if (!level) return LogLevel.INFO;
-    
+
     switch (level.toLowerCase()) {
-      case 'trace': return LogLevel.TRACE;
-      case 'debug': return LogLevel.DEBUG;
-      case 'info': return LogLevel.INFO;
-      case 'warn': return LogLevel.WARN;
-      case 'error': return LogLevel.ERROR;
-      case 'fatal': return LogLevel.FATAL;
-      default: return LogLevel.INFO;
+      case 'trace':
+        return LogLevel.TRACE;
+      case 'debug':
+        return LogLevel.DEBUG;
+      case 'info':
+        return LogLevel.INFO;
+      case 'warn':
+        return LogLevel.WARN;
+      case 'error':
+        return LogLevel.ERROR;
+      case 'fatal':
+        return LogLevel.FATAL;
+      default:
+        return LogLevel.INFO;
     }
   }
 
