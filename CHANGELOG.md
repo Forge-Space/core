@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **ESLint peer dependency conflict**: upgraded `@typescript-eslint/eslint-plugin` from `^6.0.0` to `^8.56.0` to match `@typescript-eslint/parser@^8.56.0` (same major version required)
+- **ESLint version incompatibility**: downgraded `eslint` from `^10.0.0` to `^9.0.0`; ESLint 10 dropped legacy `.eslintrc.*` config support entirely
+- **ESLint flat config migration**: replaced `.eslintrc.js` with `eslint.config.mjs` (ESLint 9 flat config format); added `@eslint/js` and `globals` dev dependencies
+- **ESLint scripts**: removed deprecated `--ext .js,.ts` flag from `lint` and `lint:check` scripts (flat config handles file matching)
+
 ### Added
 
 - **VS Code Extension stub** (`patterns/ide-extensions/vscode/`): Alpha scaffold for forge-patterns VS Code extension with command palette integration (`listPatterns`, `applyPattern`, `validateCompliance`), TypeScript entry point, and MCP context server integration docs
