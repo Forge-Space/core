@@ -26,8 +26,10 @@ func main() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
+
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default: $HOME/.myapp.yaml)")
 	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "enable verbose output")
+
 	if err := viper.BindPFlag("verbose", rootCmd.PersistentFlags().Lookup("verbose")); err != nil {
 		fmt.Fprintln(os.Stderr, "Error binding flag:", err)
 		os.Exit(1)
@@ -47,7 +49,9 @@ func initConfig() {
 		viper.SetConfigType("yaml")
 		viper.SetConfigName(".myapp")
 	}
+
 	viper.AutomaticEnv()
+
 	if err := viper.ReadInConfig(); err == nil {
 		if viper.GetBool("verbose") {
 			fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())

@@ -1,0 +1,6 @@
+{
+  "project": "mcp-gateway",
+  "title": "mcp-gateway Project Context",
+  "description": "Self-hosted MCP aggregation gateway consolidating multiple MCP servers into a single IDE connection point with intelligent tool routing and sleep/wake architecture.",
+  "updatedAt": "2026-02-18T00:00:00.000Z"
+}

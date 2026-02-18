@@ -1,4 +1,8 @@
-use axum::{routing::{get, post}, Router};
+use axum::{
+    routing::{get, post},
+    Router,
+};
+use std::net::SocketAddr;
 use tower_http::trace::TraceLayer;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
@@ -17,6 +21,7 @@ async fn main() {
         .init();
 
     let cfg = config::AppConfig::from_env().expect("Failed to load configuration");
+
     let app = Router::new()
         .route("/health", get(handlers::health::health_check))
         .route("/ready", get(handlers::health::readiness_check))
@@ -25,8 +30,12 @@ async fn main() {
         .route("/api/v1/users/:id", get(handlers::users::get_user))
         .layer(TraceLayer::new_for_http());
 
-    let addr = format!("{}:{}", cfg.host, cfg.port).parse().expect("Invalid address");
+    let addr: SocketAddr = format!("{}:{}", cfg.host, cfg.port)
+        .parse()
+        .expect("Invalid address");
+
     tracing::info!("Listening on {}", addr);
+
     let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
     axum::serve(listener, app).await.unwrap();
 }

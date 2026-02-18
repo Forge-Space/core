@@ -8,8 +8,11 @@ pub struct ApiResponse<T: Serialize> {
 }
 
 impl<T: Serialize> ApiResponse<T> {
-    pub fn ok(data: T) -> Self { Self { success: true, data: Some(data), message: None } }
-    pub fn error(msg: impl Into<String>) -> ApiResponse<()> {
-        ApiResponse { success: false, data: None, message: Some(msg.into()) }
+    pub fn ok(data: T) -> Self {
+        Self { success: true, data: Some(data), message: None }
+    }
+
+    pub fn error(message: impl Into<String>) -> ApiResponse<()> {
+        ApiResponse { success: false, data: None, message: Some(message.into()) }
     }
 }

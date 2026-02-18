@@ -26,7 +26,8 @@ public class GlobalExceptionHandler {
         detail.setType(URI.create("/errors/validation"));
         detail.setProperty("timestamp", Instant.now());
         detail.setProperty("errors", ex.getBindingResult().getFieldErrors().stream()
-            .map(e -> e.getField() + ": " + e.getDefaultMessage()).toList());
+            .map(e -> e.getField() + ": " + e.getDefaultMessage())
+            .toList());
         return detail;
     }
 

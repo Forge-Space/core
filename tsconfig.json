@@ -42,6 +42,7 @@
     "dist/",
     "build/",
     "coverage/",
+    "patterns/",
     "**/*.test.ts",
     "**/*.test.js",
     "**/*.spec.ts",

@@ -15,8 +15,9 @@ UIForge Patterns provides a comprehensive set of shared configurations, workflow
 - 🛡️ **Security First**: Built-in security scanning and validation
 - 🐳 **Docker Patterns**: Containerization and deployment patterns
 - 🎛️ **Centralized Feature Toggles**: Cross-project feature management with CLI control
-- � **Logger Module**: Comprehensive logging with observability and distributed tracing
-- �🚀 **High Performance**: Sub-100ms integration times and optimized patterns
+- 📡 **MCP Context Server**: Local stdio MCP server exposing all UIForge project context documents as resources
+- 📝 **Logger Module**: Comprehensive logging with observability and distributed tracing
+- 🚀 **High Performance**: Sub-100ms integration times and optimized patterns
 
 ## 📋 Projects Using These Patterns
 
@@ -33,6 +34,7 @@ For complete documentation, see our **[Documentation Hub](docs/README.md)** whic
 - **[Pattern Documentation](docs/patterns/)** - All pattern documentation
 - **[Architecture Decisions](docs/architecture-decisions/)** - System design decisions
 - **[User Guides](docs/guides/)** - Deployment and user journey guides
+- **[MCP Context Server](docs/guides/MCP_CONTEXT_SERVER.md)** - Setup and IDE integration for the UIForge context MCP server
 - **[Development Standards](docs/standards/)** - Coding and security standards
 
 ## 🚀 Quick Start

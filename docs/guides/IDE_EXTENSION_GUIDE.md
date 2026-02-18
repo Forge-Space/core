@@ -6,7 +6,13 @@ Setup guide for VS Code and JetBrains IDEs to get the best development experienc
 
 ### Recommended Extensions
 
-Install individually:
+Install the full recommended set with one command:
+
+```bash
+cat .vscode/extensions.json | jq -r '.recommendations[]' | xargs -I {} code --install-extension {}
+```
+
+Or install individually:
 
 ```bash
 # TypeScript / JavaScript
@@ -36,7 +42,9 @@ code --install-extension tamasfe.even-better-toml
 code --install-extension redhat.vscode-yaml
 ```
 
-### `.vscode/settings.json`
+### Workspace Settings
+
+Create `.vscode/settings.json` in your project:
 
 ```json
 {
@@ -46,22 +54,42 @@ code --install-extension redhat.vscode-yaml
     "source.organizeImports": "explicit"
   },
   "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "[go]": { "editor.defaultFormatter": "golang.go" },
-  "[rust]": { "editor.defaultFormatter": "rust-lang.rust-analyzer" },
-  "[java]": { "editor.defaultFormatter": "redhat.java" },
-  "go.lintTool": "golangci-lint",
-  "go.lintOnSave": "package",
-  "rust-analyzer.check.command": "clippy",
+  "[go]": {
+    "editor.defaultFormatter": "golang.go",
+    "editor.formatOnSave": true
+  },
+  "[rust]": {
+    "editor.defaultFormatter": "rust-lang.rust-analyzer",
+    "editor.formatOnSave": true
+  },
+  "[java]": {
+    "editor.defaultFormatter": "redhat.java"
+  },
+  "eslint.validate": ["javascript", "typescript"],
+  "typescript.preferences.importModuleSpecifier": "relative",
   "files.exclude": {
     "**/node_modules": true,
     "**/dist": true,
+    "**/.git": true,
     "**/target": true,
     "**/bin": true
-  }
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/target": true
+  },
+  "go.lintTool": "golangci-lint",
+  "go.lintOnSave": "package",
+  "go.testOnSave": false,
+  "rust-analyzer.check.command": "clippy",
+  "rust-analyzer.cargo.features": "all"
 }
 ```
 
-### `.vscode/extensions.json`
+### Recommended Extensions File
+
+Create `.vscode/extensions.json`:
 
 ```json
 {
@@ -83,7 +111,48 @@ code --install-extension redhat.vscode-yaml
 }
 ```
 
-### `.vscode/tasks.json`
+### Launch Configurations
+
+Create `.vscode/launch.json` for debugging:
+
+```json
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Node.js: Debug",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["--inspect"],
+      "program": "${workspaceFolder}/src/index.js",
+      "env": { "NODE_ENV": "development" },
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Go: Debug",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}",
+      "env": { "GO_ENV": "development" }
+    },
+    {
+      "name": "Rust: Debug",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/target/debug/${workspaceFolderBasename}",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "cargo build"
+    }
+  ]
+}
+```
+
+### Tasks
+
+Create `.vscode/tasks.json`:
 
 ```json
 {
@@ -93,18 +162,29 @@ code --install-extension redhat.vscode-yaml
       "label": "forge: validate patterns",
       "type": "shell",
       "command": "npm run patterns:validate",
-      "group": "test"
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" }
     },
     {
       "label": "forge: list patterns",
       "type": "shell",
-      "command": "npm run patterns:list"
+      "command": "npm run patterns:list",
+      "group": "none",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "forge: security scan",
+      "type": "shell",
+      "command": "./scripts/security/scan-for-secrets.sh",
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" }
     },
     {
       "label": "test: all",
       "type": "shell",
       "command": "npm run test:all",
-      "group": { "kind": "test", "isDefault": true }
+      "group": { "kind": "test", "isDefault": true },
+      "presentation": { "reveal": "always", "panel": "shared" }
     }
   ]
 }
@@ -127,27 +207,69 @@ Install via **Settings → Plugins → Marketplace**:
 | **Go** | Go language support (IntelliJ) |
 | **Rust** | Rust language support |
 | **Docker** | Docker integration |
-| **Makefile Language** | Makefile syntax |
-| **TOML** | Cargo.toml support |
+| **Makefile Language** | Makefile syntax support |
+| **TOML** | TOML file support (Cargo.toml) |
 | **Conventional Commit** | Commit message helper |
 | **GitToolBox** | Enhanced Git integration |
 | **SonarLint** | Local code quality analysis |
 
-### Code Style
+Install via CLI (IntelliJ IDEA):
 
-**TypeScript/JavaScript**: Settings → Languages & Frameworks → JavaScript → Prettier → enable **Run on save**
+```bash
+# Using the JetBrains Toolbox or IDE script
+idea installPlugins \
+  com.intellij.plugins.html.instantEditing \
+  com.jetbrains.plugins.ini4idea \
+  org.toml.lang \
+  com.github.copilot
+```
 
-**Go** (GoLand): Settings → Editor → Code Style → Go → enable **Run gofmt on save**, set **golangci-lint** as linter
+### Code Style Configuration
 
-**Rust** (CLion): Settings → Languages & Frameworks → Rust → set **Rustfmt** formatter, enable **Clippy**
+**For TypeScript/JavaScript** — import Prettier config:
 
-**Java** (IntelliJ): Settings → Editor → Code Style → Java → import Google Java Style, enable **Optimize imports on save**
+1. **Settings → Editor → Code Style → JavaScript**
+2. Click **Set from… → Prettier**
+3. Enable **Run on save** under **Settings → Languages & Frameworks → JavaScript → Prettier**
 
----
+**For Go** (GoLand):
 
-## `.editorconfig`
+1. **Settings → Editor → Code Style → Go**
+2. Enable **Run gofmt on save**
+3. Set **golangci-lint** as the external linter under **Settings → Tools → Go Linter**
 
-Create at project root — works across all IDEs:
+**For Rust** (CLion):
+
+1. Install **Rust** plugin
+2. **Settings → Languages & Frameworks → Rust**
+3. Set **Rustfmt** as formatter, enable **Run rustfmt on save**
+4. Enable **Clippy** as the external linter
+
+**For Java** (IntelliJ IDEA):
+
+1. **Settings → Editor → Code Style → Java**
+2. Import Google Java Style: download from [google/styleguide](https://github.com/google/styleguide) and import via **Manage → Import**
+3. Enable **Optimize imports on save** and **Reformat code on save**
+
+### Run Configurations
+
+**Node.js script** (WebStorm / IntelliJ):
+
+```xml
+<!-- .idea/runConfigurations/forge_validate.xml -->
+<component name="ProjectRunConfigurationManager">
+  <configuration name="forge: validate" type="NodeJSConfigurationType">
+    <node-parameters value="--experimental-vm-modules" />
+    <script-path value="$PROJECT_DIR$/scripts/forge-patterns-cli.js" />
+    <script-parameters value="validate" />
+    <working-dir value="$PROJECT_DIR$" />
+  </configuration>
+</component>
+```
+
+### `.editorconfig` (works across all IDEs)
+
+Create `.editorconfig` at the project root:
 
 ```ini
 root = true
@@ -162,15 +284,15 @@ trim_trailing_whitespace = true
 indent_style = space
 indent_size = 2
 
-[*.go]
+[*.{go}]
 indent_style = tab
 indent_size = 4
 
-[*.rs]
+[*.{rs}]
 indent_style = space
 indent_size = 4
 
-[*.java]
+[*.{java}]
 indent_style = space
 indent_size = 4
 
@@ -185,7 +307,7 @@ trim_trailing_whitespace = false
 
 ## Windsurf / Cursor
 
-The repo ships with pre-configured rules and workflows under `.windsurf/`.
+The forge-patterns repo ships with pre-configured Windsurf rules and workflows under `.windsurf/`.
 
 ### Available Workflows
 
@@ -200,16 +322,51 @@ The repo ships with pre-configured rules and workflows under `.windsurf/`.
 
 ### Active Rules
 
-Rules in `.windsurf/rules/` applied automatically:
+Rules in `.windsurf/rules/` are automatically applied:
 
 - `forge-patterns-project.md` — always active, project context
-- `zero-secrets-security.md` — BR-001 enforcement
+- `zero-secrets-security.md` — always active, BR-001 enforcement
 - `pattern-library.md` — apply when editing `patterns/`
 - `mcp-server-patterns.md` — apply when building MCP tools
 
 ---
 
-## Related
+## Quick Setup Script
+
+Run this once to configure your IDE environment:
+
+```bash
+#!/usr/bin/env bash
+# scripts/bootstrap/ide-setup.sh
+
+set -euo pipefail
+
+echo "Setting up IDE configuration..."
+
+# Create .vscode directory if it doesn't exist
+mkdir -p .vscode
+
+# Copy VS Code settings if not present
+if [ ! -f .vscode/settings.json ]; then
+  cp patterns/config/vscode/settings.json .vscode/settings.json
+  echo "✓ VS Code settings installed"
+fi
+
+if [ ! -f .vscode/extensions.json ]; then
+  cp patterns/config/vscode/extensions.json .vscode/extensions.json
+  echo "✓ VS Code extensions list installed"
+fi
+
+# Install EditorConfig if not present
+if [ ! -f .editorconfig ]; then
+  cp patterns/config/.editorconfig .editorconfig
+  echo "✓ EditorConfig installed"
+fi
+
+echo "IDE setup complete!"
+```
+
+## 🔗 Related
 
 - [`CONTRIBUTING.md`](../../CONTRIBUTING.md) — contribution guidelines
 - [`patterns/code-quality/`](../../patterns/code-quality/) — ESLint and Prettier configs

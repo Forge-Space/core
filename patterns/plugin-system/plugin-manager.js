@@ -7,10 +7,11 @@ const fs = require('fs').promises;
 const path = require('path');
 const EventEmitter = require('events');
 
+/** @extends {EventEmitter} */
 class PluginManager extends EventEmitter {
   constructor(options = {}) {
     super();
-    
+
     this.options = {
       pluginDirectory: options.pluginDirectory || './plugins',
       enableHotReload: options.enableHotReload !== false,
@@ -24,7 +25,7 @@ class PluginManager extends EventEmitter {
     this.pluginMetadata = new Map();
     this.loadedPlugins = new Set();
     this.failedPlugins = new Set();
-    
+
     this.hooks = {
       'before:plugin:load': [],
       'after:plugin:load': [],
@@ -45,7 +46,7 @@ class PluginManager extends EventEmitter {
     try {
       await this.createPluginDirectory();
       await this.loadPlugins();
-      
+
       if (this.options.enableHotReload) {
         this.setupHotReload();
       }
@@ -76,11 +77,11 @@ class PluginManager extends EventEmitter {
   async loadPlugins() {
     try {
       const pluginFiles = await this.discoverPlugins();
-      
+
       for (const pluginFile of pluginFiles) {
         await this.loadPlugin(pluginFile);
       }
-      
+
       console.log(`Loaded ${this.plugins.size} plugins successfully`);
     } catch (error) {
       console.error('Failed to load plugins:', error);
@@ -93,10 +94,10 @@ class PluginManager extends EventEmitter {
    */
   async discoverPlugins() {
     const pluginFiles = [];
-    
+
     try {
       const entries = await fs.readdir(this.options.pluginDirectory, { withFileTypes: true });
-      
+
       for (const entry of entries) {
         if (entry.isFile() && entry.name.endsWith('.js')) {
           pluginFiles.push(path.join(this.options.pluginDirectory, entry.name));
@@ -114,7 +115,7 @@ class PluginManager extends EventEmitter {
     } catch (error) {
       console.error('Failed to discover plugins:', error);
     }
-    
+
     return pluginFiles;
   }
 
@@ -124,17 +125,17 @@ class PluginManager extends EventEmitter {
   async loadPlugin(pluginPath) {
     try {
       this.emit('before:plugin:load', pluginPath);
-      
+
       // Clear require cache for hot reload
       delete require.cache[require.resolve(pluginPath)];
-      
+
       const pluginModule = require(pluginPath);
-      
+
       // Validate plugin structure
       if (this.options.enableValidation) {
         this.validatePlugin(pluginModule, pluginPath);
       }
-      
+
       const plugin = {
         name: pluginModule.name || path.basename(pluginPath, '.js'),
         version: pluginModule.version || '1.0.0',
@@ -150,27 +151,27 @@ class PluginManager extends EventEmitter {
 
       // Check dependencies
       await this.checkDependencies(plugin);
-      
+
       // Register plugin hooks
       this.registerPluginHooks(plugin);
-      
+
       // Store plugin
       this.plugins.set(plugin.name, plugin);
       this.pluginMetadata.set(plugin.name, {
         ...plugin,
         status: 'loaded'
       });
-      
+
       this.loadedPlugins.add(plugin.name);
-      
+
       // Call plugin initialize method if exists
       if (typeof pluginModule.initialize === 'function') {
         await pluginModule.initialize(this.createPluginAPI(plugin.name));
       }
-      
+
       this.emit('after:plugin:load', plugin);
       console.log(`Loaded plugin: ${plugin.name} v${plugin.version}`);
-      
+
     } catch (error) {
       console.error(`Failed to load plugin ${pluginPath}:`, error);
       this.failedPlugins.add(pluginPath);
@@ -183,13 +184,13 @@ class PluginManager extends EventEmitter {
    */
   validatePlugin(plugin, pluginPath) {
     const requiredFields = ['name'];
-    
+
     for (const field of requiredFields) {
       if (!plugin[field]) {
         throw new Error(`Plugin missing required field: ${field}`);
       }
     }
-    
+
     // Validate hooks if present
     if (plugin.hooks) {
       for (const [hookName, hookFunction] of Object.entries(plugin.hooks)) {
@@ -235,18 +236,18 @@ class PluginManager extends EventEmitter {
       registerHook: (hookName, handler) => this.registerHook(pluginName, hookName, handler),
       unregisterHook: (hookName, handler) => this.unregisterHook(pluginName, hookName, handler),
       emitHook: async (hookName, ...args) => this.emitHook(hookName, ...args),
-      
+
       // Plugin management
       getPlugin: (name) => this.getPlugin(name),
       getAllPlugins: () => this.getAllPlugins(),
-      
+
       // Configuration
       getConfig: async (key) => this.getPluginConfig(pluginName, key),
       setConfig: async (key, value) => this.setPluginConfig(pluginName, key, value),
-      
+
       // Logging
       log: (level, message, ...args) => this.pluginLog(pluginName, level, message, ...args),
-      
+
       // Events
       on: (event, handler) => this.on(event, handler),
       emit: (event, ...args) => this.emit(event, ...args)
@@ -260,7 +261,7 @@ class PluginManager extends EventEmitter {
     if (!this.hooks[hookName]) {
       this.hooks[hookName] = [];
     }
-    
+
     this.hooks[hookName].push({
       plugin: pluginName,
       handler
@@ -285,9 +286,9 @@ class PluginManager extends EventEmitter {
     if (!this.hooks[hookName]) {
       return [];
     }
-    
+
     const results = [];
-    
+
     for (const hook of this.hooks[hookName]) {
       try {
         const result = await hook.handler(...args);
@@ -297,7 +298,7 @@ class PluginManager extends EventEmitter {
         results.push({ plugin: hook.plugin, error });
       }
     }
-    
+
     return results;
   }
 
@@ -307,31 +308,31 @@ class PluginManager extends EventEmitter {
   async unloadPlugin(pluginName) {
     try {
       this.emit('before:plugin:unload', pluginName);
-      
+
       const plugin = this.plugins.get(pluginName);
       if (!plugin) {
         throw new Error(`Plugin not found: ${pluginName}`);
       }
-      
+
       // Call plugin cleanup method if exists
       if (typeof plugin.module.cleanup === 'function') {
         await plugin.module.cleanup();
       }
-      
+
       // Unregister hooks
       this.unregisterPluginHooks(pluginName);
-      
+
       // Remove from collections
       this.plugins.delete(pluginName);
       this.pluginMetadata.delete(pluginName);
       this.loadedPlugins.delete(pluginName);
-      
+
       // Clear require cache
       delete require.cache[require.resolve(plugin.path)];
-      
+
       this.emit('after:plugin:unload', plugin);
       console.log(`Unloaded plugin: ${pluginName}`);
-      
+
     } catch (error) {
       console.error(`Failed to unload plugin ${pluginName}:`, error);
       this.emit('plugin:error', { plugin: pluginName, error });
@@ -357,7 +358,7 @@ class PluginManager extends EventEmitter {
     if (!plugin) {
       throw new Error(`Plugin not found: ${pluginName}`);
     }
-    
+
     const pluginPath = plugin.path;
     await this.unloadPlugin(pluginName);
     await this.loadPlugin(pluginPath);
@@ -396,7 +397,7 @@ class PluginManager extends EventEmitter {
    */
   async getPluginConfig(pluginName, key) {
     const configPath = path.join(this.options.pluginDirectory, 'config', `${pluginName}.json`);
-    
+
     try {
       const config = await fs.readFile(configPath, 'utf8');
       const parsedConfig = JSON.parse(config);
@@ -412,10 +413,10 @@ class PluginManager extends EventEmitter {
   async setPluginConfig(pluginName, key, value) {
     const configDir = path.join(this.options.pluginDirectory, 'config');
     const configPath = path.join(configDir, `${pluginName}.json`);
-    
+
     try {
       await fs.mkdir(configDir, { recursive: true });
-      
+
       let config = {};
       try {
         const existingConfig = await fs.readFile(configPath, 'utf8');
@@ -423,7 +424,7 @@ class PluginManager extends EventEmitter {
       } catch (error) {
         // Config file doesn't exist, start with empty object
       }
-      
+
       if (typeof key === 'object') {
         // Merge object
         config = { ...config, ...key };
@@ -431,7 +432,7 @@ class PluginManager extends EventEmitter {
         // Set single key
         config[key] = value;
       }
-      
+
       await fs.writeFile(configPath, JSON.stringify(config, null, 2));
     } catch (error) {
       console.error(`Failed to set config for plugin ${pluginName}:`, error);
@@ -444,7 +445,7 @@ class PluginManager extends EventEmitter {
   pluginLog(pluginName, level, message, ...args) {
     const timestamp = new Date().toISOString();
     const logMessage = `[${timestamp}] [${pluginName}] [${level.toUpperCase()}] ${message}`;
-    
+
     switch (level) {
       case 'error':
         console.error(logMessage, ...args);
@@ -468,12 +469,12 @@ class PluginManager extends EventEmitter {
       console.warn('Hot reload not available in this environment');
       return;
     }
-    
+
     const watcher = require('fs').watch(this.options.pluginDirectory, { recursive: true }, async (eventType, filename) => {
       if (filename && filename.endsWith('.js')) {
         const pluginPath = path.join(this.options.pluginDirectory, filename);
         const pluginName = path.basename(filename, '.js');
-        
+
         if (this.plugins.has(pluginName)) {
           console.log(`Hot reloading plugin: ${pluginName}`);
           await this.reloadPlugin(pluginName);
@@ -483,11 +484,11 @@ class PluginManager extends EventEmitter {
         }
       }
     });
-    
+
     watcher.on('error', (error) => {
       console.error('Plugin watcher error:', error);
     });
-    
+
     console.log('Hot reload enabled for plugins');
   }
 
@@ -496,12 +497,12 @@ class PluginManager extends EventEmitter {
    */
   async shutdown() {
     console.log('Shutting down Plugin Manager...');
-    
+
     // Unload all plugins
     for (const pluginName of this.loadedPlugins) {
       await this.unloadPlugin(pluginName);
     }
-    
+
     this.emit('system:shutdown');
     console.log('Plugin Manager shutdown complete');
   }

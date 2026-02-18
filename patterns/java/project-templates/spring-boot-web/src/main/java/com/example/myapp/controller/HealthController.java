@@ -14,11 +14,17 @@ public class HealthController {
 
     @GetMapping("/health")
     public ResponseEntity<Map<String, Object>> health() {
-        return ResponseEntity.ok(Map.of("status", "UP", "timestamp", Instant.now().toString()));
+        return ResponseEntity.ok(Map.of(
+            "status", "UP",
+            "timestamp", Instant.now().toString()
+        ));
     }
 
     @GetMapping("/info")
     public ResponseEntity<Map<String, String>> info() {
-        return ResponseEntity.ok(Map.of("app", "myapp", "version", "1.0.0"));
+        return ResponseEntity.ok(Map.of(
+            "app", "myapp",
+            "version", "1.0.0"
+        ));
     }
 }

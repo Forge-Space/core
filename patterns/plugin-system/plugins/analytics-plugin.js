@@ -9,13 +9,13 @@ module.exports = {
   description: 'Production analytics and event tracking',
   author: 'Forge Patterns Team',
   dependencies: [],
-  
+
   hooks: {
     'system:ready': async function(api) {
       api.log('info', 'Analytics plugin starting up');
       await this.initializeAnalytics(api);
     },
-    
+
     'feature:toggle': async function(featureName, enabled, api) {
       await this.trackEvent('feature_toggle', {
         feature: featureName,
@@ -24,7 +24,7 @@ module.exports = {
         environment: process.env.NODE_ENV || 'development'
       }, api);
     },
-    
+
     'plugin:loaded': async function(plugin, api) {
       await this.trackEvent('plugin_loaded', {
         plugin: plugin.name,
@@ -32,7 +32,7 @@ module.exports = {
         timestamp: new Date().toISOString()
       }, api);
     },
-    
+
     'system:error': async function(error, api) {
       await this.trackEvent('system_error', {
         error: error.message,
@@ -40,16 +40,16 @@ module.exports = {
         timestamp: new Date().toISOString()
       }, api);
     },
-    
+
     'analytics:track': async function(event, api) {
       await this.trackEvent(event.event, event, api);
     }
   },
-  
+
   events: [],
   config: {},
   flushInterval: null,
-  
+
   async initializeAnalytics(api) {
     try {
       this.config = await api.getConfig() || {
@@ -58,27 +58,27 @@ module.exports = {
         flushInterval: parseInt(process.env.ANALYTICS_FLUSH_INTERVAL) || 30000,
         enabled: process.env.ANALYTICS_ENABLED !== 'false'
       };
-      
+
       if (!this.config.enabled) {
         api.log('info', 'Analytics is disabled');
         return;
       }
-      
+
       this.flushInterval = setInterval(() => {
         this.flushEvents(api);
       }, this.config.flushInterval);
-      
+
       api.log('info', 'Analytics initialized', this.config);
     } catch (error) {
       api.log('error', 'Failed to initialize analytics:', error);
     }
   },
-  
+
   async trackEvent(eventName, data, api) {
     if (!this.config.enabled) {
       return;
     }
-    
+
     const event = {
       name: eventName,
       data: data,
@@ -87,34 +87,34 @@ module.exports = {
       sessionId: this.getSessionId(),
       userId: this.getUserId()
     };
-    
+
     this.events.push(event);
-    
+
     if (this.events.length >= this.config.batchSize) {
       await this.flushEvents(api);
     }
-    
+
     api.log('debug', `Event tracked: ${eventName}`, { id: event.id, name: eventName });
   },
-  
+
   async flushEvents(api) {
     if (this.events.length === 0 || !this.config.enabled) {
       return;
     }
-    
+
     try {
       const eventsToSend = this.events.splice(0, this.config.batchSize);
-      
+
       api.log('info', `Flushing ${eventsToSend.length} events to analytics`);
-      
+
       await this.sendToAnalytics(eventsToSend);
-      
+
       api.log('info', `Successfully flushed ${eventsToSend.length} events`);
     } catch (error) {
       api.log('error', 'Failed to flush events:', error);
     }
   },
-  
+
   async sendToAnalytics(events) {
     // Mock implementation - in production, this would make HTTP requests
     return new Promise((resolve) => {
@@ -124,42 +124,43 @@ module.exports = {
       }, 100);
     });
   },
-  
+
   generateEventId() {
     return `evt_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   },
-  
+
   getSessionId() {
     // In production, this would come from session management
-    return this.sessionId || this.sessionId = `sess_${Date.now()}`;
+    if (!this.sessionId) this.sessionId = `sess_${Date.now()}`;
+    return this.sessionId;
   },
-  
+
   getUserId() {
     // In production, this would come from authentication
     return process.env.USER_ID || 'anonymous';
   },
-  
+
   async initialize(api) {
     api.log('info', 'Analytics plugin initializing...');
     await this.initializeAnalytics(api);
-    
+
     await this.trackEvent('plugin_initialized', {
       plugin: 'analytics-plugin',
       version: '1.0.0',
       timestamp: new Date().toISOString()
     }, api);
   },
-  
+
   async cleanup() {
     if (this.flushInterval) {
       clearInterval(this.flushInterval);
     }
-    
+
     if (this.events.length > 0) {
       console.log(`[ANALYTICS] Flushing remaining ${this.events.length} events`);
       await this.flushEvents({ log: console.log });
     }
-    
+
     console.log('Analytics plugin cleaned up');
   }
 };

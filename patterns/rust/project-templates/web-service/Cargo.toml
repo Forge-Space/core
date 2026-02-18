@@ -3,6 +3,10 @@ name = "{{APP_NAME}}"
 version = "0.1.0"
 edition = "2021"
 
+[[bin]]
+name = "{{APP_NAME}}"
+path = "src/main.rs"
+
 [dependencies]
 axum = { version = "0.7", features = ["macros"] }
 tokio = { version = "1", features = ["full"] }
@@ -16,4 +20,5 @@ chrono = { version = "0.4", features = ["serde"] }
 uuid = { version = "1", features = ["v4", "serde"] }
 
 [dev-dependencies]
+axum-test = "14"
 tokio = { version = "1", features = ["full"] }
