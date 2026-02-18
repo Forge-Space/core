@@ -25,7 +25,7 @@ class CrossProjectIntegrationTester {
   log(message, type = 'info') {
     const timestamp = new Date().toISOString();
     const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
-    // eslint-disable-next-line no-console
+     
     console.log(`${timestamp} ${prefix} ${message}`);
   }
 
@@ -333,7 +333,7 @@ class CrossProjectIntegrationTester {
 if (require.main === module) {
   const tester = new CrossProjectIntegrationTester();
   tester.runAllScenarios().catch(error => {
-    // eslint-disable-next-line no-console
+     
     console.error('Integration testing failed:', error);
     process.exit(1);
   });

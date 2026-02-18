@@ -43,7 +43,7 @@ export interface FeatureFlagsConfig<T extends string = string> {
  */
 export function createFeatureFlags<T extends string>(
   definitions: FeatureFlag<T>[],
-  overrides?: Partial<Record<T, boolean>>,
+  overrides?: Partial<Record<T, boolean>>
 ): Record<T, boolean> {
   const result = {} as Record<T, boolean>;
 
@@ -65,7 +65,7 @@ export function createFeatureFlags<T extends string>(
 export function resolveFeatureFlag(
   name: string,
   defaultValue: boolean,
-  envPrefix = '',
+  envPrefix = ''
 ): boolean {
   const envKey = `${envPrefix}${name}`;
   const envValue = process.env[envKey];
@@ -82,7 +82,7 @@ export function resolveFeatureFlag(
  */
 export function resolveAllFeatureFlags<T extends string>(
   definitions: FeatureFlag<T>[],
-  envPrefix?: string,
+  envPrefix?: string
 ): Record<T, boolean> {
   const result = {} as Record<T, boolean>;
 

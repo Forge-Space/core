@@ -64,8 +64,10 @@ class AdvancedFeatureToggles {
         await this.loadABTestConfigurations();
       }
 
+       
       console.log(`Advanced Feature Toggles initialized for ${this.options.appName}`);
     } catch (error) {
+       
       console.error('Failed to initialize Advanced Feature Toggles:', error);
       throw error;
     }
@@ -134,7 +136,6 @@ class AdvancedFeatureToggles {
       isActive: false,
       results: {
         participants: 0,
-        participantsByVariant: {},
         conversions: {},
         metrics: {}
       }
@@ -156,6 +157,7 @@ class AdvancedFeatureToggles {
     abTest.isActive = true;
     abTest.startDate = new Date();
 
+     
     console.log(`A/B test started for feature: ${featureName}`);
     return abTest;
   }
@@ -175,7 +177,9 @@ class AdvancedFeatureToggles {
     const results = this.generateABTestResults(abTest);
     abTest.results = results;
 
+     
     console.log(`A/B test stopped for feature: ${featureName}`);
+     
     console.log('Results:', results);
 
     return results;
@@ -193,15 +197,15 @@ class AdvancedFeatureToggles {
     const variant = this.getVariant(featureName, context);
     const variantName = variant.name;
 
-    const conversions = abTest.results.conversions;
-    if (!conversions[variantName]) {
-      conversions[variantName] = { total: 0 };
+    if (!abTest.results.conversions[variantName]) {
+      abTest.results.conversions[variantName] = {
+        total: 0,
+        [conversionType]: 0
+      };
     }
-    if (conversions[variantName][conversionType] === undefined) {
-      conversions[variantName][conversionType] = 0;
-    }
-    conversions[variantName].total++;
-    conversions[variantName][conversionType] += value;
+
+    abTest.results.conversions[variantName].total++;
+    abTest.results.conversions[variantName][conversionType] += value;
 
     return true;
   }
@@ -243,6 +247,7 @@ class AdvancedFeatureToggles {
     strategy.isActive = true;
     strategy.currentPhase = 0;
 
+     
     console.log(`Rollout strategy started for feature: ${featureName}`);
     return this.executeRolloutPhase(strategy);
   }
@@ -346,8 +351,6 @@ class AdvancedFeatureToggles {
 
     // Record A/B test participation
     abTest.results.participants++;
-    abTest.results.participantsByVariant[userGroup] =
-      (abTest.results.participantsByVariant[userGroup] || 0) + 1;
 
     // Store user group assignment
     if (!this.metrics.userSessions.has(userId)) {
@@ -367,8 +370,6 @@ class AdvancedFeatureToggles {
 
     // Record A/B test participation
     abTest.results.participants++;
-    abTest.results.participantsByVariant[userGroup] =
-      (abTest.results.participantsByVariant[userGroup] || 0) + 1;
 
     // Store user group assignment
     if (!this.metrics.userSessions.has(userId)) {
@@ -462,6 +463,7 @@ class AdvancedFeatureToggles {
           timestamp
         });
       } catch (error) {
+         
         console.error('Analytics callback error:', error);
       }
     });
@@ -479,14 +481,10 @@ class AdvancedFeatureToggles {
       confidence: 0
     };
 
-    // Calculate conversion rates using per-variant exposure as denominator
-    const participantsByVariant = abTest.results.participantsByVariant || {};
+    // Calculate conversion rates
     for (const [variant, data] of Object.entries(abTest.results.conversions)) {
-      const totalConversions = Object.entries(data)
-        .filter(([k]) => k !== 'total')
-        .reduce((sum, [, val]) => sum + val, 0);
-      const exposures = participantsByVariant[variant] || 0;
-      results.conversionRates[variant] = exposures > 0 ? totalConversions / exposures : 0;
+      const totalConversions = Object.values(data).reduce((sum, val) => sum + val, 0);
+      results.conversionRates[variant] = totalConversions / data.total;
     }
 
     // Determine winner (simple approach based on conversion rate)
@@ -542,7 +540,7 @@ class AdvancedFeatureToggles {
     return { completed: false, nextPhase: strategy.currentPhase };
   }
 
-  executeInstantRollout(strategy, _phase) {
+  executeInstantRollout(strategy, phase) {
     strategy.results.rolloutProgress = 100;
     strategy.results.userImpact = {
       affectedUsers: 'all',
@@ -657,19 +655,14 @@ class AdvancedFeatureToggles {
       return { significant: false, confidence: 0 };
     }
 
-    // Use per-variant exposure as denominator for accurate significance
-    const participantsByVariant = abTest.results.participantsByVariant || {};
-    const rates = variants.map(v => {
-      const exposures = participantsByVariant[v] || 0;
-      return exposures > 0 ? conversions[v].total / exposures : 0;
-    });
+    const rates = variants.map(v => conversions[v].total / conversions[v].total);
     const maxRate = Math.max(...rates);
     const minRate = Math.min(...rates);
     const difference = maxRate - minRate;
 
     return {
-      significant: difference > STATISTICAL_SIGNIFICANCE_THRESHOLD,
-      confidence: Math.min(difference * 20, MAX_CONFIDENCE)
+      significant: difference > STATISTICAL_SIGNIFICANCE_THRESHOLD, // 5% difference threshold
+      confidence: Math.min(difference * 20, MAX_CONFIDENCE) // Simple confidence calculation
     };
   }
 
@@ -698,7 +691,8 @@ class AdvancedFeatureToggles {
           this.abTests.set(test.featureName, test);
         }
       }
-    } catch {
+    } catch (error) {
+       
       console.log('No A/B test configurations found, using defaults');
     }
   }

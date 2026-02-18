@@ -31,7 +31,7 @@ class PerformanceBenchmark {
   log(message, type = 'info') {
     const timestamp = new Date().toISOString();
     const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
-    // eslint-disable-next-line no-console
+     
     console.log(`${timestamp} ${prefix} ${message}`);
   }
 
@@ -339,7 +339,7 @@ class PerformanceBenchmark {
 if (require.main === module) {
   const benchmark = new PerformanceBenchmark();
   benchmark.runAllBenchmarks().catch(error => {
-    // eslint-disable-next-line no-console
+     
     console.error('Benchmarking failed:', error);
     process.exit(1);
   });

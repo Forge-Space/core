@@ -23,22 +23,22 @@ export const AI_PROVIDERS: Record<AIProvider, AIProviderConfig> = {
     models: ['gpt-4', 'gpt-4-turbo', 'gpt-3.5-turbo'],
     maxTokens: 128_000,
     rateLimitPerMinute: 3_500,
-    requiresOrganization: true,
+    requiresOrganization: true
   },
   anthropic: {
     name: 'Anthropic',
     baseUrl: 'https://api.anthropic.com/v1',
     models: ['claude-3-5-sonnet-20241022', 'claude-3-haiku-20240307', 'claude-3-opus-20240229'],
     maxTokens: 200_000,
-    rateLimitPerMinute: 1_000,
+    rateLimitPerMinute: 1_000
   },
   google: {
     name: 'Google AI',
     baseUrl: 'https://generativelanguage.googleapis.com/v1beta',
     models: ['gemini-1.5-pro-latest', 'gemini-1.5-flash-latest'],
     maxTokens: 2_097_152,
-    rateLimitPerMinute: 60,
-  },
+    rateLimitPerMinute: 60
+  }
 };
 
 export const AI_PROVIDERS_LIST: AIProvider[] = Object.keys(AI_PROVIDERS) as AIProvider[];

@@ -19,21 +19,21 @@ module.exports = {
 
   // Plugin hooks
   hooks: {
-    'system:ready': async function(api) {
+    async 'system:ready'(api) {
       api.log('info', 'Analytics plugin starting up');
       await this.initializeAnalytics(api);
     },
 
-    'feature:toggle': async function(featureName, enabled, api) {
+    async 'feature:toggle'(featureName, enabled, api) {
       await this.trackEvent('feature_toggle', {
         feature: featureName,
-        enabled: enabled,
+        enabled,
         timestamp: new Date().toISOString(),
         userAgent: this.getUserAgent()
       }, api);
     },
 
-    'plugin:loaded': async function(plugin, api) {
+    async 'plugin:loaded'(plugin, api) {
       await this.trackEvent('plugin_loaded', {
         plugin: plugin.name,
         version: plugin.version,
@@ -41,7 +41,7 @@ module.exports = {
       }, api);
     },
 
-    'system:error': async function(error, api) {
+    async 'system:error'(error, api) {
       await this.trackEvent('system_error', {
         error: error.message,
         stack: error.stack,
@@ -78,7 +78,7 @@ module.exports = {
   async trackEvent(eventName, data, api) {
     const event = {
       name: eventName,
-      data: data,
+      data,
       timestamp: new Date().toISOString(),
       id: this.generateEventId()
     };

@@ -49,7 +49,7 @@ class AICodeAnalyzer {
     await this.loadPerformanceRules();
     await this.loadQualityMetrics();
 
-    // eslint-disable-next-line no-console
+     
     console.log('AI Code Analyzer initialized');
   }
 

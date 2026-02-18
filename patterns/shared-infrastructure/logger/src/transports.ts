@@ -14,7 +14,7 @@ export class ConsoleTransport implements LoggerTransport {
     [LogLevel.INFO]: '\x1b[32m',  // Green
     [LogLevel.WARN]: '\x1b[33m',  // Yellow
     [LogLevel.ERROR]: '\x1b[31m', // Red
-    [LogLevel.FATAL]: '\x1b[35m', // Magenta
+    [LogLevel.FATAL]: '\x1b[35m' // Magenta
   };
 
   private reset = '\x1b[0m';

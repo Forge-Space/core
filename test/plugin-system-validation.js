@@ -22,13 +22,13 @@ class PluginSystemValidator {
    */
   async runAllTests() {
     console.log('🚀 Starting Plugin System Validation...\n');
-
+    
     await this.testPluginManagerExists();
     await this.testPluginStructure();
     await this.testPluginExamples();
     await this.testPluginDocumentation();
     await this.testPluginConfiguration();
-
+    
     this.printResults();
     return this.results.failed === 0;
   }
@@ -38,13 +38,13 @@ class PluginSystemValidator {
    */
   async testPluginManagerExists() {
     const testName = 'Plugin Manager File Exists';
-
+    
     try {
       const pluginManagerPath = path.join(__dirname, '../patterns/plugin-system/plugin-manager.js');
       await fs.access(pluginManagerPath);
-
+      
       this.addTestResult(testName, true, 'Plugin manager file exists');
-    } catch {
+    } catch (error) {
       this.addTestResult(testName, false, 'Plugin manager file not found');
     }
   }
@@ -54,20 +54,20 @@ class PluginSystemValidator {
    */
   async testPluginStructure() {
     const testName = 'Plugin Structure Validation';
-
+    
     try {
       const pluginDir = path.join(__dirname, '../patterns/plugin-system');
       const entries = await fs.readdir(pluginDir, { withFileTypes: true });
-
+      
       const requiredFiles = ['plugin-manager.js', 'README.md'];
       const requiredDirs = ['examples', 'plugins'];
-
+      
       const files = entries.filter(e => e.isFile()).map(e => e.name);
       const dirs = entries.filter(e => e.isDirectory()).map(e => e.name);
-
+      
       const missingFiles = requiredFiles.filter(f => !files.includes(f));
       const missingDirs = requiredDirs.filter(d => !dirs.includes(d));
-
+      
       if (missingFiles.length === 0 && missingDirs.length === 0) {
         this.addTestResult(testName, true, 'Plugin structure is correct');
       } else {
@@ -84,19 +84,19 @@ class PluginSystemValidator {
    */
   async testPluginExamples() {
     const testName = 'Plugin Examples Available';
-
+    
     try {
       const examplesDir = path.join(__dirname, '../patterns/plugin-system/examples');
       const examples = await fs.readdir(examplesDir);
-
+      
       const requiredExamples = [
         'analytics-plugin.js',
         'feature-enhancer-plugin.js',
         'plugin-demo.js'
       ];
-
+      
       const missingExamples = requiredExamples.filter(e => !examples.includes(e));
-
+      
       if (missingExamples.length === 0) {
         this.addTestResult(testName, true, 'All plugin examples available');
       } else {
@@ -112,11 +112,11 @@ class PluginSystemValidator {
    */
   async testPluginDocumentation() {
     const testName = 'Plugin Documentation Complete';
-
+    
     try {
       const readmePath = path.join(__dirname, '../patterns/plugin-system/README.md');
       const content = await fs.readFile(readmePath, 'utf8');
-
+      
       const requiredSections = [
         '## Overview',
         '## Features',
@@ -129,9 +129,9 @@ class PluginSystemValidator {
         '## Best Practices',
         '## Troubleshooting'
       ];
-
+      
       const missingSections = requiredSections.filter(section => !content.includes(section));
-
+      
       if (missingSections.length === 0) {
         this.addTestResult(testName, true, 'Documentation is complete');
       } else {
@@ -147,24 +147,24 @@ class PluginSystemValidator {
    */
   async testPluginConfiguration() {
     const testName = 'Plugin Configuration Setup';
-
+    
     try {
       const configDir = path.join(__dirname, '../patterns/plugin-system/plugins/config');
-
+      
       // Check if config directory exists
       await fs.access(configDir);
-
+      
       // Check if analytics config exists
       const analyticsConfigPath = path.join(configDir, 'analytics-plugin.json');
       await fs.access(analyticsConfigPath);
-
+      
       // Validate config content
       const configContent = await fs.readFile(analyticsConfigPath, 'utf8');
       const config = JSON.parse(configContent);
-
+      
       const requiredConfigFields = ['enabled', 'endpoint', 'batchSize', 'flushInterval'];
       const missingFields = requiredConfigFields.filter(field => !(field in config));
-
+      
       if (missingFields.length === 0) {
         this.addTestResult(testName, true, 'Plugin configuration is properly set up');
       } else {
@@ -184,7 +184,7 @@ class PluginSystemValidator {
       passed,
       message
     });
-
+    
     if (passed) {
       this.results.passed++;
       console.log(`✅ ${testName}: ${message}`);
@@ -202,7 +202,7 @@ class PluginSystemValidator {
     console.log(`✅ Passed: ${this.results.passed}`);
     console.log(`❌ Failed: ${this.results.failed}`);
     console.log(`📈 Total: ${this.results.tests.length}`);
-
+    
     if (this.results.failed === 0) {
       console.log('\n🎉 All plugin system tests passed!');
     } else {
