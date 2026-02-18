@@ -19,13 +19,11 @@ jobs:
           BRANCH_NAME=${GITHUB_HEAD_REF}
           echo "Checking branch: $BRANCH_NAME"
 
-          # Allow main, develop, and feature branches
           if [[ "$BRANCH_NAME" =~ ^(main|develop)$ ]]; then
             echo "✅ Protected branch name: $BRANCH_NAME"
             exit 0
           fi
 
-          # Check feature branch naming
           if [[ "$BRANCH_NAME" =~ ^(feature|fix|hotfix|chore|docs|refactor|test|perf)/.+ ]]; then
             echo "✅ Branch follows naming convention: $BRANCH_NAME"
             exit 0
