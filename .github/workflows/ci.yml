@@ -94,7 +94,7 @@ jobs:
       - name: Check file organization
         run: |
           echo "Checking root directory organization..."
-          EXTRA=$(find . -maxdepth 1 -name "*.md" | grep -v "README.md" | grep -v "CHANGELOG.md" | grep -v "CONTRIBUTING.md")
+          EXTRA=$(find . -maxdepth 1 -name "*.md" | grep -v "README.md" | grep -v "CHANGELOG.md" | grep -v "CONTRIBUTING.md" || true)
           if [ -n "$EXTRA" ]; then
             echo "Found unexpected markdown files in root directory"
             echo "$EXTRA"
