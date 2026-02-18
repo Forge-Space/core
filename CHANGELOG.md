@@ -21,12 +21,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+- **`patterns/cost/`**: Removed entirely — AWS free-tier tracking, budget alerts, and cost analysis scripts are out of scope for the current project focus
+- **`patterns/terraform/`**: Removed entirely — Terraform/IaC infrastructure management is not needed at this stage
+- **`patterns/localstack/`**: Removed entirely — LocalStack (AWS emulation) has no purpose without Terraform/AWS context
 - **`patterns/go/`**: Removed — Go is not used in the Forge ecosystem (TypeScript/Node.js only); generic templates added unnecessary package weight
 - **`patterns/java/`**: Removed — Java/Spring Boot is not used in the Forge ecosystem; generic templates added unnecessary package weight
 - **`patterns/rust/`**: Removed — Rust is not used in the Forge ecosystem; generic templates added unnecessary package weight
 
 ### Changed
 
+- **`patterns/cloud-native/README.md`**: Removed AWS Lambda handler section and all AWS-specific service references (SQS, SNS, Kinesis, IAM, KMS, CloudFront, Route 53, CloudWatch); retained Supabase Edge Function pattern, circuit breaker, health checks, and generic event-driven patterns
+- **`patterns/config/patterns-config.yml`**: Removed `learning` block (aws-solutions-architect certification) and `cost-optimization` feature flag from `uiforge-mcp` project features
+- **`src/mcp-context-server/context-store/forge-patterns.md`**: Removed all references to `cost/`, `terraform/`, `localstack/`, Kubernetes, and AWS from file structure, roadmap, and metrics sections
 - **`eslint.config.mjs`** (root): migrated to `tseslint.config()` wrapper; upgraded from `recommended` to `strictTypeChecked` + `stylisticTypeChecked`; enabled `projectService: true`; added `eslint-plugin-import`; removed style rules now fully owned by Prettier (`quotes`, `semi`, `comma-dangle`); added `disableTypeChecked` override for plain JS files
 - **`.prettierrc.json`** (root): expanded to multi-line human-readable format; reconciled `trailingComma: "all"`, `arrowParens: "always"`; added `objectWrap: "collapse"` (Prettier 3.5+); added `$schema`
 - **`patterns/code-quality/prettier/base.config.json`**: synced with root — same canonical options, added `$schema`, `jsxSingleQuote`, `objectWrap`
@@ -88,7 +94,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Core Pattern Library**: Initial release with code-quality, docker, security, config, cost, coverage, git, and shared-infrastructure patterns
+- **Core Pattern Library**: Initial release with code-quality, docker, security, config, coverage, git, and shared-infrastructure patterns
 - **Logger Pattern** (`patterns/shared-infrastructure/logger/`): Structured logging with TypeScript, multiple transports, and log rotation
 - **Feature Toggle Pattern** (`patterns/feature-toggles/`): Centralized feature toggle management with Unleash integration
 - **Docker Patterns** (`patterns/docker/`): Optimized Dockerfile templates with sleep architecture for resource efficiency
