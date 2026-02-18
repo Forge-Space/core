@@ -17,13 +17,7 @@
  * ```
  */
 
-export type FeatureFlagCategory =
-  | 'auth'
-  | 'ui'
-  | 'generation'
-  | 'storage'
-  | 'analytics'
-  | 'system';
+export type FeatureFlagCategory = 'auth' | 'ui' | 'generation' | 'storage' | 'analytics' | 'system';
 
 export interface FeatureFlag<T extends string = string> {
   name: T;
@@ -62,11 +56,7 @@ export function createFeatureFlags<T extends string>(
  * @param defaultValue - Fallback when the env var is absent
  * @param envPrefix - Prefix prepended to `name` when reading from `process.env` (default: `""`)
  */
-export function resolveFeatureFlag(
-  name: string,
-  defaultValue: boolean,
-  envPrefix = ''
-): boolean {
+export function resolveFeatureFlag(name: string, defaultValue: boolean, envPrefix = ''): boolean {
   const envKey = `${envPrefix}${name}`;
   const envValue = process.env[envKey];
 

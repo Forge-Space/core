@@ -9,7 +9,7 @@ export interface ProjectResource {
 }
 
 export function getProjectResources(): ProjectResource[] {
-  return listProjects().map((meta) => ({
+  return listProjects().map(meta => ({
     uri: `uiforge://context/${meta.project}`,
     name: meta.title,
     description: meta.description,
