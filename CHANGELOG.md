@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **UIForge Context MCP Server** (`src/mcp-context-server/`): Local stdio MCP server exposing all four UIForge project context documents as MCP resources and tools
+  - `index.ts` — Server entry point with stdio transport, resource and tool handlers
+  - `resources.ts` — Resource definitions for `forge-patterns`, `uiforge-webapp`, `uiforge-mcp`, `mcp-gateway`
+  - `tools.ts` — `get_project_context` and `list_projects` tools
+  - `tsconfig.json` — TypeScript config outputting to `dist/mcp-context-server/`
+  - `docs/guides/MCP_CONTEXT_SERVER.md` — Setup and IDE integration guide
+- `mcp-context:build` and `mcp-context:start` npm scripts
+- `@modelcontextprotocol/sdk` dependency
 - `test:plugins`, `test:feature-toggles`, `test:integration`, `test:all` npm scripts
 
 ### Fixed

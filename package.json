@@ -36,12 +36,15 @@
     "patterns": "node scripts/forge-patterns-cli.js",
     "patterns:list": "node scripts/forge-patterns-cli.js list",
     "patterns:search": "node scripts/forge-patterns-cli.js search",
-    "patterns:validate": "node scripts/forge-patterns-cli.js validate"
+    "patterns:validate": "node scripts/forge-patterns-cli.js validate",
+    "mcp-context:build": "tsc --project src/mcp-context-server/tsconfig.json",
+    "mcp-context:start": "node dist/mcp-context-server/index.js"
   },
   "bin": {
     "forge-patterns": "dist/cli.js"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
     "commander": "^11.0.0",
     "chalk": "^5.3.0",
     "ora": "^7.0.1",
