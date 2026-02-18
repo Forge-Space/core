@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
 - **`patterns/python/`**: Python project template and tooling patterns for Forge ecosystem use cases (AI/ML scripts, automation, MCP server extensions) — `pyproject.toml` with ruff + mypy + pytest, entry point template, and test template; mirrors `scripts/bootstrap/project.sh python` type
 - **`patterns/shell/`**: Shell scripting conventions for all Forge bash scripts — `conventions/header.sh` (standard `set -euo pipefail`, colour helpers, `require_cmd`/`guard_cmd`) and `conventions/guard.sh` (`ensure_dir`, `safe_copy`, `require_env`, `make_tmpfile`); extracted from patterns in `scripts/security/` and `scripts/bootstrap/`
 - **`patterns/code-quality/eslint/base.config.mjs`**: new composable ESLint 9 flat-config base for Node.js/TypeScript projects — uses `typescript-eslint` unified package with `strictTypeChecked` + `stylisticTypeChecked` presets, `projectService: true` for full type-aware linting, and `eslint-plugin-import` for cycle/duplicate detection
@@ -19,33 +20,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`eslint-plugin-import`** + **`eslint-import-resolver-typescript`** added to devDependencies
 - **VS Code Extension stub** (`patterns/ide-extensions/vscode/`): Alpha scaffold for forge-patterns VS Code extension with command palette integration (`listPatterns`, `applyPattern`, `validateCompliance`), TypeScript entry point, and MCP context server integration docs
 - **UIForge Context MCP Server v2** (`src/mcp-context-server/`): Centralized context store — the MCP server is now the absolute source of truth for all UIForge project contexts
-  - `store.ts` — Read/write/list operations on `context-store/` with slug validation and path-confinement security (0 Snyk issues)
-  - `context-store/` — Seeded with all 4 project contexts (`forge-patterns`, `uiforge-webapp`, `uiforge-mcp`, `mcp-gateway`) as `.md` + `.meta.json` pairs
-  - `update_project_context` tool — Writes/overwrites any project's context document in the store; supports adding new projects dynamically
-  - `resources.ts` — Rewritten to enumerate projects dynamically from the store (no hardcoded paths)
-  - `tools.ts` — All 3 tools (`get_project_context`, `update_project_context`, `list_projects`) read/write from the centralized store
-  - `index.ts` — Bumped to v2.0.0, wires all 3 tool handlers
-  - `docs/guides/MCP_CONTEXT_SERVER.md` — Setup and IDE integration guide
 - `mcp-context:build` and `mcp-context:start` npm scripts
 - `@modelcontextprotocol/sdk` dependency
 - `test:plugins`, `test:feature-toggles`, `test:integration`, `test:all` npm scripts
-- **`patterns/shared-constants/`**: Centralised reusable constants from the Forge ecosystem — `network.ts` (timeouts, retries, gateway URL), `mcp-protocol.ts` (JSON-RPC version, MCP methods), `environments.ts` (NODE_ENVS, LOG_LEVELS, guard functions), `ai-providers.ts` (AI_PROVIDERS registry, helper functions), `feature-flags.ts` (FeatureFlag interface, createFeatureFlags, resolveFeatureFlag), `storage.ts` (IndexedDBStoreConfig, createStorageConfig, COMMON_STORE_NAMES), `index.ts` (barrel re-export)
+- **`patterns/shared-constants/`**: Centralised reusable constants from the Forge ecosystem — `network.ts`, `mcp-protocol.ts`, `environments.ts`, `ai-providers.ts`, `feature-flags.ts`, `storage.ts`, `index.ts` (barrel re-export)
 - `test:shared-constants` npm script (44 tests, 0 failures)
-- **`patterns/shell/linting/.shellcheckrc`**: strict shellcheck configuration — `shell=bash`, `enable=all`, disables only SC1091 (source not following) and SC2034 (unused variable in sourced files)
-- **`scripts/lint-shell.sh`**: unified shell linting runner — runs `shellcheck` (static analysis) and `shfmt` (formatting check) on all `.sh` files; `STRICT=1` mode for CI; graceful skip when tools are absent locally
+- **`patterns/shell/linting/.shellcheckrc`**: strict shellcheck configuration — `shell=bash`, `enable=all`, disables only SC1091 and SC2034
+- **`scripts/lint-shell.sh`**: unified shell linting runner — runs `shellcheck` and `shfmt` on all `.sh` files; `STRICT=1` mode for CI
 
 ### Removed
 
-- **`patterns/go/`**: Removed — Go is not used in the Forge ecosystem (TypeScript/Node.js only); generic templates added unnecessary package weight
-- **`patterns/java/`**: Removed — Java/Spring Boot is not used in the Forge ecosystem; generic templates added unnecessary package weight
-- **`patterns/rust/`**: Removed — Rust is not used in the Forge ecosystem; generic templates added unnecessary package weight
+- **`patterns/go/`**: Removed — Go is not used in the Forge ecosystem
+- **`patterns/java/`**: Removed — Java/Spring Boot is not used in the Forge ecosystem
+- **`patterns/rust/`**: Removed — Rust is not used in the Forge ecosystem
 
 ### Changed
 
-- **`eslint.config.mjs`** (root): migrated to `tseslint.config()` wrapper; upgraded from `recommended` to `strictTypeChecked` + `stylisticTypeChecked`; enabled `projectService: true`; added `eslint-plugin-import`; removed style rules now fully owned by Prettier (`quotes`, `semi`, `comma-dangle`); added `disableTypeChecked` override for plain JS files
-- **`.prettierrc.json`** (root): expanded to multi-line human-readable format; reconciled `trailingComma: "all"`, `arrowParens: "always"`; added `objectWrap: "collapse"` (Prettier 3.5+); added `$schema`
-- **`patterns/code-quality/prettier/base.config.json`**: synced with root — same canonical options, added `$schema`, `jsxSingleQuote`, `objectWrap`
-- **`tsconfig.json`** (root): upgraded `module`/`moduleResolution` from `ESNext`/`node` to `NodeNext`/`NodeNext`; added `composite: true`; removed redundant explicit strict flags already implied by `strict: true`
+- **`eslint.config.mjs`** (root): migrated to `tseslint.config()` wrapper; upgraded from `recommended` to `strictTypeChecked` + `stylisticTypeChecked`
+- **`.prettierrc.json`** (root): expanded to multi-line human-readable format; added `objectWrap: "collapse"` (Prettier 3.5+)
+- **`patterns/code-quality/prettier/base.config.json`**: synced with root
+- **`tsconfig.json`** (root): upgraded `module`/`moduleResolution` to `NodeNext`/`NodeNext`; added `composite: true`
 - **`prettier`** bumped to `^3.5.0` in devDependencies
 
 ### Fixed

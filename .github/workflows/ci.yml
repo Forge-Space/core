@@ -140,13 +140,11 @@ jobs:
             echo "\u274c MCP Gateway routing patterns missing"
             exit 1
           fi
-
           echo "Testing MCP Server AI provider patterns..."
           if [ ! -f "patterns/mcp-servers/ai-providers/README.md" ]; then
             echo "\u274c MCP Server AI provider patterns missing"
             exit 1
           fi
-
           echo "\u2705 All critical MCP patterns are present"
 
   deploy-docs:
