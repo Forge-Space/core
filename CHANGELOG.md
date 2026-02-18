@@ -9,6 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.4] - 2026-02-18
+
+### Changed
+
+- **Package rename**: Updated internal imports from `@uiforge/forge-patterns` to `@forgespace/core` across all modules
+- **Resource URI scheme**: Updated forge-context resources from `uiforge://context/` to `mcp://forge-context/` for MCP Gateway compatibility
+- **Internal package references**: Fixed self-references in shared constants to use new package name
+
+### Added
+
+- **MCP Gateway integration**: Added forge-context service configuration in `mcp-gateway/config/services.yml`
+- **UIForge MCP integration**: Implemented forge-context resources and tools in `uiforge-mcp` project
+- **Placeholder context management**: Temporary implementation ready for full activation once package is published
+
+### Fixed
+
+- **Internal import consistency**: All internal imports now correctly reference `@forgespace/core`
+- **Resource URI compatibility**: Updated to match MCP Gateway's expected URI scheme
+
 ## [1.1.1] - 2026-02-18
 
 ### Security
