@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
+- **VS Code Extension stub** (`patterns/ide-extensions/vscode/`): Alpha scaffold for forge-patterns VS Code extension with command palette integration (`listPatterns`, `applyPattern`, `validateCompliance`), TypeScript entry point, and MCP context server integration docs
 - **UIForge Context MCP Server v2** (`src/mcp-context-server/`): Centralized context store — the MCP server is now the absolute source of truth for all UIForge project contexts
   - `store.ts` — Read/write/list operations on `context-store/` with slug validation and path-confinement security (0 Snyk issues)
   - `context-store/` — Seeded with all 4 project contexts (`forge-patterns`, `uiforge-webapp`, `uiforge-mcp`, `mcp-gateway`) as `.md` + `.meta.json` pairs
@@ -21,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `test:plugins`, `test:feature-toggles`, `test:integration`, `test:all` npm scripts
 
 ### Fixed
+
 - Removed reference to deleted `scripts/prevent-duplicates.sh` from `pre-commit` script
 - README.md markdown lint warnings (MD031, MD012, MD032)
 - ESLint errors in cross-project integration, feature toggle validation, performance benchmark, advanced feature toggles, and AI code analyzer
@@ -30,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.1.0] - 2026-02-18
 
 ### Added
+
 - **Plugin System** (`patterns/plugin-system/`): Complete extensible architecture with dynamic plugin loading, hot reload, hook system, dependency management, and per-plugin configuration
   - `plugin-manager.js` — Core `PluginManager` class extending `EventEmitter`
   - `examples/analytics-plugin.js` — Analytics and event tracking example
@@ -45,12 +49,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Plugin System Implementation Report** (`docs/reports/PLUGIN_SYSTEM_IMPLEMENTATION_REPORT.md`)
 
 ### Fixed
+
 - Security vulnerabilities in logger examples: replaced hardcoded credentials with `process.env` references (CWE-547, CWE-798)
 - Duplicate files and backup files created by bootstrap script
 - `.vimrc` added to disable Vim backup and swap files
 - Pre-commit hook updated to prevent backup files from being committed
 
 ### Removed
+
 - Kubernetes configurations (`patterns/kubernetes/`) — replaced by cloud-native patterns approach
 - Duplicate plan files from `.windsurf/plans/`
 - `dist/` compiled output directory
@@ -60,6 +66,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2026-02-10
 
 ### Added
+
 - **Centralized Feature Toggle System** (`patterns/feature-toggles/`): Cross-project feature management with unified control via Unleash
   - Node.js SDK (`libraries/nodejs/index.js`)
   - Advanced library with A/B testing and analytics (`libraries/advanced/index.js`)
@@ -93,6 +100,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **GitHub Pages**: Automated documentation deployment
 
 ### Security
+
 - BR-001 Zero-Secrets policy enforced across all patterns
 - Multi-layer secret scanning with Trufflehog, Gitleaks, and custom scripts
 - All sensitive values use `{{PLACEHOLDER}}` syntax
