@@ -91,12 +91,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/LucasSantana-Dev/forge-patterns.git"
+    "url": "https://github.com/Forge-Space/forge-patterns.git"
   },
   "bugs": {
-    "url": "https://github.com/LucasSantana-Dev/forge-patterns/issues"
+    "url": "https://github.com/Forge-Space/forge-patterns/issues"
   },
-  "homepage": "https://github.com/LucasSantana-Dev/forge-patterns#readme",
+  "homepage": "https://github.com/Forge-Space/forge-patterns#readme",
   "engines": {
     "node": ">=22.0.0",
     "npm": ">=9.0.0"
