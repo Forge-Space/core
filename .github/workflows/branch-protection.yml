@@ -10,7 +10,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -19,14 +19,12 @@ jobs:
           BRANCH_NAME=${GITHUB_HEAD_REF}
           echo "Checking branch: $BRANCH_NAME"
 
-          # Allow main, develop, and feature branches
           if [[ "$BRANCH_NAME" =~ ^(main|develop)$ ]]; then
             echo "✅ Protected branch name: $BRANCH_NAME"
             exit 0
           fi
 
-          # Check feature branch naming
-          if [[ "$BRANCH_NAME" =~ ^(feature|fix|hotfix|chore|docs|refactor|test|perf)/.+$ ]]; then
+          if [[ "$BRANCH_NAME" =~ ^(feature|fix|hotfix|chore|docs|refactor|test|perf)/.+ ]]; then
             echo "✅ Branch follows naming convention: $BRANCH_NAME"
             exit 0
           fi
@@ -38,20 +36,22 @@ jobs:
       - name: Check commit messages follow Angular convention
         run: |
           echo "Checking commit messages..."
+          FAILED=0
 
-          # Get commit messages from PR (one per line, handles spaces correctly)
-          git log --pretty=format:"%s" origin/main..HEAD | while IFS= read -r COMMIT; do
+          while IFS= read -r COMMIT; do
             echo "Checking: $COMMIT"
-
-            # Check Angular convention
-            if [[ "$COMMIT" =~ ^(feat|fix|docs|style|refactor|perf|test|chore|build|ci|revert)(\(.+\))?: .+$ ]]; then
+            if [[ "$COMMIT" =~ ^(feat|fix|docs|style|refactor|perf|test|chore|build|ci|revert)(\(.+\))?: .+ ]]; then
               echo "✅ $COMMIT follows convention"
             else
               echo "❌ $COMMIT doesn't follow Angular convention"
               echo "Expected: type(scope): description"
-              exit 1
+              FAILED=1
             fi
-          done
+          done < <(git log --pretty=format:"%s" origin/main..HEAD)
+
+          if [ "$FAILED" -eq 1 ]; then
+            exit 1
+          fi
 
       - name: Check for merge commits
         run: |
@@ -71,7 +71,6 @@ jobs:
         run: |
           echo "Checking file sizes..."
 
-          # Find files larger than 1MB
           LARGE_FILES=$(find . -type f -not -path "./.git/*" -not -path "./node_modules/*" -size +1M)
 
           if [ -n "$LARGE_FILES" ]; then
@@ -88,7 +87,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -96,11 +95,9 @@ jobs:
         run: |
           echo "Validating TBD workflow..."
 
-          # Check if we're working against main (trunk)
           if [ "$GITHUB_BASE_REF" = "main" ]; then
             echo "✅ Working against trunk (main)"
 
-            # Check if branch is up to date with main
             BEHIND=$(git rev-list --count HEAD..origin/main)
             if [ "$BEHIND" -gt 0 ]; then
               echo "❌ Branch is $BEHIND commits behind main"
@@ -117,7 +114,6 @@ jobs:
         run: |
           echo "Checking branch age..."
 
-          # Get branch creation date
           BRANCH_AGE=$(git log --since="2 weeks ago" --pretty=format:"%h" | wc -l)
 
           if [ "$BRANCH_AGE" -eq 0 ]; then
