@@ -6,7 +6,7 @@
  *
  * @example
  * ```ts
- * import { FeatureFlag, FeatureFlagCategory, createFeatureFlags } from '@uiforge/forge-patterns/shared-constants';
+ * import { FeatureFlag, FeatureFlagCategory, createFeatureFlags } from '@forgespace/core/shared-constants';
  *
  * type MyFlags = 'ENABLE_DARK_MODE' | 'ENABLE_BETA';
  *

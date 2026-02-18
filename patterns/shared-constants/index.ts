@@ -1,5 +1,5 @@
 /**
- * @uiforge/forge-patterns — Shared Constants
+ * @forgespace/core — Shared Constants
  *
  * Central registry of reusable constants, types, and factory helpers
  * extracted from mcp-gateway, uiforge-mcp, and UIForge.

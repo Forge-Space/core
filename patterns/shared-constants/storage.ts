@@ -6,7 +6,7 @@
  *
  * @example
  * ```ts
- * import { createStorageConfig } from '@uiforge/forge-patterns/shared-constants';
+ * import { createStorageConfig } from '@forgespace/core/shared-constants';
  *
  * const storageConfig = createStorageConfig('myapp_storage', ['api_keys', 'user_preferences']);
  * ```
