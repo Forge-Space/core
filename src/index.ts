@@ -1,7 +1,7 @@
 /**
- * Forge AI Core - Main entry point
+ * Forgespace Core - Main entry point
  *
- * This is the main entry point for the @forge-ai/core package.
+ * This is the main entry point for the @forgespace/core package.
  * It provides easy access to all patterns and utilities.
  */
 

@@ -1,7 +1,7 @@
 {
-  "name": "@forge-ai/core",
+  "name": "@forgespace/core",
   "version": "1.1.1",
-  "description": "Shared configuration, workflows, and architectural patterns for the UIForge ecosystem",
+  "description": "Shared configuration, workflows, and architectural patterns for the Forgespace ecosystem",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -76,16 +76,9 @@
     "typescript-eslint": "^8.56.0"
   },
   "lint-staged": {
-    "*.{js,ts}": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "*.{json,yml,yaml}": [
-      "prettier --write"
-    ],
-    "*.md": [
-      "prettier --write"
-    ]
+    "*.{js,ts}": ["eslint --fix", "prettier --write"],
+    "*.{json,yml,yaml}": ["prettier --write"],
+    "*.md": ["prettier --write"]
   },
   "husky": {
     "hooks": {
@@ -93,18 +86,8 @@
       "pre-push": "npm run validate"
     }
   },
-  "keywords": [
-    "patterns",
-    "architecture",
-    "mcp",
-    "forge-ai",
-    "development",
-    "workflow",
-    "typescript",
-    "eslint",
-    "prettier"
-  ],
-  "author": "UIForge Team",
+  "keywords": ["patterns", "architecture", "mcp", "forgespace", "development", "workflow", "typescript", "eslint", "prettier"],
+  "author": "Forgespace",
   "license": "MIT",
   "repository": {
     "type": "git",
