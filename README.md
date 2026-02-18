@@ -1,10 +1,10 @@
 # UIForge Patterns
 
-Shared configuration, workflows, and architectural patterns for the UIForge ecosystem with zero secrets and comprehensive security.
+Shared configuration, workflows, and architectural patterns for the UIForge ecosystem with centralized feature management and comprehensive security.
 
 ## 🎯 Overview
 
-UIForge Patterns provides a comprehensive set of shared configurations, workflows, and architectural patterns designed to ensure consistency, security, and high-quality code across all UIForge projects.
+UIForge Patterns provides a comprehensive set of shared configurations, workflows, and architectural patterns designed to ensure consistency, security, and high-quality code across all UIForge projects. Our centralized feature toggle system enables unified control across the entire ecosystem.
 
 ### Key Features
 
@@ -14,6 +14,8 @@ UIForge Patterns provides a comprehensive set of shared configurations, workflow
 - 📊 **Quality Standards**: 80% test coverage, linting, and security scanning
 - 🛡️ **Security First**: Built-in security scanning and validation
 - 🐳 **Docker Patterns**: Containerization and deployment patterns
+- 🎛️ **Centralized Feature Toggles**: Cross-project feature management with CLI control
+- 🚀 **High Performance**: Sub-100ms integration times and optimized patterns
 
 ## 📋 Projects Using These Patterns
 
@@ -65,40 +67,31 @@ uiforge-patterns/
 │   ├── code-quality/       # ESLint, Prettier configurations
 │   ├── config/            # Centralized configuration management
 │   ├── docker/            # Docker and containerization patterns
-│   ├── feature-toggles/   # Centralized feature toggle system
+│   ├── feature-toggles/   # 🎛️ Centralized feature toggle system
 │   ├── git/               # Git hooks and workflows
 │   ├── mcp-gateway/       # MCP Gateway patterns (security, performance)
 │   ├── mcp-servers/       # MCP Server patterns (AI providers, streaming)
 │   ├── security/          # Security patterns (authentication, middleware)
 │   └── shared-infrastructure/ # Shared infrastructure patterns (optimization)
-├── rules/                  # ✅ NEW: Development rules and guidelines
-│   ├── README.md          # Rules library overview
-│   ├── agent-rules.md     # Core agent behavior rules
-│   ├── security-secrets.md # Security and secrets management
-│   ├── testing-quality.md  # Testing standards and QA
-│   ├── ci-cd.md           # CI/CD pipeline standards
-│   └── [35+ rule files]   # Comprehensive rule library
-├── workflows/              # ✅ NEW: Development workflows and procedures
-│   ├── README.md          # Workflows library overview
-│   ├── quality-checks.md  # Quality validation workflow
-│   ├── deploy-checklist.md # Deployment preparation
-│   ├── skill-*.md         # Specialized skill workflows
-│   └── [16+ workflow files] # Complete workflow library
-├── skills/                 # ✅ NEW: Specialized development skills
-│   ├── README.md          # Skills library overview
-│   ├── code-generation-templates.md # Code generation expertise
-│   ├── design-output.md   # System design skills
-│   ├── docker-deployment.md # Docker deployment expertise
-│   └── [5+ skill files]    # Expert-level capabilities
-├── plans/                  # ✅ NEW: Project plans and documentation
-│   ├── README.md          # Plans library overview
-│   ├── high-efficiency-docker-standards-c1f908.md
-│   └── [5+ plan files]    # Comprehensive project plans
+├── docs/                   # 📚 Comprehensive documentation
+│   ├── architecture/       # Architecture decisions and summaries
+│   ├── architecture-decisions/ # ADRs for system design
+│   ├── guides/            # User guides and deployment playbooks
+│   ├── standards/         # Development and security standards
+│   └── reports/           # Implementation and analysis reports
+├── test/                   # 🧪 Comprehensive test suites
+│   ├── feature-toggle-validation.js # Feature toggle system tests
+│   ├── cross-project-integration.js # Cross-project integration tests
+│   └── performance-benchmark.js # Performance benchmarking
 ├── scripts/
+│   ├── forge-features      # 🎛️ CLI tool for feature management
+│   ├── integrate.js        # Automated integration script
 │   ├── security/          # Security validation scripts
-│   ├── bootstrap/         # Project bootstrap scripts
-│   └── sync/             # Pattern synchronization scripts
-└── docs/                 # Comprehensive documentation
+│   └── bootstrap/         # Project bootstrap scripts
+├── src/                   # TypeScript source files
+├── test/                  # 🧪 Comprehensive test suites
+├── package.json           # Package configuration
+└── README.md             # This file
 ```
 
 ## 🔧 Available Patterns

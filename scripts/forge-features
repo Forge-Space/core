@@ -35,21 +35,79 @@ show_help() {
 Forge Features CLI - Centralized Feature Management
 
 USAGE:
-    forge-features <command> [options]
+    forge-features <command> [options] [arguments]
 
 COMMANDS:
-    help                Show this help message
-    list                List all available features
+    help, --help, -h              Show this help message
+    list                         List all available features
+    status                       Show current feature status
+    enable <feature>             Enable a feature (requires Unleash server)
+    disable <feature>            Disable a feature (requires Unleash server)
+    validate                     Validate feature toggle configuration
+    version                      Show CLI version information
+
+OPTIONS:
+    --global                     Show global features only
+    --project=<name>            Show project-specific features
+    --format=<json|table>        Output format (default: table)
+    --verbose                    Show detailed information
 
 FEATURE NAMES:
-    Global features: global.debug-mode, global.beta-features, global.experimental-ui
-    MCP Gateway: mcp-gateway.rate-limiting, mcp-gateway.security-headers
-    UIForge MCP: uiforge-mcp.ai-chat, uiforge-mcp.template-management
-    UIForge WebApp: uiforge-webapp.dark-mode, uiforge-webapp.advanced-analytics
+    Global Features:
+        global.debug-mode         Enable debug logging and monitoring
+        global.beta-features       Enable beta functionality
+        global.experimental-ui    Enable experimental UI components
+        global.enhanced-logging   Enable detailed logging
+        global.maintenance-mode    Put system in maintenance mode
+
+    MCP Gateway Features:
+        mcp-gateway.rate-limiting          Request rate limiting
+        mcp-gateway.request-validation     Input validation middleware
+        mcp-gateway.security-headers       Security headers middleware
+        mcp-gateway.performance-monitoring Performance monitoring
+        mcp-gateway.circuit-breaker        Circuit breaker pattern
+        mcp-gateway.health-checks          Health check endpoints
+
+    UIForge MCP Features:
+        uiforge-mcp.ai-chat               Enable AI chat functionality
+        uiforge-mcp.template-management    Enable template management
+        uiforge-mcp.ui-generation          Enable UI generation features
+        uiforge-mcp.cost-optimization      Enable cost optimization
+        uiforge-mcp.provider-load-balancing Enable provider load balancing
+        uiforge-mcp.streaming-responses    Enable streaming responses
+
+    UIForge WebApp Features:
+        uiforge-webapp.dark-mode           Enable dark mode
+        uiforge-webapp.advanced-analytics   Enable advanced analytics
+        uiforge-webapp.feature-flags-ui    Enable feature flags UI
 
 EXAMPLES:
     forge-features help
     forge-features list
+    forge-features list --global
+    forge-features list --project=mcp-gateway
+    forge-features status --global
+    forge-features enable global.debug-mode
+    forge-features disable mcp-gateway.rate-limiting
+    forge-features validate
+
+CONFIGURATION:
+    Environment Variables:
+        UNLEASH_URL           URL of Unleash server
+        UNLEASH_CLIENT_KEY    Client authentication key
+        DEBUG                 Enable debug output
+
+    Configuration Files:
+        patterns/feature-toggles/config/centralized-config.yml
+
+TROUBLESHOOTING:
+    If commands fail, check:
+    1. Unleash server is running (for enable/disable commands)
+    2. Environment variables are set correctly
+    3. Configuration file exists and is valid
+    4. Network connectivity to Unleash server
+
+For more help, see: https://github.com/uiforge/forge-patterns/docs/guides/
 
 Note: This is a simplified version for testing. Full CLI functionality requires Unleash server.
 EOF
