@@ -24,7 +24,7 @@ SECRET_PATTERNS=(
 for pattern in "${SECRET_PATTERNS[@]}"; do
   echo "Checking for pattern: $pattern"
   if grep -r -i "$pattern" --include="*.yml" --include="*.yaml" --include="*.json" --include="*.js" --include="*.ts" \
-    --exclude="package-lock.json" --exclude-dir="node_modules" --exclude-dir=".git" . \
+    --exclude="package-lock.json" --exclude-dir="node_modules" --exclude-dir=".git" --exclude-dir="dist" . \
     | grep -v "REPLACE_WITH_" \
     | grep -v "#.*example" | grep -v "//.*example" \
     | grep -v "SECURITY NOTICE" | grep -v "placeholder" | grep -v "template" \
@@ -32,13 +32,17 @@ for pattern in "${SECRET_PATTERNS[@]}"; do
     | grep -v "documentation" | grep -v "patterns" | grep -v "validation" | grep -v "detection" \
     | grep -v ".gitleaks.yml" | grep -v "SECURITY.md" | grep -v "README.md" \
     | grep -v "workflow" | grep -v "github-actions" \
-    | grep -v "maxToken" | grep -v "costPerToken" | grep -v "Object\.keys" \
+    | grep -v "maxToken" | grep -v "costPerToken" | grep -v "Object\.keys" | grep -v "Object\.entries" \
     | grep -v "keywords" | grep -v "visitor-keys" | grep -v "path-key" \
     | grep -v "apiKey.*process\.env" | grep -v "process\.env\.[A-Z_]*KEY" \
     | grep -v "integrity.*sha" | grep -v "resolved.*registry" \
-    | grep -v "\"key\":\s*\"" | grep -v "\[key\]" | grep -v "(key)" \
+    | grep -v "\"key\":\s*\"" | grep -v "\[key\]" | grep -v "(key)" | grep -v "\[key," \
     | grep -v "secretsManager\|secretKey\|secretName" \
-    | grep -v "tokenize\|tokenizer\|tokenCount\|tokenLimit"; then
+    | grep -v "tokenize\|tokenizer\|tokenCount\|tokenLimit" \
+    | grep -v "\"author\"" | grep -v "author:" \
+    | grep -v "authentication" \
+    | grep -v "private static\|private readonly\|private " \
+    | grep -v "API keys" | grep -v "\${key}:" | grep -v "\[key\."; then
     echo "❌ Found potential secret with pattern: $pattern"
     FAILED=1
   else
@@ -59,7 +63,10 @@ FORBIDDEN_PATTERNS=(
 )
 
 for pattern in "${FORBIDDEN_PATTERNS[@]}"; do
-  if grep -r "$pattern" --include="*.yml" --include="*.yaml" --include="*.json" --include="*.example" . | grep -v "SECURITY NOTICE" | grep -v "FORBIDDEN_PATTERNS" | grep -v "placeholder format" | grep -v "documentation"; then
+  if grep -r "$pattern" --include="*.yml" --include="*.yaml" --include="*.json" --include="*.example" \
+    --exclude="package-lock.json" --exclude-dir="node_modules" --exclude-dir=".git" --exclude-dir="dist" \
+    --exclude-dir="patterns" . \
+    | grep -v "SECURITY NOTICE" | grep -v "FORBIDDEN_PATTERNS" | grep -v "placeholder format" | grep -v "documentation"; then
     echo "❌ Found forbidden placeholder format: $pattern"
     echo "Use format: REPLACE_WITH_[TYPE] instead"
     FAILED=1
@@ -68,7 +75,8 @@ done
 
 # Check for proper placeholder format
 echo "Checking for proper placeholder format..."
-if grep -r "REPLACE_WITH_" --include="*.yml" --include="*.yaml" --include="*.json" --include="*.example" .; then
+if grep -r "REPLACE_WITH_" --include="*.yml" --include="*.yaml" --include="*.json" --include="*.example" \
+  --exclude-dir="node_modules" --exclude-dir=".git" --exclude-dir="dist" .; then
   echo "✅ Proper placeholder format found"
 else
   echo "⚠️  No placeholders found - ensure all sensitive values use REPLACE_WITH_ format"

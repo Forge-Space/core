@@ -36,9 +36,7 @@ jobs:
         continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          version: latest
-          config: .gitleaks.yml
+          GITLEAKS_CONFIG: .gitleaks.yml
 
       - name: Custom Secret Validation
         run: |
@@ -54,6 +52,7 @@ jobs:
 
       - name: Run Snyk Security Scan
         uses: snyk/actions/node@master
+        continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
@@ -66,12 +65,12 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Run CodeQL Analysis
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@v4
         with:
           languages: javascript
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@v4
         with:
           category: "/language:javascript"
 

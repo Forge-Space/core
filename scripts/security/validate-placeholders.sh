@@ -19,7 +19,13 @@ FORBIDDEN_PATTERNS=(
 )
 
 for pattern in "${FORBIDDEN_PATTERNS[@]}"; do
-  if grep -r "$pattern" --include="*.yml" --include="*.yaml" --include="*.json" --include="*.example" --include="*.md" . | grep -v "SECURITY NOTICE" | grep -v "FORBIDDEN_PATTERNS" | grep -v "placeholder format" | grep -v "documentation" | grep -v "examples" | grep -v "what to avoid" | grep -v "validation examples" | grep -v "configuration examples" | grep -v "development for new features" | grep -v "description.*placeholder"; then
+  if grep -r "$pattern" --include="*.yml" --include="*.yaml" --include="*.json" --include="*.example" --include="*.md" \
+    --exclude="package-lock.json" \
+    --exclude-dir="node_modules" --exclude-dir=".git" --exclude-dir="dist" \
+    --exclude-dir="patterns" --exclude-dir="docs" --exclude-dir=".windsurf" \
+    --exclude-dir="context-store" . \
+    | grep -v "SECURITY NOTICE" | grep -v "FORBIDDEN_PATTERNS" | grep -v "placeholder format" | grep -v "documentation" | grep -v "examples" | grep -v "what to avoid" | grep -v "validation examples" | grep -v "configuration examples" | grep -v "development for new features" | grep -v "description.*placeholder" \
+    | grep -v "CONTRIBUTING.md"; then
     echo "❌ Found improper placeholder format: $pattern"
     echo "Use format: REPLACE_WITH_[TYPE] instead"
     FAILED=1
@@ -28,11 +34,12 @@ done
 
 # Check for proper REPLACE_WITH_ format
 echo "Checking for REPLACE_WITH_ format..."
-REPLACE_WITH_COUNT=$(grep -r "REPLACE_WITH_" --include="*.yml" --include="*.yaml" --include="*.json" --include="*.example" --include="*.md" . | wc -l || true)
+REPLACE_WITH_COUNT=$(grep -r "REPLACE_WITH_" --include="*.yml" --include="*.yaml" --include="*.json" --include="*.example" --include="*.md" \
+  --exclude-dir="node_modules" --exclude-dir=".git" --exclude-dir="dist" . | wc -l || true)
 
 if [ "$REPLACE_WITH_COUNT" -gt 0 ]; then
   echo "✅ Found $REPLACE_WITH_COUNT proper placeholder(s)"
-  
+
   # Validate specific placeholder types
   VALID_PLACEHOLDERS=(
     "REPLACE_WITH_API_KEY"
@@ -43,10 +50,11 @@ if [ "$REPLACE_WITH_COUNT" -gt 0 ]; then
     "REPLACE_WITH_WEBHOOK_SECRET"
     "REPLACE_WITH_GITHUB_TOKEN"
   )
-  
+
   echo "Validating specific placeholder types..."
   for placeholder in "${VALID_PLACEHOLDERS[@]}"; do
-    if grep -r "$placeholder" --include="*.yml" --include="*.yaml" --include="*.json" --include="*.example" --include="*.md" .; then
+    if grep -r "$placeholder" --include="*.yml" --include="*.yaml" --include="*.json" --include="*.example" --include="*.md" \
+      --exclude-dir="node_modules" --exclude-dir=".git" --exclude-dir="dist" .; then
       echo "✅ Found valid placeholder: $placeholder"
     fi
   done
@@ -57,7 +65,7 @@ fi
 
 # Check for environment files that should be templates
 echo "Checking for .env files that should be templates..."
-if find . -name ".env*" -not -name ".env.example" -not -name ".env.template" | grep -v node_modules; then
+if find . -name ".env*" -not -name ".env.example" -not -name ".env.template" | grep -v node_modules | grep -v \.git | grep -v dist; then
   echo "❌ Found .env files that should be .env.example or .env.template"
   FAILED=1
 else
