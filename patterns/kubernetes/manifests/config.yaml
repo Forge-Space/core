@@ -87,8 +87,8 @@ metadata:
     app: uiforge-app
 type: Opaque
 data:
-  # Base64 encoded values
-  # Use: echo -n "value" | base64
-  database-password: UkVQTEFDRV9XSVRIX1NUUk9OR19QQVNTV09SRA==
-  jwt-secret: UkVQTEFDRV9XSVRIX0pXVF9TRUNSRVQ=
-  api-key: UkVQTEFDRV9XSVRIX0FQSV9LRVk=
+  # Base64 encoded placeholder values
+  # Replace with actual secrets using: echo -n "your-secret" | base64
+  database-password: UkVQTEFDRV9EQVRBQkFTRV9QQVNTV09SRA==
+  jwt-secret: UkVQTEFDRV9KV1RfU0VDUkVUX1BMQUNFSE9MREVSOg==
+  api-key: UkVQTEFDRV9BUElfS0VZX1BMQUNFSE9MREVSOg==
