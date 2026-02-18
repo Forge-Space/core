@@ -7,7 +7,7 @@ on:
 
 jobs:
   publish:
-    name: Publish @uiforge/forge-patterns
+    name: Publish @forgespace/core
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -34,6 +34,4 @@ jobs:
         run: npm test
 
       - name: Publish to npm
-        run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public --provenance
