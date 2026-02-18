@@ -9,6 +9,9 @@ const fs = require('fs-extra');
 const path = require('path');
 const { spawn } = require('child_process');
 
+// Constants
+const DEFAULT_TIMEOUT = 30000;
+
 class CrossProjectIntegrationTester {
   constructor() {
     this.results = {
@@ -22,6 +25,7 @@ class CrossProjectIntegrationTester {
   log(message, type = 'info') {
     const timestamp = new Date().toISOString();
     const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
+    // eslint-disable-next-line no-console
     console.log(`${timestamp} ${prefix} ${message}`);
   }
 
@@ -48,7 +52,7 @@ class CrossProjectIntegrationTester {
       const child = spawn(command, args, {
         cwd,
         stdio: 'pipe',
-        timeout: 30000
+        timeout: DEFAULT_TIMEOUT
       });
       
       let stdout = '';
@@ -102,7 +106,7 @@ class CrossProjectIntegrationTester {
       );
       
       // Run integration
-      const { code, stdout, stderr } = await this.runCommand(
+      const { code, stderr } = await this.runCommand(
         'node',
         [path.join(__dirname, '../scripts/integrate.js'), 'integrate', '--project=mcp-gateway'],
         projectDir
@@ -154,7 +158,7 @@ class CrossProjectIntegrationTester {
       );
       
       // Run integration
-      const { code, stdout, stderr } = await this.runCommand(
+      const { code, stderr } = await this.runCommand(
         'node',
         [path.join(__dirname, '../scripts/integrate.js'), 'integrate', '--project=uiforge-mcp'],
         projectDir
@@ -195,7 +199,7 @@ class CrossProjectIntegrationTester {
       );
       
       // Run integration
-      const { code, stdout, stderr } = await this.runCommand(
+      const { code, stderr } = await this.runCommand(
         'node',
         [path.join(__dirname, '../scripts/integrate.js'), 'integrate', '--project=uiforge-webapp'],
         projectDir
@@ -248,7 +252,6 @@ class CrossProjectIntegrationTester {
       
       for (const project of projects) {
         const projectDir = path.join(this.testDir, project);
-        const cliPath = path.join(projectDir, 'scripts', 'forge-features');
         
         // Test help command
         const { code: helpCode } = await this.runCommand('./scripts/forge-features', ['help'], projectDir);
@@ -299,7 +302,7 @@ class CrossProjectIntegrationTester {
 
   async runAllScenarios() {
     this.log('🚀 Starting Cross-Project Integration Testing');
-    this.log('=' .repeat(60));
+    this.log('='.repeat(60));
 
     try {
       await this.setup();
@@ -311,7 +314,7 @@ class CrossProjectIntegrationTester {
       await this.testCLIConsistency();
       await this.testPackageJsonUpdates();
       
-      this.log('=' .repeat(60));
+      this.log('='.repeat(60));
       this.log(`📊 Test Results: ${this.results.passed} passed, ${this.results.failed} failed`);
       
       if (this.results.failed > 0) {
@@ -330,6 +333,7 @@ class CrossProjectIntegrationTester {
 if (require.main === module) {
   const tester = new CrossProjectIntegrationTester();
   tester.runAllScenarios().catch(error => {
+    // eslint-disable-next-line no-console
     console.error('Integration testing failed:', error);
     process.exit(1);
   });
