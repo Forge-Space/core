@@ -7,7 +7,7 @@ on:
 
 jobs:
   publish:
-    name: Publish @uiforge/forge-patterns
+    name: Publish @forgespace/core
     runs-on: ubuntu-latest
     permissions:
       contents: read
