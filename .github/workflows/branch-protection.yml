@@ -1,124 +1,158 @@
-name: Branch Protection
+name: Branch Protection and Release Rules
 
 on:
+  push:
+    branches: [main]
   pull_request:
-    branches: [main, develop]
+    branches: [main, 'release/*']
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
 
 jobs:
-  check-branch-protection:
+  validate-release-branch:
+    name: Validate Release Branch
     runs-on: ubuntu-latest
-
+    if: startsWith(github.head_ref, 'release/')
+    
     steps:
-      - name: Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate release branch name
+        id: validate
+        run: |
+          BRANCH="${{ github.head_ref }}"
+          if [[ ! "$BRANCH" =~ ^release/[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "❌ Release branch name must follow pattern: release/X.Y.Z"
+            echo "Current branch: $BRANCH"
+            exit 1
+          fi
+          
+          VERSION=$(echo "$BRANCH" | sed 's|release/||')
+          echo "✅ Valid release version: $VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Check version format
+        run: |
+          VERSION="${{ steps.validate.outputs.version }}"
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "❌ Version must be semantic: X.Y.Z"
+            exit 1
+          fi
+
+      - name: Check for existing releases
+        run: |
+          VERSION="${{ steps.validate.outputs.version }}"
+          if git tag -l "v$VERSION" | grep -q .; then
+            echo "❌ Version v$VERSION already exists"
+            exit 1
+          fi
+
+  enforce-pr-requirements:
+    name: Enforce PR Requirements
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Check branch name follows conventions
+      - name: Check PR description
+        env:
+          DESCRIPTION: "${{ github.event.pull_request.body }}"
         run: |
-          BRANCH_NAME=${GITHUB_HEAD_REF}
-          echo "Checking branch: $BRANCH_NAME"
-
-          if [[ "$BRANCH_NAME" =~ ^(main|develop)$ ]]; then
-            echo "Branch is a protected branch: $BRANCH_NAME"
-            exit 0
+          # Safely handle the description from environment variable
+          DESCRIPTION="$(printf '%s' "$DESCRIPTION")"
+          if [[ -z "$DESCRIPTION" || ${#DESCRIPTION} -lt 20 ]]; then
+            echo "❌ PR must have a description (at least 20 characters)"
+            exit 1
           fi
 
-          if [[ "$BRANCH_NAME" =~ ^(feature|fix|hotfix|chore|docs|refactor|test|perf)/.+ ]]; then
-            echo "Branch follows naming convention: $BRANCH_NAME"
-            exit 0
-          fi
-
-          echo "Branch name does not follow conventions: $BRANCH_NAME"
-          echo "Expected: feature/*, fix/*, hotfix/*, chore/*, docs/*, refactor/*, test/*, perf/*"
-          exit 1
-
-      - name: Check commit messages follow Angular convention
+      - name: Check for tests
         run: |
-          echo "Checking commit messages..."
-          FAILED=0
-          ANGULAR_TYPES="feat|fix|docs|style|refactor|perf|test|chore|build|ci|revert"
-
-          while IFS= read -r COMMIT; do
-            echo "Checking: $COMMIT"
-            if echo "$COMMIT" | grep -qE "^($ANGULAR_TYPES)(\([^)]+\))?: .+"; then
-              echo "OK: $COMMIT"
-            else
-              echo "FAIL: $COMMIT does not follow Angular convention"
-              echo "Expected: type(scope): description"
-              FAILED=1
+          # Check if PR adds or modifies code that should have tests
+          FILES_CHANGED=$(git diff --name-only origin/${{ github.base_ref }}..HEAD)
+          HAS_CODE_CHANGES=false
+          HAS_TEST_CHANGES=false
+          
+          for FILE in $FILES_CHANGED; do
+            if [[ "$FILE" =~ \.(ts|js|tsx|jsx)$ ]] && [[ ! "$FILE" =~ test|spec ]]; then
+              HAS_CODE_CHANGES=true
             fi
-          done < <(git log --pretty=format:"%s" origin/main..HEAD)
-
-          if [ "$FAILED" -eq 1 ]; then
-            exit 1
+            if [[ "$FILE" =~ \.(test|spec)\.(ts|js|tsx|jsx)$ ]]; then
+              HAS_TEST_CHANGES=true
+            fi
+          done
+          
+          if [[ "$HAS_CODE_CHANGES" == "true" && "$HAS_TEST_CHANGES" == "false" ]]; then
+            echo "⚠️ Consider adding tests for code changes"
+            echo "This is a warning, not blocking the PR"
           fi
 
-      - name: Check for merge commits
+      - name: Check CHANGELOG updates
         run: |
-          echo "Checking for merge commits..."
-
-          MERGE_COMMITS=$(git log --oneline --merges origin/main..HEAD | wc -l)
-
-          if [ "$MERGE_COMMITS" -gt 0 ]; then
-            echo "Found $MERGE_COMMITS merge commits in PR"
-            echo "Please rebase to avoid merge commits"
-            exit 1
-          else
-            echo "No merge commits found"
+          if [[ "${{ github.base_ref }}" == "main" ]]; then
+            FILES_CHANGED=$(git diff --name-only origin/main..HEAD)
+            if echo "$FILES_CHANGED" | grep -qE "\.(ts|js|tsx|jsx)$" && ! echo "$FILES_CHANGED" | grep -q "CHANGELOG.md"; then
+              echo "⚠️ Consider updating CHANGELOG.md for user-facing changes"
+              echo "This is a warning, not blocking the PR"
+            fi
           fi
 
-      - name: Check file size limits
-        run: |
-          echo "Checking file sizes..."
-
-          LARGE_FILES=$(find . -type f -not -path "./.git/*" -not -path "./node_modules/*" -size +1M)
-
-          if [ -n "$LARGE_FILES" ]; then
-            echo "Found large files:"
-            echo "$LARGE_FILES"
-            echo "Please keep files under 1MB or use Git LFS"
-            exit 1
-          else
-            echo "No large files found"
-          fi
-
-  validate-tbd-workflow:
+  pre-release-validation:
+    name: Pre-Release Validation
     runs-on: ubuntu-latest
-
+    if: startsWith(github.head_ref, 'release/')
+    
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          fetch-depth: 0
+          node-version: "24"
+          cache: "npm"
 
-      - name: Validate Trunk Based Development workflow
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run full test suite
+        run: npm test
+
+      - name: Run security scan
+        run: npm audit --audit-level high
+
+      - name: Check build
+        run: npm run build
+
+      - name: Validate package.json
         run: |
-          echo "Validating TBD workflow..."
-
-          if [ "$GITHUB_BASE_REF" = "main" ]; then
-            echo "Working against trunk (main)"
-
-            BEHIND=$(git rev-list --count HEAD..origin/main)
-            if [ "$BEHIND" -gt 0 ]; then
-              echo "Branch is $BEHIND commits behind main"
-              echo "Please sync with main before creating PR"
-              exit 1
-            else
-              echo "Branch is up to date with main"
-            fi
-          else
-            echo "Not targeting main branch"
+          # Check that package.json is valid
+          if ! npm ls --json >/dev/null 2>&1; then
+            echo "❌ package.json has dependency issues"
+            exit 1
           fi
 
-      - name: Check for long-lived branches
+      - name: Check for breaking changes
         run: |
-          echo "Checking branch age..."
-
-          BRANCH_AGE=$(git log --since="2 weeks ago" --pretty=format:"%h" | wc -l)
-
-          if [ "$BRANCH_AGE" -eq 0 ]; then
-            echo "Branch is older than 2 weeks - consider merging or updating"
-          else
-            echo "Branch is recent"
+          VERSION="${{ github.head_ref }}"
+          VERSION=${VERSION#release/}
+          
+          # Extract major version
+          MAJOR=$(echo "$VERSION" | cut -d. -f1)
+          
+          # Get last released version
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          LAST_VERSION=${LAST_TAG#v}
+          LAST_MAJOR=$(echo "$LAST_VERSION" | cut -d. -f1)
+          
+          if [[ "$MAJOR" -gt "$LAST_MAJOR" ]]; then
+            echo "⚠️ This is a major version bump ($LAST_VERSION -> $VERSION)"
+            echo "Ensure breaking changes are documented"
           fi
