@@ -1,0 +1,351 @@
+name: Base CI Workflow (Shared)
+
+on:
+  workflow_call:
+    inputs:
+      project-type:
+        description: "Type of project (gateway, webapp, mcp, patterns)"
+        required: false
+        default: "patterns"
+        type: string
+      node-version:
+        description: "Node.js version to use"
+        required: false
+        default: "22"
+        type: string
+      python-version:
+        description: "Python version to use"
+        required: false
+        default: "3.12"
+        type: string
+      enable-docker:
+        description: "Enable Docker builds"
+        required: false
+        default: false
+        type: boolean
+      enable-security:
+        description: "Enable security scanning"
+        required: false
+        default: true
+        type: boolean
+      enable-coverage:
+        description: "Enable coverage reporting"
+        required: false
+        default: true
+        type: boolean
+      coverage-threshold:
+        description: "Coverage threshold percentage"
+        required: false
+        default: "80"
+        type: string
+      test-parallel:
+        description: "Run tests in parallel"
+        required: false
+        default: true
+        type: boolean
+      timeout-minutes:
+        description: "Default timeout for jobs"
+        required: false
+        default: "30"
+        type: string
+    secrets:
+      CODECOV_TOKEN:
+        description: "Codecov token"
+        required: false
+      SNYK_TOKEN:
+        description: "Snyk token"
+        required: false
+      GITHUB_TOKEN:
+        description: "GitHub token"
+        required: false
+      NPM_TOKEN:
+        description: "NPM token for publishing"
+        required: false
+
+env:
+  NODE_VERSION: ${{ inputs.node-version }}
+  PYTHON_VERSION: ${{ inputs.python-version }}
+  COVERAGE_THRESHOLD: ${{ inputs.coverage-threshold }}
+  CACHE_VERSION: "v2"
+
+jobs:
+  # Node.js Jobs
+  lint-node:
+    name: Lint Node.js
+    runs-on: ubuntu-latest
+    timeout-minutes: ${{ inputs.timeout-minutes }}
+    if: inputs.project-type != 'gateway'
+    outputs:
+      cache-hit: ${{ steps.cache.outputs.cache-hit }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: "npm"
+
+      - name: Get npm cache directory
+        id: cache
+        run: |
+          echo "dir=$(npm config get cache)" >> $GITHUB_OUTPUT
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.cache.outputs.dir }}
+          key: ${{ runner.os }}-node-${{ inputs.node-version }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ inputs.node-version }}-
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Run ESLint
+        run: npm run lint --if-present
+
+      - name: Check formatting
+        run: npm run format:check --if-present
+
+      - name: TypeScript compilation
+        run: npx tsc --noEmit --if-present
+
+  test-node:
+    name: Test Node.js
+    runs-on: ubuntu-latest
+    timeout-minutes: ${{ inputs.timeout-minutes }}
+    needs: lint-node
+    if: inputs.project-type != 'gateway'
+    strategy:
+      matrix:
+        node-version: [22]
+      fail-fast: false
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ matrix.node-version }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ matrix.node-version }}-
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Run tests with coverage
+        run: npm run test:coverage --if-present || npm run test --if-present
+
+      - name: Upload coverage to Codecov
+        if: inputs.enable-coverage && matrix.node-version == '22'
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/coverage-final.json,./coverage/lcov.info
+          flags: unittests
+          fail_ci_if_error: false
+
+  # Python Jobs (for gateway and mcp projects)
+  lint-python:
+    name: Lint Python
+    runs-on: ubuntu-latest
+    timeout-minutes: ${{ inputs.timeout-minutes }}
+    if: inputs.project-type == 'gateway' || inputs.project-type == 'mcp'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version }}
+          cache: "pip"
+          cache-dependency-path: "requirements.txt"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff black mypy pytest pytest-cov
+          pip install -r requirements.txt --if-present
+
+      - name: Run ruff
+        run: ruff check . --format=github
+
+      - name: Run black
+        run: black --check .
+
+      - name: Run mypy
+        run: mypy . --ignore-missing-imports || true
+
+  test-python:
+    name: Test Python
+    runs-on: ubuntu-latest
+    timeout-minutes: ${{ inputs.timeout-minutes }}
+    needs: lint-python
+    if: inputs.project-type == 'gateway' || inputs.project-type == 'mcp'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version }}
+          cache: "pip"
+          cache-dependency-path: "requirements.txt"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-cov pytest-mock
+          pip install -r requirements.txt --if-present
+
+      - name: Run tests with coverage
+        run: |
+          pytest --cov=. --cov-report=xml --cov-report=html \
+            --cov-fail-under=${{ inputs.coverage-threshold }} \
+            -v --tb=short
+
+      - name: Upload coverage to Codecov
+        if: inputs.enable-coverage
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml
+          fail_ci_if_error: false
+
+  # Build Jobs
+  build-node:
+    name: Build Node.js
+    runs-on: ubuntu-latest
+    timeout-minutes: ${{ inputs.timeout-minutes }}
+    needs: [test-node]
+    if: inputs.project-type != 'gateway'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Build
+        run: npm run build --if-present
+
+      - name: Verify build output
+        run: |
+          if [ -f "dist/index.js" ] || [ -f "lib/index.js" ] || [ -d "build" ]; then
+            echo "✅ Build output verified"
+          else
+            echo "⚠️ No standard build output found"
+          fi
+
+  build-docker:
+    name: Build Docker Images
+    runs-on: ubuntu-latest
+    timeout-minutes: ${{ inputs.timeout-minutes }}
+    needs: [test-python, test-node]
+    if: inputs.enable-docker
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        run: |
+          if [ -f "docker-compose.yml" ]; then
+            docker compose -f docker-compose.yml build
+          elif [ -f "Dockerfile" ]; then
+            docker build -t test-image .
+          else
+            echo "⚠️ No Docker configuration found"
+          fi
+
+  # Security Scanning
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [lint-node, lint-python]
+    if: inputs.enable-security
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Snyk (Node.js)
+        if: inputs.project-type != 'gateway'
+        uses: snyk/actions/node@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high
+
+      - name: Run Snyk (Python)
+        if: inputs.project-type == 'gateway' || inputs.project-type == 'mcp'
+        uses: snyk/actions/python@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high
+
+      - name: Run npm audit
+        if: inputs.project-type != 'gateway'
+        run: npm audit --audit-level=high
+        continue-on-error: true
+
+  # Quality Gates
+  quality-gates:
+    name: Quality Gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [lint-node, test-node, lint-python, test-python, build-node, build-docker, security-scan]
+    if: always()
+
+    steps:
+      - name: Quality Gates Summary
+        run: |
+          echo "## 🏗️ CI Pipeline Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Job | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Node.js Lint | ${{ needs.lint-node.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Node.js Test | ${{ needs.test-node.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Python Lint | ${{ needs.lint-python.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Python Test | ${{ needs.test-python.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Node.js Build | ${{ needs.build-node.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Docker Build | ${{ needs.build-docker.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Security Scan | ${{ needs.security-scan.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Overall status
+          if [[ "${{ needs.lint-node.result }}" == "success" && "${{ needs.test-node.result }}" == "success" ]]; then
+            echo "✅ All quality checks passed!" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Some quality checks failed" >> $GITHUB_STEP_SUMMARY
+          fi

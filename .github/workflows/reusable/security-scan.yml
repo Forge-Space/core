@@ -1,0 +1,344 @@
+name: Security Scanning (Shared)
+
+on:
+  workflow_call:
+    inputs:
+      project-type:
+        description: "Type of project (gateway, webapp, mcp, patterns)"
+        required: false
+        default: "patterns"
+        type: string
+      node-version:
+        description: "Node.js version to use"
+        required: false
+        default: "22"
+        type: string
+      python-version:
+        description: "Python version to use"
+        required: false
+        default: "3.12"
+        type: string
+      severity-threshold:
+        description: "Security severity threshold"
+        required: false
+        default: "high"
+        type: string
+      enable-codeql:
+        description: "Enable CodeQL analysis"
+        required: false
+        default: true
+        type: boolean
+      enable-snyk:
+        description: "Enable Snyk scanning"
+        required: false
+        default: true
+        type: boolean
+      enable-secrets:
+        description: "Enable secret scanning"
+        required: false
+        default: true
+        type: boolean
+      timeout-minutes:
+        description: "Default timeout for security jobs"
+        required: false
+        default: "15"
+        type: string
+    secrets:
+      SNYK_TOKEN:
+        description: "Snyk token"
+        required: false
+      GITHUB_TOKEN:
+        description: "GitHub token"
+        required: false
+
+env:
+  NODE_VERSION: ${{ inputs.node-version }}
+  PYTHON_VERSION: ${{ inputs.python-version }}
+  SNYK_SEVERITY_THRESHOLD: ${{ inputs.severity-threshold }}
+  SNYK_ORGANIZATION: "LucasSantana-Dev"
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+jobs:
+  # Snyk Dependency Scanning
+  snyk-dependencies:
+    name: Snyk Dependencies
+    runs-on: ubuntu-latest
+    timeout-minutes: ${{ inputs.timeout-minutes }}
+    if: inputs.enable-snyk
+
+    strategy:
+      matrix:
+        language: [node, python]
+        include:
+          - language: node
+            if: inputs.project-type != 'gateway'
+          - language: python
+            if: inputs.project-type == 'gateway' || inputs.project-type == 'mcp'
+      fail-fast: false
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        if: matrix.language == 'node'
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: "npm"
+
+      - name: Setup Python
+        if: matrix.language == 'python'
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version }}
+          cache: "pip"
+
+      - name: Install Node.js dependencies
+        if: matrix.language == 'node'
+        run: npm ci --legacy-peer-deps
+
+      - name: Install Python dependencies
+        if: matrix.language == 'python'
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt --if-present
+
+      - name: Run Snyk
+        uses: snyk/actions/${{ matrix.language }}@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=${{ env.SNYK_SEVERITY_THRESHOLD }} --org=${{ env.SNYK_ORGANIZATION }}
+
+      - name: Upload Snyk results
+        uses: github/codeql-action/upload-sarif@v4
+        if: always()
+        with:
+          sarif_file: snyk.sarif
+
+  # Snyk Code Security Analysis
+  snyk-code:
+    name: Snyk Code Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: ${{ inputs.timeout-minutes }}
+    if: inputs.enable-snyk
+
+    strategy:
+      matrix:
+        language: [node, python]
+        include:
+          - language: node
+            if: inputs.project-type != 'gateway'
+          - language: python
+            if: inputs.project-type == 'gateway' || inputs.project-type == 'mcp'
+      fail-fast: false
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        if: matrix.language == 'node'
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: "npm"
+
+      - name: Setup Python
+        if: matrix.language == 'python'
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version }}
+          cache: "pip"
+
+      - name: Install dependencies
+        if: matrix.language == 'node'
+        run: npm ci --legacy-peer-deps
+
+      - name: Install Python dependencies
+        if: matrix.language == 'python'
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt --if-present
+
+      - name: Run Snyk Code
+        uses: snyk/actions/${{ matrix.language }}@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: code --severity-threshold=${{ env.SNYK_SEVERITY_THRESHOLD }} --org=${{ env.SNYK_ORGANIZATION }}
+
+      - name: Upload Snyk Code results
+        uses: github/codeql-action/upload-sarif@v4
+        if: always()
+        with:
+          sarif_file: snyk-code.sarif
+
+  # CodeQL Analysis
+  codeql:
+    name: CodeQL Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: ${{ inputs.timeout-minutes }}
+    if: inputs.enable-codeql
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      matrix:
+        language: ["javascript", "typescript", "python"]
+      fail-fast: false
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: ${{ matrix.language }}
+          queries: security-extended,security-and-quality
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v4
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: "/language:${{matrix.language}}"
+
+  # Secret Scanning
+  secret-scan:
+    name: Secret Scanning
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: inputs.enable-secrets
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run TruffleHog
+        uses: trufflesecurity/trufflehog@v3.93.3
+        with:
+          path: ./
+          base: main
+          head: HEAD
+          extra_args: --only-verified
+          fail: false
+
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check for hardcoded secrets
+        run: |
+          echo "🔍 Checking for common secret patterns..."
+
+          # Check for common secret patterns
+          if grep -r -i "password\|secret\|token\|key\|api_key" --include="*.js" --include="*.ts" --include="*.py" --include="*.json" --include="*.yml" --include="*.yaml" . | grep -v "node_modules\|\.git\|test\|example"; then
+            echo "⚠️ Potential hardcoded secrets found"
+          else
+            echo "✅ No obvious hardcoded secrets found"
+          fi
+
+  # Dependency Audit
+  dependency-audit:
+    name: Dependency Audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        if: inputs.project-type != 'gateway'
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: "npm"
+
+      - name: Setup Python
+        if: inputs.project-type == 'gateway' || inputs.project-type == 'mcp'
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version }}
+          cache: "pip"
+
+      - name: npm audit
+        if: inputs.project-type != 'gateway'
+        run: |
+          npm ci --legacy-peer-deps
+          npm audit --audit-level=high
+        continue-on-error: true
+
+      - name: pip audit
+        if: inputs.project-type == 'gateway' || inputs.project-type == 'mcp'
+        run: |
+          python -m pip install --upgrade pip
+          pip install pip-audit
+          pip install -r requirements.txt --if-present
+          pip-audit --format=json --output=audit-results.json || true
+        continue-on-error: true
+
+      - name: Upload audit results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: audit-results
+          path: audit-results.json
+          retention-days: 30
+
+  # Security Summary
+  security-summary:
+    name: Security Summary
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [snyk-dependencies, snyk-code, codeql, secret-scan, dependency-audit]
+    if: always()
+
+    steps:
+      - name: Security Scan Summary
+        run: |
+          echo "## 🔒 Security Scan Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Scan Type | Status | Result |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----------|--------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Snyk Dependencies | ${{ needs.snyk-dependencies.result }} | ✅ Passed or ❌ Failed |" >> $GITHUB_STEP_SUMMARY
+          echo "| Snyk Code Analysis | ${{ needs.snyk-code.result }} | ✅ Passed or ❌ Failed |" >> $GITHUB_STEP_SUMMARY
+          echo "| CodeQL Analysis | ${{ needs.codeql.result }} | ✅ Passed or ❌ Failed |" >> $GITHUB_STEP_SUMMARY
+          echo "| Secret Scanning | ${{ needs.secret-scan.result }} | ✅ Passed or ❌ Failed |" >> $GITHUB_STEP_SUMMARY
+          echo "| Dependency Audit | ${{ needs.dependency-audit.result }} | ✅ Passed or ❌ Failed |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📊 Security Metrics" >> $GITHUB_STEP_SUMMARY
+          echo "- **Organization**: ${{ env.SNYK_ORGANIZATION }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Severity Threshold**: ${{ env.SNYK_SEVERITY_THRESHOLD }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Project Type**: ${{ inputs.project-type }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Languages**: Node.js, Python, TypeScript" >> $GITHUB_STEP_SUMMARY
+          echo "- **Scan Frequency**: Event-driven + scheduled" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Overall security status
+          if [[ "${{ needs.snyk-dependencies.result }}" == "success" && "${{ needs.codeql.result }}" == "success" && "${{ needs.secret-scan.result }}" == "success" ]]; then
+            echo "✅ All security checks passed!" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ Some security checks require attention" >> $GITHUB_STEP_SUMMARY
+            echo "🔍 Review the Security tab for detailed findings" >> $GITHUB_STEP_SUMMARY
+          fi

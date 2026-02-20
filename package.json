@@ -76,9 +76,16 @@
     "typescript-eslint": "^8.56.0"
   },
   "lint-staged": {
-    "*.{js,ts}": ["eslint --fix", "prettier --write"],
-    "*.{json,yml,yaml}": ["prettier --write"],
-    "*.md": ["prettier --write"]
+    "*.{js,ts}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,yml,yaml}": [
+      "prettier --write"
+    ],
+    "*.md": [
+      "prettier --write"
+    ]
   },
   "husky": {
     "hooks": {
@@ -86,7 +93,17 @@
       "pre-push": "npm run validate"
     }
   },
-  "keywords": ["patterns", "architecture", "mcp", "forgespace", "development", "workflow", "typescript", "eslint", "prettier"],
+  "keywords": [
+    "patterns",
+    "architecture",
+    "mcp",
+    "forgespace",
+    "development",
+    "workflow",
+    "typescript",
+    "eslint",
+    "prettier"
+  ],
   "author": "Forgespace",
   "license": "MIT",
   "repository": {

@@ -1,4 +1,10 @@
-import { listProjects, readContext, writeContext, projectExists, validateProjectSlug } from './store.js';
+import {
+  listProjects,
+  readContext,
+  writeContext,
+  projectExists,
+  validateProjectSlug
+} from './store.js';
 
 export const TOOLS = [
   {

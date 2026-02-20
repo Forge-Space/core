@@ -1,4 +1,10 @@
-import { listProjects, readContext, readMeta, projectExists, validateProjectSlug } from './store.js';
+import {
+  listProjects,
+  readContext,
+  readMeta,
+  projectExists,
+  validateProjectSlug
+} from './store.js';
 
 export interface ProjectResource {
   uri: string;

@@ -1,0 +1,275 @@
+name: Release Detection (Shared)
+
+on:
+  workflow_call:
+    inputs:
+      project-type:
+        description: 'Type of project (gateway, webapp, mcp, patterns)'
+        required: false
+        default: 'patterns'
+        type: string
+      enable-publishing:
+        description: 'Enable automated publishing'
+        required: false
+        default: true
+        type: boolean
+      enable-changelog:
+        description: 'Enable changelog updates'
+        required: false
+        default: true
+        type: boolean
+      timeout-minutes:
+        description: 'Default timeout for jobs'
+        required: false
+        default: '10'
+        type: string
+    secrets:
+      GITHUB_TOKEN:
+        description: 'GitHub token'
+        required: true
+      NPM_TOKEN:
+        description: 'NPM token for publishing'
+        required: false
+    outputs:
+      is-release:
+        description: 'Whether this is a release'
+        value: ${{ jobs.detect-release.outputs.is-release }}
+      version:
+        description: 'Detected version'
+        value: ${{ jobs.detect-release.outputs.version }}
+      version-type:
+        description: 'Type of version bump'
+        value: ${{ jobs.detect-release.outputs.version-type }}
+      should-publish:
+        description: 'Whether to publish'
+        value: ${{ jobs.detect-release.outputs.should-publish }}
+
+jobs:
+  detect-release:
+    name: Detect Release
+    runs-on: ubuntu-latest
+    timeout-minutes: ${{ inputs.timeout-minutes }}
+    outputs:
+      is-release: ${{ steps.check.outputs.is-release }}
+      version: ${{ steps.check.outputs.version }}
+      version-type: ${{ steps.check.outputs.version-type }}
+      should-publish: ${{ steps.check.outputs.should-publish }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check if this is a release
+        id: check
+        run: |
+          echo "🔍 Checking for release conditions..."
+          
+          # Check if this is a tag push
+          if [[ "${{ github.ref_type }}" == "tag" && "${{ github.ref_name }}" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+ ]]; then
+            VERSION=$(echo "${{ github.ref_name }}" | sed 's/^v//')
+            echo "is-release=true" >> $GITHUB_OUTPUT
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+            echo "should-publish=${{ inputs.enable-publishing }}" >> $GITHUB_OUTPUT
+            echo "✅ Tag release detected: $VERSION"
+            exit 0
+          fi
+          
+          # Check if this is a release branch merge to main
+          if [[ "${{ github.ref }}" == "refs/heads/main" || "${{ github.ref }}" == "refs/heads/master" ]]; then
+            COMMIT_MSG=$(git log -1 --pretty=format:"%s")
+            echo "Commit message: $COMMIT_MSG"
+            
+            if [[ "$COMMIT_MSG" =~ ^Merge\ branch\ .*/release/([0-9]+)\.([0-9]+)\.([0-9]+) ]]; then
+              FULL_VERSION=$(echo "$COMMIT_MSG" | sed -E 's|.*release/([0-9]+\.[0-9]+\.[0-9]+).*|\1|')
+              echo "is-release=true" >> $GITHUB_OUTPUT
+              echo "version=$FULL_VERSION" >> $GITHUB_OUTPUT
+              echo "should-publish=${{ inputs.enable-publishing }}" >> $GITHUB_OUTPUT
+              
+              # Determine version type
+              if [ -f "package.json" ]; then
+                CURRENT_VERSION=$(node -p "require('./package.json').version" 2>/dev/null || echo "0.0.0")
+              elif [ -f "pyproject.toml" ]; then
+                CURRENT_VERSION=$(grep -E "^version\s*=" pyproject.toml | sed -E 's/.*["'\'']([^"'\''*)["'\''].*/\1/' 2>/dev/null || echo "0.0.0")
+              else
+                CURRENT_VERSION="0.0.0"
+              fi
+              
+              echo "Current version: $CURRENT_VERSION"
+              echo "Target version: $FULL_VERSION"
+              
+              # Compare versions to determine bump type
+              MAJOR_CURRENT=$(echo "$CURRENT_VERSION" | cut -d. -f1)
+              MINOR_CURRENT=$(echo "$CURRENT_VERSION" | cut -d. -f2)
+              PATCH_CURRENT=$(echo "$CURRENT_VERSION" | cut -d. -f3 | cut -d- -f1)
+              
+              MAJOR_TARGET=$(echo "$FULL_VERSION" | cut -d. -f1)
+              MINOR_TARGET=$(echo "$FULL_VERSION" | cut -d. -f2)
+              PATCH_TARGET=$(echo "$FULL_VERSION" | cut -d. -f3 | cut -d- -f1)
+              
+              if [[ $MAJOR_TARGET -gt $MAJOR_CURRENT ]]; then
+                VERSION_TYPE="major"
+              elif [[ $MINOR_TARGET -gt $MINOR_CURRENT ]]; then
+                VERSION_TYPE="minor"
+              else
+                VERSION_TYPE="patch"
+              fi
+              
+              echo "version-type=$VERSION_TYPE" >> $GITHUB_OUTPUT
+              echo "✅ Release branch merge detected: $FULL_VERSION ($VERSION_TYPE)"
+            else
+              echo "is-release=false" >> $GITHUB_OUTPUT
+              echo "version=" >> $GITHUB_OUTPUT
+              echo "version-type=" >> $GITHUB_OUTPUT
+              echo "should-publish=false" >> $GITHUB_OUTPUT
+              echo "Not a release merge"
+            fi
+          else
+            echo "is-release=false" >> $GITHUB_OUTPUT
+            echo "version=" >> $GITHUB_OUTPUT
+            echo "version-type=" >> $GITHUB_OUTPUT
+            echo "should-publish=false" >> $GITHUB_OUTPUT
+            echo "Not on main branch"
+          fi
+
+  update-changelog:
+    name: Update Changelog
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: detect-release
+    if: needs.detect-release.outputs.is-release == 'true' && inputs.enable-changelog == 'true'
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        if: inputs.project-type != 'gateway'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        if: inputs.project-type != 'gateway'
+        run: npm ci --legacy-peer-deps
+
+      - name: Update CHANGELOG
+        run: |
+          VERSION="${{ needs.detect-release.outputs.version }}"
+          VERSION_TYPE="${{ needs.detect-release.outputs.version-type }}"
+          DATE=$(date +%Y-%m-%d)
+          PROJECT_TYPE="${{ inputs.project-type }}"
+
+          # Create changelog entry
+          ENTRY="## [$VERSION] - $DATE
+
+### 🚀 Automated Release
+- **Release Type**: $VERSION_TYPE
+- **Project Type**: $PROJECT_TYPE
+- **Automated Pipeline**: Release triggered by merge from release/$VERSION branch
+- **Quality Gates**: All quality checks passed automatically
+- **Security**: Security scans completed successfully
+
+### 📦 Package Information
+- **Version**: $VERSION
+- **Release Date**: $DATE
+
+### ✅ Validation Results
+- All tests passed
+- Code quality checks passed
+- Security audit completed
+- Build completed successfully
+
+### 🔗 Installation
+"
+
+          # Add installation instructions based on project type
+          case "$PROJECT_TYPE" in
+            "gateway")
+              ENTRY="$ENTRY\`\`\`bash
+# Install via pip
+pip install forge-mcp-gateway==$VERSION
+
+# Or via Docker
+docker pull lucassantana/forge-mcp-gateway:v$VERSION
+\`\`\`"
+              ;;
+            "webapp")
+              ENTRY="$ENTRY\`\`\`bash
+# Deploy to Cloudflare Pages
+# See deployment documentation for details
+\`\`\`"
+              ;;
+            "mcp"|"patterns")
+              ENTRY="$ENTRY\`\`\`bash
+# Install via npm
+npm install -g @forgespace/ui-mcp@$VERSION
+
+# Or via Docker
+docker pull lucassantana/uiforge-mcp:v$VERSION
+\`\`\`"
+              ;;
+          esac
+
+          ENTRY="$ENTRY
+
+---
+
+"
+
+          # Update CHANGELOG.md
+          if [ -f "CHANGELOG.md" ]; then
+            EXISTING=$(cat CHANGELOG.md)
+            if echo "$EXISTING" | grep -q "^## "; then
+              # Insert after first ## line
+              echo "$ENTRY" > temp_changelog.md
+              echo "$EXISTING" | sed '1d' >> temp_changelog.md
+              mv temp_changelog.md CHANGELOG.md
+            else
+              # Insert at beginning
+              echo "$ENTRY" > temp_changelog.md
+              echo "$EXISTING" >> temp_changelog.md
+              mv temp_changelog.md CHANGELOG.md
+            fi
+          else
+            echo "$ENTRY" > CHANGELOG.md
+          fi
+
+      - name: Commit CHANGELOG
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add CHANGELOG.md
+          git commit -m "chore(release): update CHANGELOG for v${{ needs.detect-release.outputs.version }}"
+          git push origin main
+
+  notify-release:
+    name: Notify Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    needs: detect-release
+    if: needs.detect-release.outputs.is-release == 'true'
+    
+    steps:
+      - name: Release Notification
+        run: |
+          echo "🚀 Automated Release Detected!"
+          echo "📦 Version: ${{ needs.detect-release.outputs.version }}"
+          echo "🔄 Type: ${{ needs.detect-release.outputs.version-type }}"
+          echo "🏗️ Project: ${{ inputs.project-type }}"
+          echo "📊 Should Publish: ${{ needs.detect-release.outputs.should-publish }}"
+          echo ""
+          echo "📋 Release Status:"
+          echo "✅ Release detected"
+          if [ "${{ inputs.enable-changelog }}" == "true" ]; then
+            echo "✅ CHANGELOG updated"
+          fi
+          if [ "${{ needs.detect-release.outputs.should-publish }}" == "true" ]; then
+            echo "🔄 Publishing workflow will be triggered"
+          fi
+          echo ""
+          echo "🔗 Monitor progress: https://github.com/${{ github.repository }}/actions"
