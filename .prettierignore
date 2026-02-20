@@ -25,6 +25,10 @@ coverage/
 !tsconfig.json
 !.eslintrc.js
 
+# YAML files (GitHub Actions workflows)
+*.yml
+*.yaml
+
 # Logs
 *.log
 

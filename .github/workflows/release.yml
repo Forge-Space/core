@@ -41,7 +41,7 @@ jobs:
               # Extract version from branch name in commit message - fixed regex
               VERSION=$(echo "$COMMIT_MSG" | sed -E 's|.*release/([0-9]+\.[0-9]+\.[0-9]+).*|\1|')
               echo "version=$VERSION" >> $GITHUB_OUTPUT
-              echo "should-publish=true" >> $GITHUB_OUTPUT
+              echo "should-publish=true" >> $ITHUB_OUTPUT
             else
               echo "is-release=false" >> $GITHUB_OUTPUT
               echo "should-publish=false" >> $GITHUB_OUTPUT
