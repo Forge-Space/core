@@ -173,7 +173,15 @@ FAILED_TESTS=()
 
 for project in "${DEPENDENT_PROJECTS[@]}"; do
     # Skip projects that failed to update
-    if [[ " ${FAILED_PROJECTS[@]} " =~ " $project " ]]; then
+    local found=false
+    for failed_project in "${FAILED_PROJECTS[@]}"; do
+        if [[ "$failed_project" == "$project" ]]; then
+            found=true
+            break
+        fi
+    done
+    
+    if [ "$found" = true ]; then
         log_warning "Skipping tests for $project (update failed)"
         continue
     fi
